@@ -17,7 +17,10 @@ class Model(models.Model):
     model_number = models.TextField(blank=False, default=None)
     description = models.TextField(blank=True)
     comment = models.TextField(blank=True)
-    calibration_frequency = models.IntegerField(blank=True)
+    calibration_frequency = models.IntegerField(blank=True, null=True)
+
+    def is_calibratable(self):
+        return self.calibration_frequency is not None
 
     def __str__(self):
         return self.vendor, self.model_number, self.description, self.comment, self.calibration_frequency
