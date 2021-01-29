@@ -34,6 +34,9 @@ class Instrument(models.Model):
     def __str__(self):
         return self.model, self.serial_number, self.comment
 
+    def is_calibratable(self):
+        return self.model.is_calibratable()
+
 
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
