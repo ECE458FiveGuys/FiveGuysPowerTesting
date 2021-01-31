@@ -15,10 +15,18 @@ class CalibrationEventTestCase(TestCase):
         instrument = Instrument.objects.create(model=model, serial_number="serial_number", comment="comment")
         return user, instrument
 
-    def test_optional_fields_empty(self):
+    def test_optional_fields_empty_no_exception(self):
         user, instrument = self.create_objects()
         try:
             CalibrationEvent.objects.create(instrument=instrument, user=user, date=datetime.Now())
+            pass
+        except Exception:
+            self.fail("optional fields throwing error")
+
+    def test_optional_fields_none_no_exception(self):
+        user, instrument = self.create_objects()
+        try:
+            CalibrationEvent.objects.create(instrument=instrument, user=user, date=datetime.Now(), comment=None)
             pass
         except Exception:
             self.fail("optional fields throwing error")
