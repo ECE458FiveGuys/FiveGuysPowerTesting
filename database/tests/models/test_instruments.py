@@ -5,21 +5,11 @@ from database.models import Instrument
 
 
 class InstrumentTestCase(TestCase):
-
-    def test_optional_fields_empty_no_exception(self):
+    def test_optional_fields_empty(self):
         model = Model.objects.create(vendor="vendor", model_number="model_number", description="description",
                                      comment="comment", calibration_frequency=1)
         try:
             Instrument.objects.create(model=model, serial_number="serial_number")
-            pass
-        except Exception:
-            self.fail("optional fields throwing error")
-
-    def test_optional_fields_none_no_exception(self):
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description",
-                                     comment=None, calibration_frequency=1)
-        try:
-            Instrument.objects.create(model=model, serial_number="serial_number", comment=None)
             pass
         except Exception:
             self.fail("optional fields throwing error")
