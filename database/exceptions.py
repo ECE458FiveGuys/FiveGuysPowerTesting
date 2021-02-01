@@ -8,9 +8,9 @@ class IllegalAccessException(UserError):
         super().__init__("This function is admin-only")
 
 
-class NoSuchEntryExistsException(UserError):
-    def __init__(self):
-        super().__init__("This entry no longer exists")
+class EntryDoesNotExistException(UserError):
+    def __init__(self, entry_type, entry_id):
+        super().__init__("The {0} with id {1} no longer exists".format(entry_type, entry_id))
 
 
 class RequiredFieldsEmptyException(UserError):

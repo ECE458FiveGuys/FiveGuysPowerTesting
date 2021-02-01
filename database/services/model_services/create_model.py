@@ -29,7 +29,7 @@ class CreateModel(Service):
         try:
             if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
                 raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])
-            Model.objects.create(vendor=self.vendor, model_number=self.model_number,
+            return Model.objects.create(vendor=self.vendor, model_number=self.model_number,
                                          description=self.description,
                                          comment=self.comment, calibration_frequency=self.calibration_frequency)
         except IntegrityError:
