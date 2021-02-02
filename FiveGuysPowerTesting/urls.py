@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from front import views as v
 
 urlpatterns = [
     path('models/', include('database.urls')),
     path('admin/', admin.site.urls),
+    path('', v.modelpage)
 ]
