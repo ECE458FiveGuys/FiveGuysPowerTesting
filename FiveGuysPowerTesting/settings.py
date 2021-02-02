@@ -25,7 +25,7 @@ SECRET_KEY = '&t60tb1s$pamsehr-e3q_2)^n+z#3mo(*ksabeyu3=71u*ik47'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['vcm-18605.vm.duke.edu', '127.0.0.1']
+ALLOWED_HOSTS = ['vcm-18605.vm.duke.edu']
 
 
 # Application definition
@@ -37,8 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'database.apps.DatabaseConfig',
-    'front',
+    'database.apps.DatabaseConfig'
 ]
 
 MIDDLEWARE = [
