@@ -11,6 +11,8 @@ class SelectModels(Service):
             model_number=None,
             description=None,
             calibration_frequency=None,
+            num_per_page=None,
+            page_num=None
     ):
         self.id = model_id
         self.vendor = vendor

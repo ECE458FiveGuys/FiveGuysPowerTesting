@@ -7,9 +7,10 @@ class User(models.Model):
     email = models.EmailField(null=False, blank=False, default=None)
     password = models.TextField(blank=False, default=None)
     admin = models.BooleanField(blank=False, default=None)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.username, self.name, self.email, self.password, self.admin
+        return self.username, self.name, self.email, self.password, self.admin, self.active
 
 
 class Model(models.Model):
