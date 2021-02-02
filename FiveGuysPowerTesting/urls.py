@@ -20,5 +20,6 @@ from front import views as v
 urlpatterns = [
     path('models/', include('database.urls')),
     path('admin/', admin.site.urls),
-    path('', v.modelpage)
+    path('model/', v.modelpage),
+    path('instrument/', v.instrumentpage)
 ]
