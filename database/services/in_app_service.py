@@ -4,7 +4,7 @@ from database.services.service import Service
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from database.exceptions import UserError, InactiveUserException, IllegalAccessException
+from database.exceptions import UserError, InactiveUserException, IllegalAccessException, AuthenticationFailedException
 from database.models import User
 from database.services.utils.security_utils import encrypt
 
@@ -19,7 +19,7 @@ def verify_and_retrieve_user(user_id, password):
             raise InactiveUserException()
         return user
     except ObjectDoesNotExist:
-        raise UserError("Authentication failed")
+        raise AuthenticationFailedException()
 
 class InAppService(Service):
 

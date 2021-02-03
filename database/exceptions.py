@@ -15,7 +15,12 @@ class EntryDoesNotExistException(UserError):
 
 class InactiveUserException(UserError):
     def __init__(self):
-        super().__init__("This user has been deleted")
+        super().__init__("The user owning these credentials has been deleted")
+
+
+class AuthenticationFailedException(UserError):
+    def __init__(self):
+        super().__init__("Authentication Failed")
 
 
 class RequiredFieldsEmptyException(UserError):
