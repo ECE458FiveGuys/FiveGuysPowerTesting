@@ -41,7 +41,7 @@ class Instrument(models.Model):
 
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
-    date = models.DateTimeField(null=False, blank=False, default=None)
+    date = models.DateField(null=False, blank=False, default=None)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField(blank=True, null=True)
 

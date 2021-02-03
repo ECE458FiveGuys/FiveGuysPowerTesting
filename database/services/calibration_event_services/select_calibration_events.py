@@ -3,12 +3,13 @@ from django.db.models import Q
 
 from database.exceptions import EntryDoesNotExistException
 from database.models import Instrument, CalibrationEvent, User
+from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
 from database.services.model_services.select_models import SelectModels
 from database.services.service import Service
 
 
-class SelectCalibrationEvents(Service):
+class SelectCalibrationEvents(InAppService):
 
     def __init__(
             self,
@@ -37,13 +38,15 @@ class SelectCalibrationEvents(Service):
         instrument = None
         if self.instrument_id is not None:
             try:
-                instrument = SelectInstruments(instrument_id=self.instrument_id).execute().get(id=self.instrument_id)
+                instrument = SelectInstruments(user_id=self.user.id, password=self.user.password, instrument_id=self.instrument_id)\
+                    .execute()\
+                    .get(id=self.instrument_id)
             except ObjectDoesNotExist:
                 raise EntryDoesNotExistException("instrument", self.instrument_id)
 
-        calibration_events = calibration_events if instrument is None else calibration_events.filter(user=instrument)
+        calibration_events = calibration_events if instrument is None else calibration_events.filter(instrument=instrument)
 
         if self.chronological:
-            calibration_events = calibration_events.order_by("-date")
+            calibration_events = calibration_events.order_by("date")
 
         return calibration_events
