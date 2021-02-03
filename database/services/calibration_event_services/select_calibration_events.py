@@ -12,17 +12,18 @@ class SelectCalibrationEvents(Service):
 
     def __init__(
             self,
+            user_id,
+            password,
             calibration_event_id=None,
-            user=None,
             instrument_id=None,
             date=None,
             chronological=True
     ):
         self.calibration_event_id = calibration_event_id
         self.instrument_id = instrument_id
-        self.user = user
         self.date = date
         self.chronological = chronological
+        super().__init__(user_id=user_id, password=password, admin_only=False)
 
     def execute(self):
         calibration_events = CalibrationEvent.objects.all()
@@ -32,7 +33,6 @@ class SelectCalibrationEvents(Service):
         calibration_events = calibration_events if self.calibration_event_id is None else calibration_events.filter(
             id=self.calibration_event_id)
         calibration_events = calibration_events if self.date is None else calibration_events.filter(date=self.date)
-        calibration_events = calibration_events if self.user is None else calibration_events.filter(user=self.user)
 
         instrument = None
         if self.instrument_id is not None:

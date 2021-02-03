@@ -12,8 +12,10 @@ class CreateModelTestCase(TestCase):
     def test_create_model_happy_case(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        model = CreateModel(user=user, vendor="vendor", model_number="model_number", description="description").execute()
-        models = SelectModels(model_id=model.id).execute()
+        model = CreateModel(user_id=user.id, password=user.password, vendor="vendor", model_number="model_number", description="description")\
+            .execute()
+        models = SelectModels(user_id=user.id, password=user.password, model_id=model.id)\
+            .execute()
         if models.count() != 1 or models.get(id=model.id) != model:
             self.fail("selected wrong models")
 
@@ -21,7 +23,7 @@ class CreateModelTestCase(TestCase):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
         try:
-            CreateModel(user=user, vendor=None, model_number=None, description=None).execute()
+            CreateModel(user_id=user.id, password=user.password, vendor=None, model_number=None, description=None).execute()
             self.fail("model without required fields was created")
         except RequiredFieldsEmptyException as e:
             if e.message != "vendor and model_number are required fields for model":
@@ -34,7 +36,7 @@ class CreateModelTestCase(TestCase):
                                    admin=True)
         Model.objects.create(vendor="vendor", model_number="model_number", description="description")
         try:
-            CreateModel(user=user, vendor="vendor", model_number="model_number", description="description").execute()
+            CreateModel(user_id=user.id, password=user.password, vendor="vendor", model_number="model_number", description="description").execute()
             self.fail("non unqiue model was created")
         except FieldCombinationNotUniqueException as e:
             if e.message != "The combination of vendor and model_number must be unique for model":
@@ -44,7 +46,7 @@ class CreateModelTestCase(TestCase):
     def test_create_model_not_admin_throws_exception(self):
         user = create_non_admin_user()
         try:
-            CreateModel(user=user, vendor="vendor", model_number="model_number", description="description").execute()
+            CreateModel(user_id=user.id, password=user.password, vendor="vendor", model_number="model_number", description="description").execute()
             self.fail("non admin permitted to use function")
         except IllegalAccessException:
             pass

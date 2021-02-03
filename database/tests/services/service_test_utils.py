@@ -4,7 +4,7 @@ from database.services.instrument_services.create_instrument import CreateInstru
 
 def create_admin_and_model_and_instrument():
     user, model = create_admin_and_model()
-    instrument = CreateInstrument(user=user, model_id=model.id, serial_number="serial_number").execute()
+    instrument = CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
     return user, model, instrument
 
 

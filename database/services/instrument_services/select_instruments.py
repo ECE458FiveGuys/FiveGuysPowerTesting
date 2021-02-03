@@ -1,14 +1,17 @@
 from django.db.models import Q
 
 from database.models import Instrument
+from database.services.in_app_service import InAppService
 from database.services.model_services.select_models import SelectModels
 from database.services.service import Service
 
 
-class SelectInstruments(Service):
+class SelectInstruments(InAppService):
 
     def __init__(
             self,
+            user_id,
+            password,
             instrument_id=None,
             model_id=None,
             model_number=None,
@@ -22,6 +25,7 @@ class SelectInstruments(Service):
         self.vendor = vendor
         self.description = description
         self.serial_number = serial_number
+        super().__init__(user_id=user_id, password=password, admin_only=False)
 
     def execute(self):
         instruments = Instrument.objects.all()
@@ -34,7 +38,7 @@ class SelectInstruments(Service):
 
         # filter by model fields
 
-        models = SelectModels(model_id=self.model_id, model_number=self.model_number, vendor=self.vendor,
+        models = SelectModels(user_id=self.user.id, password=self.user.password, model_id=self.model_id, model_number=self.model_number, vendor=self.vendor,
                               description=self.description).execute()
         query = None
         for model in models:

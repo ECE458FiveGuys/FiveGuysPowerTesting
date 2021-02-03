@@ -1,31 +1,32 @@
 from django.db.utils import IntegrityError
 
-from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, RequiredFieldsEmptyException
-from database.models import Model
+from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
+    RequiredFieldsEmptyException, InactiveUserException
+from database.models import Model, User
+from database.services.in_app_service import InAppService
 from database.services.service import Service
 
 
-class CreateModel(Service):
+class CreateModel(InAppService):
 
     def __init__(
             self,
-            user,
+            user_id,
+            password,
             vendor,
             model_number,
             description,
             comment=None,
             calibration_frequency=None
     ):
-        self.user = user
         self.vendor = vendor
         self.model_number = model_number
         self.description = description
         self.comment = comment
         self.calibration_frequency = calibration_frequency
+        super().__init__(user_id=user_id, password=password, admin_only=True)
 
     def execute(self):
-        if not self.user.admin:
-            raise IllegalAccessException()
         try:
             if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
                 raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])

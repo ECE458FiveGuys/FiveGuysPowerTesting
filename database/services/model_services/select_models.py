@@ -1,11 +1,14 @@
 from database.models import Model
+from database.services.in_app_service import InAppService
 from database.services.service import Service
 
 
-class SelectModels(Service):
+class SelectModels(InAppService):
 
     def __init__(
             self,
+            user_id,
+            password,
             model_id=None,
             vendor=None,
             model_number=None,
@@ -19,6 +22,7 @@ class SelectModels(Service):
         self.model_number = model_number
         self.description = description
         self.calibration_frequency = calibration_frequency
+        super().__init__(user_id=user_id, password=password, admin_only=False)
 
     def execute(self):
         models = Model.objects.all()

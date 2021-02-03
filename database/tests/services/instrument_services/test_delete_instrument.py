@@ -12,7 +12,7 @@ class DeleteInstrumentTestCase(TestCase):
 
     def test_delete_models_succeeds(self):
         user, model, instrument = create_admin_and_model_and_instrument()
-        DeleteInstrument(instrument_id=instrument.id, user=user).execute()
+        DeleteInstrument(instrument_id=instrument.id, user_id=user.id, password=user.password).execute()
         try:
             Instrument.objects.get(id=instrument.id)
             self.fail("Instrument did not delete")
@@ -23,7 +23,7 @@ class DeleteInstrumentTestCase(TestCase):
         user, model, instrument = create_admin_and_model_and_instrument()
         non_admin = create_non_admin_user()
         try:
-            DeleteInstrument(instrument_id=instrument.id, user=non_admin).execute()
+            DeleteInstrument(instrument_id=instrument.id, user_id=non_admin.id, password=non_admin.password).execute()
             self.fail("non admin was allowed to delete")
         except IllegalAccessException:
             pass
@@ -31,7 +31,7 @@ class DeleteInstrumentTestCase(TestCase):
     def test_delete_models_invalid_id_throws_exception(self):
         user, model, instrument = create_admin_and_model_and_instrument()
         try:
-            DeleteInstrument(instrument_id=instrument.id + 1, user=user).execute()
+            DeleteInstrument(instrument_id=instrument.id + 1, user_id=user.id, password=user.password).execute()
             self.fail("delete worked for invalid id")
         except EntryDoesNotExistException:
             pass

@@ -3,14 +3,16 @@ from django.db import IntegrityError
 from database.exceptions import IllegalAccessException, RequiredFieldsEmptyException, \
     FieldCombinationNotUniqueException, EntryDoesNotExistException
 from database.models import Model
+from database.services.in_app_service import InAppService
 from database.services.service import Service
 
 
-class EditModel(Service):
+class EditModel(InAppService):
 
     def __init__(
             self,
-            user,
+            user_id,
+            password,
             model_id,
             vendor,
             model_number,
@@ -18,17 +20,15 @@ class EditModel(Service):
             comment=None,
             calibration_frequency=None,
     ):
-        self.user = user
         self.id = model_id
         self.vendor = vendor
         self.model_number = model_number
         self.description = description
         self.comment = comment
         self.calibration_frequency = calibration_frequency
+        super().__init__(user_id=user_id, password=password, admin_only=True)
 
     def execute(self):
-        if not self.user.admin:
-            raise IllegalAccessException()
         try:
             if not Model.objects.filter(id=self.id):
                 raise EntryDoesNotExistException("model", self.id)

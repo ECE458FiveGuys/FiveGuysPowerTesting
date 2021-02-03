@@ -12,14 +12,14 @@ class CreateInstrumentTestCase(TestCase):
 
     def test_create_instrument_happy_case(self):
         user, model, instrument = create_admin_and_model_and_instrument()
-        instruments = SelectInstruments(instrument_id=instrument.id).execute()
+        instruments = SelectInstruments(user_id=user.id, password=user.password, instrument_id=instrument.id).execute()
         if instruments.count() != 1 or instruments.get(id=instrument.id) != instrument:
             self.fail("selected wrong instrument")
 
     def test_create_instrument_invalid_model_id_exception(self):
         user, model = create_admin_and_model()
         try:
-            CreateInstrument(user=user, model_id=model.id + 1, serial_number="serial_number").execute()
+            CreateInstrument(user_id=user.id, password=user.password, model_id=model.id + 1, serial_number="serial_number").execute()
             self.fail("instrument with invalid model_id allowed to be created")
         except EntryDoesNotExistException as e:
             expected_message = "The model with id {} no longer exists".format(model.id + 1)
@@ -31,7 +31,7 @@ class CreateInstrumentTestCase(TestCase):
     def test_create_instrument_without_required_fields_throws_exception(self):
         user, model = create_admin_and_model()
         try:
-            CreateInstrument(user=user, model_id=None, serial_number=None).execute()
+            CreateInstrument(user_id=user.id, password=user.password, model_id=None, serial_number=None).execute()
             self.fail("instrument without required fields was created")
         except RequiredFieldsEmptyException as e:
             if e.message != "model and serial_number are required fields for instrument":
@@ -43,7 +43,7 @@ class CreateInstrumentTestCase(TestCase):
         user, model = create_admin_and_model()
         Instrument.objects.create(model=model, serial_number="serial_number")
         try:
-            CreateInstrument(user=user, model_id=model.id, serial_number="serial_number").execute()
+            CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
             self.fail("non unqiue instrument was created")
         except FieldCombinationNotUniqueException as e:
             if e.message != "The combination of model and serial_number must be unique for instrument":
@@ -55,7 +55,7 @@ class CreateInstrumentTestCase(TestCase):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=False)
         try:
-            CreateInstrument(user=user, model_id=model.id, serial_number="serial_number").execute()
+            CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
             self.fail("non admin permitted to use function")
         except IllegalAccessException:
             pass
