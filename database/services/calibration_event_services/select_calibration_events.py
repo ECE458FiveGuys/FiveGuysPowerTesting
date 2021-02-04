@@ -6,10 +6,11 @@ from database.models import Instrument, CalibrationEvent, User
 from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
 from database.services.model_services.select_models import SelectModels
+from database.services.select_service import SelectService
 from database.services.service import Service
 
 
-class SelectCalibrationEvents(InAppService):
+class SelectCalibrationEvents(SelectService):
 
     def __init__(
             self,
@@ -18,23 +19,15 @@ class SelectCalibrationEvents(InAppService):
             calibration_event_id=None,
             instrument_id=None,
             date=None,
-            chronological=True
+            num_per_page=SelectService.ALL,
+            order_by="date"
     ):
         self.calibration_event_id = calibration_event_id
         self.instrument_id = instrument_id
         self.date = date
-        self.chronological = chronological
-        super().__init__(user_id=user_id, password=password, admin_only=False)
+        super().__init__(user_id=user_id, password=password, admin_only=False, num_per_page=num_per_page, order_by=order_by)
 
-    def execute(self):
-        calibration_events = CalibrationEvent.objects.all()
-
-        # filter by instrument fields
-
-        calibration_events = calibration_events if self.calibration_event_id is None else calibration_events.filter(
-            id=self.calibration_event_id)
-        calibration_events = calibration_events if self.date is None else calibration_events.filter(date=self.date)
-
+    def filter_by_fields(self):
         instrument = None
         if self.instrument_id is not None:
             try:
@@ -44,9 +37,16 @@ class SelectCalibrationEvents(InAppService):
             except ObjectDoesNotExist:
                 raise EntryDoesNotExistException("instrument", self.instrument_id)
 
-        calibration_events = calibration_events if instrument is None else calibration_events.filter(instrument=instrument)
+        query = None
+        if self.calibration_event_id is not None:
+            query = self.add_to_query(term=Q(id=self.calibration_event_id), query=query)
+        if self.date is not None:
+            query = self.add_to_query(term=Q(date=self.date), query=query)
+        if instrument is not None:
+            query = self.add_to_query(term=Q(instrument=instrument), query=query)
 
-        if self.chronological:
-            calibration_events = calibration_events.order_by("date")
+        if query is None:
+            return CalibrationEvent.objects.all()
+        else:
+            return CalibrationEvent.objects.filter(query)
 
-        return calibration_events

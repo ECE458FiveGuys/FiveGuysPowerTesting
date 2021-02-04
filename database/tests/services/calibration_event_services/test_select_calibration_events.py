@@ -13,14 +13,14 @@ class SelectCalibrationEventsTestCase(TestCase):
     def test_select_all_calibration_events_happy_case(self):
         user = create_non_admin_user()
         calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
-        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, chronological=False).execute()
+        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password).execute()
         if calib_events.count() != 3:
             self.fail("selected wrong calibration events")
 
     def test_select_all_calibration_events_chronological(self):
         user = create_non_admin_user()
         calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
-        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, chronological=True).execute()
+        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, order_by="date").execute()
         if calib_events.count() != 3 or calib_events.first() != calibration_event:
             self.fail("selected wrong calibration events")
 
@@ -47,6 +47,19 @@ class SelectCalibrationEventsTestCase(TestCase):
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, date=calibration_event.date).execute()
         if calib_events.count() != 1 or calib_events.get(date=calibration_event.date) != calibration_event:
             self.fail("selected wrong calibration event")
+
+    def test_select_calib_events_by_multiple_fields(self):
+        user = create_non_admin_user()
+        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, date=calibration_event.date, calibration_event_id=calibration_event2.instrument.id).execute()
+        if calib_events.count() != 0:
+            self.fail("selected wrong calibration event")
+
+        calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, date=calibration_event.date, instrument_id=calibration_event.instrument.id).execute()
+        if calib_events.count() != 1 or calib_events.get(date=calibration_event.date) != calibration_event:
+            self.fail("selected wrong calibration event")
+
+
 
     def create_calibration_events(self):
         user = create_non_admin_user()

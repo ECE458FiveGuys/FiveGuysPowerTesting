@@ -8,7 +8,9 @@ from database.tests.services.service_test_utils import create_non_admin_user
 
 class SelectModelsTestCase(TestCase):
 
-    def test_select_all_models(self):
+    # happy case
+
+    def test_select_all_models_happy_case(self):
         user = create_non_admin_user()
         Model.objects.create(vendor="vendor", model_number="model_number", description="description",
                              comment="comment", calibration_frequency=1)
@@ -17,6 +19,8 @@ class SelectModelsTestCase(TestCase):
             pass
         except ObjectDoesNotExist:
             self.fail("Added model could not be found")
+
+    # filtering
 
     def test_select_model_by_id(self):
         user = create_non_admin_user()
@@ -50,6 +54,18 @@ class SelectModelsTestCase(TestCase):
         model, model2 = self.create_2_models()
         user = create_non_admin_user()
         models = SelectModels(user_id=user.id, password=user.password, calibration_frequency=model.calibration_frequency).execute()
+        if models.count() != 1 or models.get(id=model.id) != model:
+            self.fail("selected wrong models")
+
+    def test_select_model_by_multiple_fields(self):
+        model, model2 = self.create_2_models()
+        user = create_non_admin_user()
+        models = SelectModels(user_id=user.id, password=user.password, calibration_frequency=model.calibration_frequency,
+                              description=model2.description).execute()
+        if models.count() != 0:
+            self.fail("selected wrong models")
+        models = SelectModels(user_id=user.id, password=user.password, calibration_frequency=model.calibration_frequency,
+                              description=model.description).execute()
         if models.count() != 1 or models.get(id=model.id) != model:
             self.fail("selected wrong models")
 

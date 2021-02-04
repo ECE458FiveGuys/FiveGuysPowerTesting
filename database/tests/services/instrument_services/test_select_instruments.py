@@ -7,7 +7,9 @@ from database.services.model_services.select_models import SelectModels
 from database.tests.services.service_test_utils import create_non_admin_user
 
 
-class SelectModelsTestCase(TestCase):
+class SelectInstrumentsTestCase(TestCase):
+
+    # happy case
 
     def test_select_all_instruments(self):
         user = create_non_admin_user()
@@ -16,14 +18,16 @@ class SelectModelsTestCase(TestCase):
         if instruments.count() != 3:
             self.fail("selected wrong instruments")
 
-    def test_select_model_by_instrument_id(self):
+    # filtering
+
+    def test_select_instruments_by_instrument_id(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, instrument_id=instrument.id).execute()
         if instruments.count() != 1 or instruments.get(id=instrument.id) != instrument:
             self.fail("selected wrong instrument")
 
-    def test_select_model_by_serial_number(self):
+    def test_select_instruments_by_serial_number(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, serial_number=instrument2.serial_number).execute()
@@ -32,7 +36,7 @@ class SelectModelsTestCase(TestCase):
                 instruments.get(id=instrument3.id) != instrument3:
             self.fail("selected wrong instrument")
 
-    def test_select_model_by_model_id(self):
+    def test_select_instruments_by_model_id(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, model_id=instrument.model_id).execute()
@@ -41,7 +45,7 @@ class SelectModelsTestCase(TestCase):
                 instruments.get(id=instrument2.id) != instrument2:
             self.fail("selected wrong instrument")
 
-    def test_select_model_by_model_number(self):
+    def test_select_instruments_by_model_number(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, model_number=model.model_number).execute()
@@ -50,7 +54,7 @@ class SelectModelsTestCase(TestCase):
                 instruments.get(id=instrument2.id) != instrument2:
             self.fail("selected wrong instrument")
 
-    def test_select_model_by_vendor(self):
+    def test_select_instruments_by_vendor(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, vendor=model.vendor).execute()
@@ -59,7 +63,7 @@ class SelectModelsTestCase(TestCase):
                 instruments.get(id=instrument2.id) != instrument2:
             self.fail("selected wrong instrument")
 
-    def test_select_model_by_description(self):
+    def test_select_instruments_by_description(self):
         user = create_non_admin_user()
         instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
         instruments = SelectInstruments(user_id=user.id, password=user.password, description=model.description).execute()
@@ -67,6 +71,18 @@ class SelectModelsTestCase(TestCase):
                 instruments.get(id=instrument.id) != instrument or \
                 instruments.get(id=instrument2.id) != instrument2:
             self.fail("selected wrong instrument")
+
+    def test_select_instrument_by_multiple_fields(self):
+        user = create_non_admin_user()
+        instrument, instrument2, instrument3, model, model2 = self.create_3_instruments()
+        instruments = SelectInstruments(user_id=user.id, password=user.password, description=model2.description,
+                                        serial_number=instrument.serial_number).execute()
+        if instruments.count() != 0:
+            self.fail("selected wrong instruments")
+        instruments = SelectInstruments(user_id=user.id, password=user.password, description=model.description,
+                                        serial_number=instrument3.serial_number).execute()
+        if instruments.count() != 1 or instruments.get(id=instrument2.id) != instrument2:
+            self.fail("selected wrong instruments")
 
 
     def create_3_instruments(self):
