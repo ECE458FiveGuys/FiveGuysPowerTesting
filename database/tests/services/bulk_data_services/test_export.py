@@ -21,5 +21,4 @@ class ExportTestCase(TestCase):
         )
         decoded_response = response.content.decode('utf-8')
         reader = csv.reader(io.StringIO(decoded_response))
-        row1 =
         print(next(reader))
