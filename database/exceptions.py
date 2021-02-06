@@ -2,6 +2,7 @@ from database.models import VENDOR_LENGTH, MODEL_NUMBER_LENGTH, DESCRIPTION_LENG
 
 CHARACTER_LENGTH_ERROR_MESSAGE = "Ensure this value has at most {} characters"
 NULL_FIELD_ERROR_MESSAGE = "This field cannot be null."
+INVALID_DATE_FIELD_ERROR_MESSAGE = "value has an invalid date format."
 
 class UserError(Exception):
     def __init__(self, message):
@@ -12,6 +13,10 @@ class IllegalAccessException(UserError):
     def __init__(self):
         super().__init__("This function is admin-only")
 
+
+class InvalidDateException(UserError):
+    def __init__(self):
+        super().__init__("Date must be of form YYYY-MM-DD")
 
 class EntryDoesNotExistException(UserError):
     def __init__(self, entry_type, entry_id):

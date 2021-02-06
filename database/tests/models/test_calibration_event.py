@@ -1,6 +1,8 @@
 from django.db import IntegrityError
 from django.db.models.functions import datetime
 from django.test import TestCase
+
+from database.exceptions import InvalidDateException
 from database.models import Model, User, CalibrationEvent
 from database.models import Instrument
 from database.tests.services.service_test_utils import OVERLONG_STRING
@@ -53,15 +55,5 @@ class CalibrationEventTestCase(TestCase):
         try:
             CalibrationEvent.objects.create(instrument=instrument, user=user, comment="comment")
             self.fail("NON NULL field allowed")
-        except IntegrityError:
-            pass
-
-    # Field Length Tests
-
-    def test_overlong_comment_field_test(self):
-        user, instrument = self.create_objects()
-        try:
-            CalibrationEvent.objects.create(instrument=instrument, user=user, comment=OVERLONG_STRING)
-            self.fail("overlong comment allowed")
         except IntegrityError:
             pass

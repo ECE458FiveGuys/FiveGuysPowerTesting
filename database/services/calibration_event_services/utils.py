@@ -1,5 +1,5 @@
 from database.exceptions import NULL_FIELD_ERROR_MESSAGE, RequiredFieldsEmptyException, CHARACTER_LENGTH_ERROR_MESSAGE, \
-    FieldLengthException, UserError
+    FieldLengthException, UserError, INVALID_DATE_FIELD_ERROR_MESSAGE, InvalidDateException
 from database.models import VENDOR_LENGTH, MODEL_NUMBER_LENGTH, DESCRIPTION_LENGTH, COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
 
 
@@ -10,5 +10,7 @@ def handle_calib_event_validation_error(error):
                                                required_fields_list=["instrument id", "user", "date"])
         elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
             raise FieldLengthException("commment", COMMENT_LENGTH)
+        elif INVALID_DATE_FIELD_ERROR_MESSAGE in error_message:
+            raise InvalidDateException()
         else:
             raise UserError(error.messages)
