@@ -51,5 +51,5 @@ class Export(InAppService):
                              calibration_event.instrument.model.model_number,
                              calibration_event.instrument.serial_number,
                              calibration_event.user.username,
-                             calibration_event.date,
+                             calibration_event.date.__str__(),
                              calibration_event.comment])
