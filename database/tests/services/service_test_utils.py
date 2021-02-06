@@ -1,12 +1,19 @@
 from database.models import User, Model
 from database.services.instrument_services.create_instrument import CreateInstrument
-
+OVERLONG_STRING = "STRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRING" \
+                  "STRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRING" \
+                  "STRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRING" \
+                  "STRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRING" \
+                  "STRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRINGSTRING"
 
 def create_admin_and_model_and_instrument():
     user, model = create_admin_and_model()
     instrument = CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
     return user, model, instrument
 
+def create_admin():
+    return User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
+                               admin=True)
 
 def create_admin_and_model():
     user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
@@ -16,5 +23,6 @@ def create_admin_and_model():
 
 
 def create_non_admin_user():
-    return User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
+    return User.objects.create(username="username2", password="password", name="name", email="user@gmail.com",
                                admin=False)
+

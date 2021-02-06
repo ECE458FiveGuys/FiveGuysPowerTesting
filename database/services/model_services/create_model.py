@@ -1,10 +1,14 @@
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
-    RequiredFieldsEmptyException, InactiveUserException
-from database.models import Model, User
+    RequiredFieldsEmptyException, InactiveUserException, UserError, FieldLengthException, \
+    CHARACTER_LENGTH_ERROR_MESSAGE, NULL_FIELD_ERROR_MESSAGE
+from database.models import Model, User, VENDOR_LENGTH, MODEL_NUMBER_LENGTH, DESCRIPTION_LENGTH, COMMENT_LENGTH
 from database.services.in_app_service import InAppService
+from database.services.model_services.utils import handle_model_validation_error
 from database.services.service import Service
+from database.services.utils.constants import NOT_APPLICABLE
 
 
 class CreateModel(InAppService):
@@ -30,8 +34,12 @@ class CreateModel(InAppService):
         try:
             if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
                 raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])
-            return Model.objects.create(vendor=self.vendor, model_number=self.model_number,
+            model = Model(vendor=self.vendor, model_number=self.model_number,
                                          description=self.description,
-                                         comment=self.comment, calibration_frequency=self.calibration_frequency)
-        except IntegrityError:
-            raise RequiredFieldsEmptyException(object_type="model", required_fields_list=["vendor", "model_number"])
+                                         comment=self.comment,
+                                        calibration_frequency=None if self.calibration_frequency is NOT_APPLICABLE else self.calibration_frequency)
+            model.full_clean()
+            model.save()
+            return model
+        except ValidationError as e:
+            handle_model_validation_error(e)
