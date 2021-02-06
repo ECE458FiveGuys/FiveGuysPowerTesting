@@ -4,7 +4,10 @@ import io
 from django.http import HttpResponse
 
 from openpyxl import Workbook
+from openpyxl.writer.excel import save_virtual_workbook
 
+from database.services.bulk_data_services.utils import VENDOR, MODEL_NUMBER, MODEL_DESCRIPTION, MODEL_COMMENT, \
+    CALIBRATION_FREQUENCY
 from database.services.calibration_event_services.select_calibration_events import SelectCalibrationEvents
 from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
@@ -32,25 +35,21 @@ class Export(InAppService):
         #                      calibration_event.user.username,
         #                      calibration_event.date,
         #                      calibration_event.comment])
-        output = io.BytesIO()
-        wb = Workbook()
+        workbook = Workbook()
         self.create_calibration_sheet(workbook)
-        workbook.close()
-        output.seek(0)
-        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response = HttpResponse(save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename="calibration_events.csv"'
         return response
 
     def create_calibration_sheet(self, workbook):
-        worksheet = workbook.add_worksheet()
+        worksheet = workbook.create_sheet(title="Calibration Events")
         calibration_events = SelectCalibrationEvents(user_id=self.user.id, password=self.user.password, order_by="date")\
             .execute()
-        row = 0
+        worksheet.append([VENDOR, MODEL_NUMBER, MODEL_DESCRIPTION, MODEL_COMMENT, CALIBRATION_FREQUENCY])
         for calibration_event in calibration_events:
-            worksheet.write_row(row, 0, [calibration_event.instrument.model.vendor,
+            worksheet.append([calibration_event.instrument.model.vendor,
                              calibration_event.instrument.model.model_number,
                              calibration_event.instrument.serial_number,
                              calibration_event.user.username,
                              calibration_event.date,
                              calibration_event.comment])
-            row+=1

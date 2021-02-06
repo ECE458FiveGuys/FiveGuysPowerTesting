@@ -1,10 +1,12 @@
 import csv
 import io
+import tempfile
 import zipfile
 
 # from django.contrib.gis.geos import io
 from django.conf.locale import cs
 from django.test import TestCase
+from openpyxl import load_workbook
 
 from database.services.bulk_data_services.export_service import Export
 from database.tests.services.service_test_utils import create_calibration_events, create_admin
@@ -19,6 +21,16 @@ class ExportTestCase(TestCase):
             response.get('Content-Disposition'),
             'attachment; filename="calibration_events.csv"'
         )
-        decoded_response = response.content.decode('utf-8')
-        reader = csv.reader(io.StringIO(decoded_response))
-        print(next(reader))
+        new_file = tempfile.TemporaryFile()
+        new_file.write(response.content)
+        wb = load_workbook(new_file)
+        sheet = wb.get_sheet_by_name("Calibration Events")
+        print([sheet["A2"].value, sheet["B2"].value, sheet["C2"].value, sheet["D2"].value, sheet["E2"].value])
+        new_file.close()
+        # decoded_response = response.content.decode('utf-8')
+        # reader = csv.reader(io.StringIO(decoded_response))
+        # print(next(reader))
+        #decoded_response = response.content.decode('utf-8')
+        print(sheet)
+        #print(next(reader))
+
