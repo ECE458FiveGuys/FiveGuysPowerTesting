@@ -36,3 +36,9 @@ class CalibrationEventEnum(Enum):
     DATE = "date"
     USER = "user"
     COMMENT = "comment"
+
+
+class PostEnum(Enum):
+    CREATE = "create"
+    DELETE = "delete"
+    MODIFY = "modify"
