@@ -1,5 +1,0 @@
-VENDOR = "Vendor"
-MODEL_NUMBER = "Model Number"
-MODEL_DESCRIPTION = "Short Description"
-MODEL_COMMENT = "Comment"
-CALIBRATION_FREQUENCY = "Calibration Frequency"
