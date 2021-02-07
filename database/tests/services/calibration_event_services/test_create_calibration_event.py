@@ -42,7 +42,7 @@ class CreateCalibrationEventTestCase(TestCase):
                 .execute()
             self.fail("calibration event without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "instrument id and user and date are required fields for calibration event":
+            if e.message != "instrument id and user and date are required fields for the calibration event with vendor 'None' and model number 'None' and serial number 'None' and date 'None'":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
             pass

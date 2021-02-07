@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
     RequiredFieldsEmptyException, InactiveUserException, UserError, FieldLengthException, \
-    CHARACTER_LENGTH_ERROR_MESSAGE, NULL_FIELD_ERROR_MESSAGE
+    CHARACTER_LENGTH_ERROR_MESSAGE, NULL_FIELD_ERROR_MESSAGE, ModelFieldCombinationNotUniqueException
 from database.models import Model, User, VENDOR_LENGTH, MODEL_NUMBER_LENGTH, DESCRIPTION_LENGTH, COMMENT_LENGTH
 from database.services.in_app_service import InAppService
 from database.services.model_services.utils import handle_model_validation_error
@@ -33,7 +33,7 @@ class CreateModel(InAppService):
     def execute(self):
         try:
             if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
-                raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])
+                raise ModelFieldCombinationNotUniqueException(self.vendor, self.model_number)
             model = Model(vendor=self.vendor, model_number=self.model_number,
                                          description=self.description,
                                          comment=self.comment,
@@ -42,4 +42,4 @@ class CreateModel(InAppService):
             model.save()
             return model
         except ValidationError as e:
-            handle_model_validation_error(e)
+            handle_model_validation_error(e, self.vendor, self.model_number)

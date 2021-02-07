@@ -35,7 +35,7 @@ class CreateInstrumentTestCase(TestCase):
             CreateInstrument(user_id=user.id, password=user.password, model_id=None, serial_number=None).execute()
             self.fail("instrument without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "model and serial_number are required fields for instrument":
+            if e.message != "model and serial_number are required fields for the instrument with vendor 'None' and model number 'None' and serial_number 'None'":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
             pass
@@ -47,7 +47,7 @@ class CreateInstrumentTestCase(TestCase):
             CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
             self.fail("non unqiue instrument was created")
         except FieldCombinationNotUniqueException as e:
-            if e.message != "The combination of model and serial_number must be unique for instrument":
+            if e.message != "The combination of model and serial_number must be unique for the instrument with vendor 'vendor' and model number 'model_number' and serial_number 'serial_number'":
                 self.fail("incorrect error message thrown: {}".format(e.message))
             pass
 
