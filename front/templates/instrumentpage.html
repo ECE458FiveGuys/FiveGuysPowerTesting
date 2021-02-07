@@ -19,22 +19,35 @@
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
                     <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+
+                    <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+
+                    <label for="Search Types">Search By:</label>
+                    <select name="Search Types" id="Search Types">
+                      <option value="vendor">Vendor</option>
+                      <option value="modelnum">Model Number</option>
+                      <option value="serial">Serial Number</option>
+                      <option value="description">Description</option>
+                    </select>
+
+                    <label for="Sort Types">Sort By:</label>
+                    <select name="Sort Types" id="Sort Types">
+                      <option value="vendor">Vendor</option>
+                      <option value="modelnum">Model Number</option>
+                      <option value="serial">Serial Number</option>
+                      <option value="description">Description</option>
+                      <option value="calibration_recent">Most Recent Calibration</option>
+                      <option value="calibration_expiration">Calibration Expiry Date</option>
+                      <option value="calibration_status">Calibration Status</option>
+                    </select>
+
+
                     <div class="input-group-append">
-                        <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
                     </div>
                 </div>
             </form>
             <!-- Navbar-->
             <ul class="navbar-nav ml-auto ml-md-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="#">Settings</a>
-                        <a class="dropdown-item" href="#">Activity Log</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="login.html">Logout</a>
-                    </div>
-                </li>
             </ul>
         </nav>
         <div id="layoutSidenav">
@@ -51,47 +64,8 @@
                     <div class="container-fluid">
                         <h1 class="mt-4">Instrument Page</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
+                            <li class="breadcrumb-item active">Instrument List</li>
                         </ol>
-                        <div class="row">
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-primary text-white mb-4">
-                                    <div class="card-body">Primary Card</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-warning text-white mb-4">
-                                    <div class="card-body">Warning Card</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">Success Card</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-danger text-white mb-4">
-                                    <div class="card-body">Danger Card</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                         </div>
                         <div class="card mb-4">
                             <div class="card-header">
@@ -138,6 +112,16 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="pagination">
+                      <a href="#">&laquo;</a>
+                      <a href="#">1</a>
+                      <a class="active" href="#">2</a>
+                      <a href="#">3</a>
+                      <a href="#">4</a>
+                      <a href="#">5</a>
+                      <a href="#">6</a>
+                      <a href="#">&raquo;</a>
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">
