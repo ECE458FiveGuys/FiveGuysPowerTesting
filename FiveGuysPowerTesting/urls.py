@@ -15,15 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 
 
 # Routers provide an easy way of automatically determining the URL conf.
-from database.views import UserViewSet, ModelViewSet, InstrumentViewSet, CalibrationEventViewSet
+from database.views import ModelViewSet, InstrumentViewSet, CalibrationEventViewSet
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
 router.register(r'models', ModelViewSet)
 router.register(r'instruments', InstrumentViewSet)
 router.register(r'calibration-event', CalibrationEventViewSet)
@@ -31,7 +29,7 @@ router.register(r'calibration-event', CalibrationEventViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('', include('user_portal.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

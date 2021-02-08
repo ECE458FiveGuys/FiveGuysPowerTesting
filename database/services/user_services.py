@@ -5,7 +5,6 @@ from django.db import IntegrityError
 
 from database.model_enums import ModelsEnum, UserEnum
 from database.exceptions import FieldCombinationNotUniqueException, RequiredFieldsEmptyException, EntryDoesNotExistException
-from database.models import User
 
 
 @dataclass
@@ -24,10 +23,10 @@ def create_user(dto):
     Takes a UserDTO and adds user with specified values to database
     """
     try:
-        if User.objects.filter(username=dto.username, name=dto.name, email=dto.email).count() > 0:
+        if User.objects.filter(username=dto.power_username, name=dto.name, email=dto.email).count() > 0:
             raise FieldCombinationNotUniqueException(object_type=ModelsEnum.USER.value,
                                                      fields_list=[e.value for e in UserEnum])
-        return User.objects.create(username=dto.username,
+        return User.objects.create(username=dto.power_username,
                                    name=dto.name,
                                    email=dto.email,
                                    password=dto.password,
@@ -44,13 +43,13 @@ def modify_user(dto):
     """
     try:
         # check if username is taken as username must be unique
-        count = User.objects.filter(username=dto.username).exclude(id=dto.id).count()
+        count = User.objects.filter(username=dto.power_username).exclude(id=dto.id).count()
         if count == 1:
             raise FieldCombinationNotUniqueException(object_type=ModelsEnum.USER.value,
                                                      fields_list=[e.value for e in UserEnum])
         else:
             user = User.objects.filter(id=dto.id).get()
-            user.username = dto.username
+            user.power_username = dto.power_username
             user.name = dto.name
             user.email = dto.email
             user.password = dto.password

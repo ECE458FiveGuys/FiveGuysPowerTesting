@@ -1,17 +1,17 @@
 from rest_framework import serializers
 
-from database.model_enums import UserEnum, ModelEnum, InstrumentEnum, CalibrationEventEnum, PostEnum
-from database.models import User, Model, Instrument, CalibrationEvent
+from database.model_enums import ModelEnum, InstrumentEnum, CalibrationEventEnum, PostEnum
+from database.models import Model, Instrument, CalibrationEvent
 
 
-class UserSerializer(serializers.Serializer):
-    id = serializers.IntegerField(default=0)
-    username = serializers.CharField()
-    name = serializers.CharField()
-    email = serializers.EmailField()
-    password = serializers.CharField()
-    admin = serializers.BooleanField()
-    active = serializers.BooleanField()
+# class UserSerializer(serializers.Serializer):
+#     id = serializers.IntegerField(default=0)
+#     username = serializers.CharField()
+#     name = serializers.CharField()
+#     email = serializers.EmailField()
+#     password = serializers.CharField()
+#     admin = serializers.BooleanField()
+#     active = serializers.BooleanField()
 
 
 class ModelSerializer(serializers.HyperlinkedModelSerializer):

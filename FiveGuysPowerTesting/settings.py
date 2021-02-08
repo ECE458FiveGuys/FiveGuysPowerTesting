@@ -24,13 +24,15 @@ SECRET_KEY = '&t60tb1s$pamsehr-e3q_2)^n+z#3mo(*ksabeyu3=71u*ik47'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+AUTH_USER_MODEL = 'user_portal.PowerUser'
+
 ALLOWED_HOSTS = ['127.0.0.1',
                  'vcm-18605.vm.duke.edu']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -38,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'database.apps.DatabaseConfig',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+    'user_portal'
 ]
 
 MIDDLEWARE = [
@@ -85,7 +90,20 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
     ]
+}
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SERIALIZERS': {},
 }
 
 # Password validation
