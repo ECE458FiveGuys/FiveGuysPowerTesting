@@ -13,7 +13,7 @@ class DeleteModelTestCase(TestCase):
 
     def test_delete_models_happy_case(self):
         user, model = create_admin_and_model()
-        DeleteModel(model_id=model.id, user=user).execute()
+        DeleteModel(model_id=model.id, user_id=user.id, password=user.password).execute()
         try:
             Model.objects.get(id=model.id)
             self.fail("Model did not delete")
@@ -24,7 +24,7 @@ class DeleteModelTestCase(TestCase):
         admin, model = create_admin_and_model()
         user = create_non_admin_user()
         try:
-            DeleteModel(model_id=model.id, user=user).execute()
+            DeleteModel(model_id=model.id, user_id=user.id, password=user.password).execute()
             self.fail("non admin was allowed to delete")
         except IllegalAccessException:
             pass
@@ -32,7 +32,7 @@ class DeleteModelTestCase(TestCase):
     def test_delete_models_invalid_id_throws_exception(self):
         user, model = create_admin_and_model()
         try:
-            DeleteModel(model_id=model.id + 1, user=user).execute()
+            DeleteModel(model_id=model.id + 1, user_id=user.id, password=user.password).execute()
             self.fail("delete worked for invalid id")
         except EntryDoesNotExistException:
             pass
@@ -40,7 +40,7 @@ class DeleteModelTestCase(TestCase):
     def test_delete_models_instrument_exists_throws_exception(self):
         user, model, instrument = create_admin_and_model_and_instrument()
         try:
-            DeleteModel(model_id=model.id, user=user).execute()
+            DeleteModel(model_id=model.id, user_id=user.id, password=user.password).execute()
             self.fail("delete worked even though model exists")
         except UserError as e:
             if e.message == "Cannot be deleted, as instruments of this model exist":
