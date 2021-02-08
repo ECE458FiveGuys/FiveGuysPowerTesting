@@ -14,7 +14,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <a class="navbar-brand" href="/model/">Models</a>
-            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-primary btn-lg" id="button" href="#">Create User</button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
@@ -40,7 +40,6 @@
                       <option value="calibration_expiration">Calibration Expiry Date</option>
                       <option value="calibration_status">Calibration Status</option>
                     </select>
-
 
                     <div class="input-group-append">
                     </div>
@@ -100,6 +99,18 @@
                                             </tr>
                                         </tfoot>
                                         <tbody>
+                                            {% for instr in instrlist %}
+                                            <tr>
+                                                <td>{{instr.vendor}}</td>
+                                                <td>{{instr.model_number}}</td>
+                                                <td>{{instr.serial_number}}</td>
+                                                <td>{{instr.description}}</td>
+                                                <td>{{instr.model_number}}</td>
+                                                <td>{{instr.model_number}}</td>
+                                                <td>{{instr.model_number}}</td>
+                                            </tr>
+                                            {% endfor %}
+
                                             <tr>
                                                 <td>Duratool</td>
                                                 <td>389284</td>
