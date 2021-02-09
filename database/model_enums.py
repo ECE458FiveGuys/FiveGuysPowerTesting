@@ -24,7 +24,7 @@ class EquipmentModelEnum(Enum):
     MODEL_NUMBER = "model_number"
     DESCRIPTION = "description"
     COMMENT = "comment"
-    CALIBRATION_FREQUENCY = "calibration_frequency"\
+    CALIBRATION_FREQUENCY = "calibration_frequency"
 
 
 class InstrumentEnum(Enum):
@@ -39,9 +39,3 @@ class CalibrationEventEnum(Enum):
     DATE = "date"
     USER = "user"
     COMMENT = "comment"
-
-
-class PostEnum(Enum):
-    CREATE = "create"
-    DELETE = "delete"
-    MODIFY = "modify"
