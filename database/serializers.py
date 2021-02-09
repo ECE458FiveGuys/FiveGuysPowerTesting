@@ -28,3 +28,9 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationEvent
         fields = [e.value for e in CalibrationEventEnum]
+
+
+class VendorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentModel
+        fields = [EquipmentModelEnum.VENDOR.value]
