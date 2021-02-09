@@ -37,10 +37,9 @@ class VendorAutoCompleteViewSet(generics.ListAPIView):
             Q(vendor__contains=self.request.query_params.get('vendor'))
         )
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         vendor_list = list({model.vendor for model in self.get_queryset()})
         vendor_list.sort()
-        vendor_list[:]
         return Response(vendor_list)
 
 
