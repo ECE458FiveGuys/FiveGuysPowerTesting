@@ -1,32 +1,30 @@
 from rest_framework import serializers
 
-from database.model_enums import ModelEnum, InstrumentEnum, CalibrationEventEnum, PostEnum
-from database.models import Model, Instrument, CalibrationEvent
+from database.model_enums import EquipmentModelEnum, InstrumentEnum, CalibrationEventEnum, PostEnum
+from database.models import EquipmentModel, Instrument, CalibrationEvent
 
 
-# class UserSerializer(serializers.Serializer):
-#     id = serializers.IntegerField(default=0)
-#     username = serializers.CharField()
-#     name = serializers.CharField()
-#     email = serializers.EmailField()
-#     password = serializers.CharField()
-#     admin = serializers.BooleanField()
-#     active = serializers.BooleanField()
-
-
-class ModelSerializer(serializers.HyperlinkedModelSerializer):
+class InstrumentSerialNumberSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Model
-        fields = [e.value for e in ModelEnum]
+        model = Instrument
+        fields = [InstrumentEnum.PK.value, InstrumentEnum.SERIAL_NUMBER.value]
 
 
-class InstrumentSerializer(serializers.HyperlinkedModelSerializer):
+class EquipmentModelSerializer(serializers.ModelSerializer):
+    instruments = InstrumentSerialNumberSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = EquipmentModel
+        fields = [e.value for e in EquipmentModelEnum]
+
+
+class InstrumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instrument
         fields = [e.value for e in InstrumentEnum]
 
 
-class CalibrationEventSerializer(serializers.HyperlinkedModelSerializer):
+class CalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationEvent
         fields = [e.value for e in CalibrationEventEnum]

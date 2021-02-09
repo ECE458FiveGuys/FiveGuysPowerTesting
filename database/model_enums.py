@@ -9,6 +9,7 @@ class ModelsEnum(Enum):
 
 
 class UserEnum(Enum):
+    PK = "pk"
     USERNAME = "username"
     NAME = "name"
     EMAIL = "email"
@@ -17,15 +18,18 @@ class UserEnum(Enum):
     ACTIVE = "active"
 
 
-class ModelEnum(Enum):
+class EquipmentModelEnum(Enum):
+    PK = "pk"
     VENDOR = "vendor"
     MODEL_NUMBER = "model_number"
     DESCRIPTION = "description"
     COMMENT = "comment"
     CALIBRATION_FREQUENCY = "calibration_frequency"
+    INSTRUMENTS = 'instruments'
 
 
 class InstrumentEnum(Enum):
+    PK = "pk"
     MODEL = "model"
     SERIAL_NUMBER = "serial_number"
     COMMENT = "comment"

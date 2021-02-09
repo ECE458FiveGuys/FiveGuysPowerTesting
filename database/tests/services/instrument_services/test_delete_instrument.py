@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 
 from database.exceptions import IllegalAccessException, EntryDoesNotExistException
-from database.models import Model, User, Instrument
+from database.models import EquipmentModel, User, Instrument
 from database.services.instrument_services.delete_instrument import DeleteInstrument
 from database.tests.services.service_test_utils import create_admin_and_model_and_instrument, create_admin_and_model, \
     create_non_admin_user

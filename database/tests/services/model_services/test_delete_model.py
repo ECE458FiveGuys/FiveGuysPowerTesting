@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 
 from database.exceptions import IllegalAccessException, EntryDoesNotExistException, UserError
-from database.models import Model, User
+from database.models import EquipmentModel, User
 from database.services.instrument_services.create_instrument import CreateInstrument
 from database.services.model_services.delete_model import DeleteModel
 from database.tests.services.service_test_utils import create_admin_and_model_and_instrument, create_admin_and_model, \
@@ -15,7 +15,7 @@ class DeleteModelTestCase(TestCase):
         user, model = create_admin_and_model()
         DeleteModel(model_id=model.id, user_id=user.id, password=user.password).execute()
         try:
-            Model.objects.get(id=model.id)
+            EquipmentModel.objects.get(id=model.id)
             self.fail("Model did not delete")
         except ObjectDoesNotExist:
             pass

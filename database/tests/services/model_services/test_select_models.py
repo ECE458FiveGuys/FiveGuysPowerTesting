@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 
-from database.models import Model
+from database.models import EquipmentModel
 from database.services.model_services.select_models import SelectModels
 from database.tests.services.service_test_utils import create_non_admin_user
 
@@ -12,8 +12,8 @@ class SelectModelsTestCase(TestCase):
 
     def test_select_all_models_happy_case(self):
         user = create_non_admin_user()
-        Model.objects.create(vendor="vendor", model_number="model_number", description="description",
-                             comment="comment", calibration_frequency=1)
+        EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description",
+                                      comment="comment", calibration_frequency=1)
         try:
             SelectModels(user_id=user.id, password=user.password).execute().get(vendor="vendor")
             pass
@@ -70,8 +70,8 @@ class SelectModelsTestCase(TestCase):
             self.fail("selected wrong models")
 
     def create_2_models(self):
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description",
-                             comment="comment", calibration_frequency=1)
-        model2 = Model.objects.create(vendor="vendor2", model_number="model_number2", description="description2",
-                             comment="comment2", calibration_frequency=2)
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description",
+                                              comment="comment", calibration_frequency=1)
+        model2 = EquipmentModel.objects.create(vendor="vendor2", model_number="model_number2", description="description2",
+                                               comment="comment2", calibration_frequency=2)
         return model, model2

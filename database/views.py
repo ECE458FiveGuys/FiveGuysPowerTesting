@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from database.exceptions import RequiredFieldsEmptyException, EntryDoesNotExistException
 from database.model_enums import PostEnum
 from database.services.user_services import UserDTO, create_user, deactivate_user, modify_user
-from database.models import Model, Instrument, CalibrationEvent
-from database.serializers import ModelSerializer, InstrumentSerializer, CalibrationEventSerializer
+from database.models import EquipmentModel, Instrument, CalibrationEvent
+from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer
 
 
 # class UserViewSet(viewsets.ViewSet):
@@ -71,12 +71,12 @@ from database.serializers import ModelSerializer, InstrumentSerializer, Calibrat
 #                        active=data['active'])
 
 
-class ModelViewSet(viewsets.ModelViewSet):
+class EquipmentModelViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Model.objects.all()
-    serializer_class = ModelSerializer
+    queryset = EquipmentModel.objects.all()
+    serializer_class = EquipmentModelSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

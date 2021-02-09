@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
     IllegalAccessException, EntryDoesNotExistException
-from database.models import Model, User
+from database.models import EquipmentModel, User
 from database.services.model_services.create_model import CreateModel
 from database.services.model_services.edit_model import EditModel
 from database.services.model_services.select_models import SelectModels
@@ -21,7 +21,7 @@ class EditModelTestCase(TestCase):
     def test_edit_model_without_required_fields_throws_exception(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
         try:
             EditModel(user_id=user.id, password=user.password, model_id=model.id, vendor=None, model_number=None, description=None).execute()
             self.fail("model without required fields was created")
@@ -34,7 +34,7 @@ class EditModelTestCase(TestCase):
     def test_edit_model_non_unique_throws_exception(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
         try:
             EditModel(user_id=user.id, password=user.password, model_id=model.id, vendor="vendor", model_number="model_number",
                       description="description").execute()
@@ -55,7 +55,7 @@ class EditModelTestCase(TestCase):
     def test_edit_unexisting_model_throws_exception(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
         try:
             EditModel(user_id=user.id, password=user.password, model_id=model.id + 1, vendor="vendor", model_number="model_number", description="description").execute()
             self.fail("No model of this id exists")
@@ -65,7 +65,7 @@ class EditModelTestCase(TestCase):
     def test_edit_model_succeeds(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        model = Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
         EditModel(user_id=user.id, password=user.password, model_id=model.id, vendor="vendor", model_number="model_number", description="description").execute()
         pass
 

@@ -1,11 +1,11 @@
 from django.db import models
-from user_portal.models import PowerUser
+from user_portal.models import PowerUser as User
 
 
-class Model(models.Model):
-    vendor = models.TextField(blank=False, default=None)
-    model_number = models.TextField(blank=False, default=None)
-    description = models.TextField(blank=False, default=None)
+class EquipmentModel(models.Model):
+    vendor = models.TextField(blank=False)
+    model_number = models.TextField(blank=False)
+    description = models.TextField(blank=False)
     comment = models.TextField(blank=True, null=True)
     calibration_frequency = models.IntegerField(blank=True, null=True)
 
@@ -20,8 +20,8 @@ class Model(models.Model):
 
 
 class Instrument(models.Model):
-    model = models.ForeignKey(Model, on_delete=models.DO_NOTHING)
-    serial_number = models.TextField(blank=False, default=None)
+    model = models.ForeignKey(EquipmentModel, related_name='instruments', on_delete=models.DO_NOTHING)
+    serial_number = models.TextField(blank=False)
     comment = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -37,7 +37,7 @@ class Instrument(models.Model):
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
     date = models.DateField(null=False, blank=False, default=None)
-    user = models.ForeignKey(PowerUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.TextField(blank=True, null=True)
 
     def __str__(self):

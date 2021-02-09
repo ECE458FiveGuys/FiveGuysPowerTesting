@@ -1,4 +1,4 @@
-from database.models import User, Model
+from database.models import User, EquipmentModel
 from database.services.instrument_services.create_instrument import CreateInstrument
 
 
@@ -11,7 +11,7 @@ def create_admin_and_model_and_instrument():
 def create_admin_and_model():
     user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                admin=True)
-    model = Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+    model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
     return user, model
 
 

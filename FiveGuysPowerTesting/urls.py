@@ -19,10 +19,10 @@ from rest_framework import routers, serializers, viewsets
 
 
 # Routers provide an easy way of automatically determining the URL conf.
-from database.views import ModelViewSet, InstrumentViewSet, CalibrationEventViewSet
+from database.views import EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet
 
 router = routers.DefaultRouter()
-router.register(r'models', ModelViewSet)
+router.register(r'models', EquipmentModelViewSet)
 router.register(r'instruments', InstrumentViewSet)
 router.register(r'calibration-event', CalibrationEventViewSet)
 

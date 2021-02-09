@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
     IllegalAccessException, EntryDoesNotExistException
-from database.models import Model, User, Instrument
+from database.models import EquipmentModel, User, Instrument
 from database.services.instrument_services.create_instrument import CreateInstrument
 from database.services.instrument_services.select_instruments import SelectInstruments
 from database.tests.services.service_test_utils import create_admin_and_model_and_instrument, create_admin_and_model

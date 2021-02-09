@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, IllegalAccessException
-from database.models import Model, User
+from database.models import EquipmentModel, User
 from database.services.model_services.create_model import CreateModel
 from database.services.model_services.select_models import SelectModels
 from database.tests.services.service_test_utils import create_non_admin_user
@@ -34,7 +34,7 @@ class CreateModelTestCase(TestCase):
     def test_create_model_non_unique_throws_exception(self):
         user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
                                    admin=True)
-        Model.objects.create(vendor="vendor", model_number="model_number", description="description")
+        EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
         try:
             CreateModel(user_id=user.id, password=user.password, vendor="vendor", model_number="model_number", description="description").execute()
             self.fail("non unqiue model was created")

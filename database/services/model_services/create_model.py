@@ -2,7 +2,7 @@ from django.db.utils import IntegrityError
 
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
     RequiredFieldsEmptyException, InactiveUserException
-from database.models import Model, User
+from database.models import EquipmentModel, User
 from database.services.in_app_service import InAppService
 from database.services.service import Service
 
@@ -28,10 +28,10 @@ class CreateModel(InAppService):
 
     def execute(self):
         try:
-            if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
+            if EquipmentModel.objects.filter(vendor=self.vendor, model_number=self.model_number).count() > 0:
                 raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])
-            return Model.objects.create(vendor=self.vendor, model_number=self.model_number,
-                                         description=self.description,
-                                         comment=self.comment, calibration_frequency=self.calibration_frequency)
+            return EquipmentModel.objects.create(vendor=self.vendor, model_number=self.model_number,
+                                                 description=self.description,
+                                                 comment=self.comment, calibration_frequency=self.calibration_frequency)
         except IntegrityError:
             raise RequiredFieldsEmptyException(object_type="model", required_fields_list=["vendor", "model_number"])
