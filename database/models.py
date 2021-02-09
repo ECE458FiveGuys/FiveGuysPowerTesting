@@ -1,4 +1,7 @@
+from datetime import date
 from django.db import models
+from django.core.validators import MaxValueValidator
+
 from user_portal.models import PowerUser as User
 
 VENDOR_LENGTH = 30
@@ -42,7 +45,7 @@ class Instrument(models.Model):
 
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
-    date = models.DateField(blank=False)
+    date = models.DateField(blank=False, validators=[MaxValueValidator(limit_value=date.today)])
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
 
