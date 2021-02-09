@@ -37,7 +37,7 @@ class CreateModelTestCase(TestCase):
             CreateModel(user_id=user.id, password=user.password, vendor=None, model_number=None, description=None).execute()
             self.fail("model without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "vendor and model_number and description are required fields for model":
+            if e.message != "vendor and model_number and description are required fields for the model with vendor 'None' and model number 'None'":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
             pass
@@ -50,7 +50,7 @@ class CreateModelTestCase(TestCase):
             CreateModel(user_id=user.id, password=user.password, vendor="vendor", model_number="model_number", description="description").execute()
             self.fail("non unqiue model was created")
         except FieldCombinationNotUniqueException as e:
-            if e.message != "The combination of vendor and model_number must be unique for model":
+            if e.message != "The combination of vendor and model_number must be unique for the model with vendor 'vendor' and model number 'model_number'":
                 self.fail("incorrect error message thrown: {}".format(e.message))
             pass
 

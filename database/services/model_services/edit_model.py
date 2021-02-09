@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import IntegrityError
 
 from database.exceptions import IllegalAccessException, RequiredFieldsEmptyException, \
-    FieldCombinationNotUniqueException, EntryDoesNotExistException
+    FieldCombinationNotUniqueException, EntryDoesNotExistException, ModelFieldCombinationNotUniqueException
 from database.models import Model
 from database.services.in_app_service import InAppService
 from database.services.model_services.select_models import SelectModels
@@ -45,12 +45,12 @@ class EditModel(InAppService):
             model.comment = self.comment,
             model.calibration_frequency = None if self.calibration_frequency is NOT_APPLICABLE else self.calibration_frequency
             if Model.objects.filter(vendor=self.vendor, model_number=self.model_number).exclude(id=self.id):
-                raise FieldCombinationNotUniqueException(object_type="model", fields_list=["vendor", "model_number"])
+                raise ModelFieldCombinationNotUniqueException(self.vendor, self.model_number)
             try:
                 model.full_clean()
                 model.save()
                 return model
             except ValidationError as e:
-                handle_model_validation_error(e)
+                handle_model_validation_error(e, vendor=self.vendor, model_number=self.model_number)
         except ObjectDoesNotExist:
             raise EntryDoesNotExistException("model", self.id)

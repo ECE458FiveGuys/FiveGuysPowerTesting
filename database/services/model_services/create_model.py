@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 
+
 from database.exceptions import FieldCombinationNotUniqueException
 from database.models import EquipmentModel
+
 from database.services.in_app_service import InAppService
 from database.services.model_services.utils import handle_model_validation_error
 from database.services.utils.constants import NOT_APPLICABLE
@@ -38,4 +40,4 @@ class CreateModel(InAppService):
             model.save()
             return model
         except ValidationError as e:
-            handle_model_validation_error(e)
+            handle_model_validation_error(e, self.vendor, self.model_number)
