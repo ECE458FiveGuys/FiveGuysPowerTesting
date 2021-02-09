@@ -19,10 +19,21 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     queryset = EquipmentModel.objects.all()
     serializer_class = EquipmentModelSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = [EquipmentModelEnum.VENDOR.value,
-                        EquipmentModelEnum.MODEL_NUMBER.value,
-                        EquipmentModelEnum.DESCRIPTION.value]
+    filterset_fields = [
+        EquipmentModelEnum.VENDOR.value,
+        EquipmentModelEnum.MODEL_NUMBER.value,
+        EquipmentModelEnum.DESCRIPTION.value
+    ]
+    search_fields = [
+        EquipmentModelEnum.VENDOR.value,
+        EquipmentModelEnum.MODEL_NUMBER.value,
+        EquipmentModelEnum.DESCRIPTION.value,
+        EquipmentModelEnum.CALIBRATION_FREQUENCY.value
+    ]
+    ordering_fields = [
+        EquipmentModelEnum.VENDOR.value,
+        EquipmentModelEnum.MODEL_NUMBER.value
+    ]
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
@@ -50,11 +61,26 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     queryset = Instrument.objects.all()
     serializer_class = InstrumentSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['model__' + EquipmentModelEnum.VENDOR.value,
-                        'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
-                        'model__' + EquipmentModelEnum.DESCRIPTION.value,
-                        InstrumentEnum.SERIAL_NUMBER.value]
+    filterset_fields = [
+        'model__' + EquipmentModelEnum.VENDOR.value,
+        'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
+        'model__' + EquipmentModelEnum.DESCRIPTION.value,
+        InstrumentEnum.SERIAL_NUMBER.value
+    ]
+    search_fields = [
+        'model__' + EquipmentModelEnum.VENDOR.value,
+        'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
+        'model__' + EquipmentModelEnum.DESCRIPTION.value,
+        InstrumentEnum.SERIAL_NUMBER.value
+    ]
+    ordering_fields = [
+        'model__' + EquipmentModelEnum.VENDOR.value,
+        'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
+        'model__' + EquipmentModelEnum.DESCRIPTION.value,
+        InstrumentEnum.MODEL.value,
+        InstrumentEnum.SERIAL_NUMBER.value,
+        InstrumentEnum.COMMENT.value
+    ]
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
@@ -64,3 +90,4 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = []
