@@ -35,6 +35,7 @@ class InstrumentEnum(Enum):
 
 
 class CalibrationEventEnum(Enum):
+    PK = 'pk'
     INSTRUMENT = "instrument"
     DATE = "date"
     USER = "user"
