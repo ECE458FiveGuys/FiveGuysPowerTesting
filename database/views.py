@@ -2,6 +2,8 @@ from django.db.models import Q
 from rest_framework import permissions
 from rest_framework import viewsets, generics
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
     VendorSerializer
@@ -74,6 +76,19 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     queryset = EquipmentModel.objects.all()
     serializer_class = EquipmentModelSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['vendor']
+
+
+# class EquipmentModelFilterList(generics.ListAPIView):
+#     serializer_class = EquipmentModelSerializer
+#
+#     def get_queryset(self):
+#         queryset = EquipmentModel.objects.all()
+#         vendor = self.request.query_params.get('vendor', None)
+#         if vendor is not None:
+#             queryset = queryset.filter(equipmentmodel__vendor=vendor)
+#         return queryset
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
