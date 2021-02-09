@@ -26,7 +26,7 @@ class EditModelTestCase(TestCase):
             EditModel(user_id=user.id, password=user.password, model_id=model.id, vendor=None, model_number=None, description=None).execute()
             self.fail("model without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "vendor and model_number are required fields for model":
+            if e.message != "vendor and model_number and description are required fields for model":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
             pass

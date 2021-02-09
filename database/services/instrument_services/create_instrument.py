@@ -1,4 +1,4 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
 
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
@@ -6,6 +6,7 @@ from database.exceptions import IllegalAccessException, FieldCombinationNotUniqu
 from database.models import Instrument
 from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
+from database.services.instrument_services.utils import handle_instrument_validation_error
 from database.services.model_services.select_models import SelectModels
 from database.services.service import Service
 
@@ -38,9 +39,12 @@ class CreateInstrument(InAppService):
                         .execute()\
                         .count() > 0:
                     raise FieldCombinationNotUniqueException(object_type="instrument", fields_list=["model", "serial_number"])
-                return Instrument.objects.create(model=model, serial_number=self.serial_number,
+                instrument = Instrument(model=model, serial_number=self.serial_number,
                                              comment=self.comment)
-            except IntegrityError:
-                raise RequiredFieldsEmptyException(object_type="instrument", required_fields_list=["model", "serial_number"])
+                instrument.full_clean()
+                instrument.save()
+                return instrument
+            except ValidationError as e:
+                handle_instrument_validation_error(e)
         except ObjectDoesNotExist:
             raise EntryDoesNotExistException("model", self.model_id)

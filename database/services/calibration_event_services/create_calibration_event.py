@@ -1,10 +1,11 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
 
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
     RequiredFieldsEmptyException, EntryDoesNotExistException
 from database.models import Instrument, CalibrationEvent
 from database.services.calibration_event_services.select_calibration_events import SelectCalibrationEvents
+from database.services.calibration_event_services.utils import handle_calib_event_validation_error
 from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
 from database.services.model_services.select_models import SelectModels
@@ -35,10 +36,12 @@ class CreateCalibrationEvent(InAppService):
                 .execute()\
                 .get(id=self.instrument_id)
             try:
-                return CalibrationEvent.objects.create(instrument=instrument, user=self.user, date=self.date,
+                calibration_event = CalibrationEvent(instrument=instrument, user=self.user, date=self.date,
                                                        comment=self.comment)
-            except IntegrityError:
-                raise RequiredFieldsEmptyException(object_type="calibration event",
-                                                   required_fields_list=["instrument id", "user", "date"])
+                calibration_event.full_clean()
+                calibration_event.save()
+                return calibration_event
+            except ValidationError as e:
+                handle_calib_event_validation_error(e)
         except ObjectDoesNotExist:
             raise EntryDoesNotExistException("instrument", self.instrument_id)

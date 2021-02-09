@@ -11,29 +11,25 @@ from django.utils.timezone import localtime, now
 class SelectCalibrationEventsTestCase(TestCase):
 
     def test_select_all_calibration_events_happy_case(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password).execute()
         if calib_events.count() != 3:
             self.fail("selected wrong calibration events")
 
     def test_select_all_calibration_events_chronological(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, order_by="date").execute()
         if calib_events.count() != 3 or calib_events.first() != calibration_event:
             self.fail("selected wrong calibration events")
 
     def test_select_calib_events_by_calib_event_id(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, calibration_event_id=calibration_event.id).execute()
         if calib_events.count() != 1 or calib_events.get(id=calibration_event.id) != calibration_event:
             self.fail("selected wrong calibration event")
 
     def test_select_calib_events_by_instrument_id(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, instrument_id=calibration_event.instrument.id).execute()
         if calib_events.count() != 3 or \
                 calib_events.get(id=calibration_event.id) != calibration_event or \
@@ -42,15 +38,13 @@ class SelectCalibrationEventsTestCase(TestCase):
             self.fail("selected wrong calibration_event")
 
     def test_select_calib_events_by_date(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, date=calibration_event.date).execute()
         if calib_events.count() != 1 or calib_events.get(date=calibration_event.date) != calibration_event:
             self.fail("selected wrong calibration event")
 
     def test_select_calib_events_by_multiple_fields(self):
-        user = create_non_admin_user()
-        calibration_event, calibration_event2, calibration_event3 = self.create_calibration_events()
+        calibration_event, calibration_event2, calibration_event3, user = self.create_calibration_events()
         calib_events = SelectCalibrationEvents(user_id=user.id, password=user.password, date=calibration_event.date, calibration_event_id=calibration_event2.instrument.id).execute()
         if calib_events.count() != 0:
             self.fail("selected wrong calibration event")
@@ -72,4 +66,4 @@ class SelectCalibrationEventsTestCase(TestCase):
         calibration_event3 = CalibrationEvent.objects.create(instrument=instrument, user=user, date=latest)
         calibration_event = CalibrationEvent.objects.create(instrument=instrument, user=user, date=earlier)
         calibration_event2 = CalibrationEvent.objects.create(instrument=instrument, user=user, date=later)
-        return calibration_event, calibration_event2, calibration_event3
+        return calibration_event, calibration_event2, calibration_event3, user

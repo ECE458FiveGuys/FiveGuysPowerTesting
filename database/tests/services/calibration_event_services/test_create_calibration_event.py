@@ -1,11 +1,13 @@
 from django.test import TestCase
 
-from database.exceptions import IllegalAccessException, EntryDoesNotExistException, RequiredFieldsEmptyException
+from database.exceptions import IllegalAccessException, EntryDoesNotExistException, RequiredFieldsEmptyException, \
+    FieldLengthException, InvalidDateException
 from database.models import User
 from database.services.calibration_event_services.create_calibration_event import CreateCalibrationEvent
 from database.services.calibration_event_services.select_calibration_events import SelectCalibrationEvents
 from database.services.instrument_services.create_instrument import CreateInstrument
-from database.tests.services.service_test_utils import create_admin_and_model, create_admin_and_model_and_instrument
+from database.tests.services.service_test_utils import create_admin_and_model, create_admin_and_model_and_instrument, \
+    OVERLONG_STRING
 from django.utils.timezone import localtime, now
 
 class CreateCalibrationEventTestCase(TestCase):
@@ -43,4 +45,22 @@ class CreateCalibrationEventTestCase(TestCase):
             if e.message != "instrument id and user and date are required fields for calibration event":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
+            pass
+
+    # Field validity tests
+
+    def test_overlong_comment_field_test(self):
+        user, model, instrument = create_admin_and_model_and_instrument()
+        try:
+            CreateCalibrationEvent(instrument_id=instrument.id, user_id=user.id, password=user.password, comment=OVERLONG_STRING, date=localtime(now()).date()).execute()
+            self.fail("overlong comment allowed")
+        except FieldLengthException:
+            pass
+
+    def test_invalid_date_field_test(self):
+        user, model, instrument = create_admin_and_model_and_instrument()
+        try:
+            CreateCalibrationEvent(instrument_id=instrument.id, user_id=user.id, password=user.password, comment="comment", date="date").execute()
+            self.fail("invalid date allowed")
+        except InvalidDateException:
             pass

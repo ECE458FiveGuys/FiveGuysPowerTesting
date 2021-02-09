@@ -69,7 +69,7 @@ class EditInstrumentTestCase(TestCase):
 
     def test_edit_instrument_not_admin_throws_exception(self):
         user, model, instrument = create_admin_and_model_and_instrument()
-        user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
+        user = User.objects.create(username="username3", password="password", name="name", email="user@gmail.com",
                                    admin=False)
         try:
             EditInstrument(user_id=user.id, password=user.password, instrument_id=instrument.id, model_id=model.id, serial_number="serial_number").execute()

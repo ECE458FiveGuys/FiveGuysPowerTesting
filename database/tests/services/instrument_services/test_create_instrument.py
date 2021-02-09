@@ -1,11 +1,12 @@
 from django.test import TestCase
 
 from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
-    IllegalAccessException, EntryDoesNotExistException
-from database.models import EquipmentModel, User, Instrument
+    IllegalAccessException, EntryDoesNotExistException, FieldLengthException
+from database.models import Model, User, Instrument
 from database.services.instrument_services.create_instrument import CreateInstrument
 from database.services.instrument_services.select_instruments import SelectInstruments
-from database.tests.services.service_test_utils import create_admin_and_model_and_instrument, create_admin_and_model
+from database.tests.services.service_test_utils import create_admin_and_model_and_instrument, create_admin_and_model, \
+    OVERLONG_STRING
 
 
 class CreateInstrumentTestCase(TestCase):
@@ -52,10 +53,30 @@ class CreateInstrumentTestCase(TestCase):
 
     def test_create_instrument_not_admin_throws_exception(self):
         user, model = create_admin_and_model()
-        user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
+        user = User.objects.create(username="username3", password="password", name="name", email="user@gmail.com",
                                    admin=False)
         try:
             CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="serial_number").execute()
             self.fail("non admin permitted to use function")
         except IllegalAccessException:
             pass
+
+    # Field length tests
+
+    def test_create_instrument_overlong_serial_number(self):
+        user, model = create_admin_and_model()
+        try:
+            CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number=OVERLONG_STRING).execute()
+            self.fail("overlong serial number permitted")
+        except FieldLengthException:
+            pass
+
+
+    def test_create_instrument_overlong_comment(self):
+        user, model = create_admin_and_model()
+        try:
+            CreateInstrument(user_id=user.id, password=user.password, model_id=model.id, serial_number="ser", comment=OVERLONG_STRING).execute()
+            self.fail("overlong comment permitted")
+        except FieldLengthException:
+            pass
+
