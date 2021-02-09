@@ -24,7 +24,7 @@ from database.views import EquipmentModelViewSet, InstrumentViewSet, Calibration
 router = routers.DefaultRouter()
 router.register(r'models', EquipmentModelViewSet)
 router.register(r'instruments', InstrumentViewSet)
-router.register(r'calibration-event', CalibrationEventViewSet)
+router.register(r'calibration-events', CalibrationEventViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
