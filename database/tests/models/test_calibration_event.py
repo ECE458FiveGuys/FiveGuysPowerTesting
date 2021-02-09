@@ -2,17 +2,15 @@ from django.db import IntegrityError
 from django.db.models.functions import datetime
 from django.test import TestCase
 
-from database.exceptions import InvalidDateException
-from database.models import Model, User, CalibrationEvent
+from database.models import EquipmentModel as Model, CalibrationEvent
 from database.models import Instrument
-from database.tests.services.service_test_utils import OVERLONG_STRING
+from user_portal.models import PowerUser as User
 
 
 class CalibrationEventTestCase(TestCase):
 
     def create_objects(self):
-        user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com",
-                                   admin=True)
+        user = User.objects.create(username="username", password="password", name="name", email="user@gmail.com")
         model = Model.objects.create(vendor="vendor", model_number="model_number", description="description",
                                      comment="comment", calibration_frequency=1)
         instrument = Instrument.objects.create(model=model, serial_number="serial_number", comment="comment")
