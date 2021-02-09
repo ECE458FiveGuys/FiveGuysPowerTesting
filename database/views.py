@@ -33,6 +33,9 @@ class InstrumentViewSet(viewsets.ModelViewSet):
                         'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
                         'model__' + EquipmentModelEnum.DESCRIPTION.value,
                         InstrumentEnum.SERIAL_NUMBER.value]
+    search_fields = ['model__' + EquipmentModelEnum.VENDOR.value,
+                     'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
+                     'model__' + EquipmentModelEnum.DESCRIPTION.value]
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
