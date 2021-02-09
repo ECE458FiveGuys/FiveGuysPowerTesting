@@ -41,10 +41,13 @@ class Instrument(models.Model):
 
 
 class CalibrationEvent(models.Model):
-    instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)
+    instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
     date = models.DateField(blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
+
+    class Meta:
+        ordering = ['date']
 
     def __str__(self):
         return self.instrument, self.date, self.user, self.comment
