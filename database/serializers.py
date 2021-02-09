@@ -27,14 +27,17 @@ class EquipmentModelForInstrumentSerializer(serializers.ModelSerializer):
                   EquipmentModelEnum.DESCRIPTION.value]
 
 
-class CalibrationEventSerializer(serializers.ModelSerializer):
+class CalibrationHistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationEvent
-        fields = [e.value for e in CalibrationEventEnum]
+        fields = [CalibrationEventEnum.PK.value,
+                  CalibrationEventEnum.DATE.value,
+                  CalibrationEventEnum.USER.value,
+                  CalibrationEventEnum.COMMENT.value]
 
 
 class InstrumentSerializerResponse(serializers.ModelSerializer):
-    calibration_history = CalibrationEventSerializer(many=True, read_only=True)
+    calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     class Meta:
@@ -52,6 +55,12 @@ class InstrumentSerializer(serializers.ModelSerializer):
             serializer = InstrumentSerializerResponse(instance)
             return serializer.data
         return super().to_representation(instance)
+
+
+class CalibrationEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CalibrationEvent
+        fields = [e.value for e in CalibrationEventEnum]
 
 
 class VendorSerializer(serializers.ModelSerializer):
