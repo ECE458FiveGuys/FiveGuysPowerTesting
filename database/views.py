@@ -4,6 +4,7 @@ from rest_framework import viewsets, generics
 
 from django_filters.rest_framework import DjangoFilterBackend
 
+from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
     VendorSerializer
@@ -77,18 +78,9 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     serializer_class = EquipmentModelSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['vendor']
-
-
-# class EquipmentModelFilterList(generics.ListAPIView):
-#     serializer_class = EquipmentModelSerializer
-#
-#     def get_queryset(self):
-#         queryset = EquipmentModel.objects.all()
-#         vendor = self.request.query_params.get('vendor', None)
-#         if vendor is not None:
-#             queryset = queryset.filter(equipmentmodel__vendor=vendor)
-#         return queryset
+    filterset_fields = [EquipmentModelEnum.VENDOR.value,
+                        EquipmentModelEnum.MODEL_NUMBER.value,
+                        EquipmentModelEnum.DESCRIPTION.value]
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
@@ -111,6 +103,11 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     queryset = Instrument.objects.all()
     serializer_class = InstrumentSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['model__' + EquipmentModelEnum.VENDOR.value,
+                        'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
+                        'model__' + EquipmentModelEnum.DESCRIPTION.value,
+                        InstrumentEnum.SERIAL_NUMBER.value]
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):

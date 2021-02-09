@@ -15,10 +15,21 @@ class EquipmentModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EquipmentModel
-        fields = [e.value for e in EquipmentModelEnum]
+        fields = [e.value for e in EquipmentModelEnum] + ['instruments']
+
+
+class EquipmentModelForInstrumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentModel
+        fields = [EquipmentModelEnum.PK.value,
+                  EquipmentModelEnum.VENDOR.value,
+                  EquipmentModelEnum.MODEL_NUMBER.value,
+                  EquipmentModelEnum.DESCRIPTION.value]
 
 
 class InstrumentSerializer(serializers.ModelSerializer):
+    model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
+
     class Meta:
         model = Instrument
         fields = [e.value for e in InstrumentEnum]
