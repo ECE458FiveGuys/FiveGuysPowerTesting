@@ -1,8 +1,10 @@
+from django.db.migrations import serializer
 from django.db.models import Q
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 from rest_framework import viewsets, generics
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 
 from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
@@ -34,6 +36,12 @@ class VendorAutoCompleteViewSet(generics.ListAPIView):
         return EquipmentModel.objects.filter(
             Q(vendor__contains=self.request.query_params.get('vendor'))
         )
+
+    def list(self, request):
+        vendor_list = list({model.vendor for model in self.get_queryset()})
+        vendor_list.sort()
+        vendor_list[:]
+        return Response(vendor_list)
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
