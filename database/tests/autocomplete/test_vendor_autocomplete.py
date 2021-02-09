@@ -14,7 +14,7 @@ class VendorAutoCompleteTestCase(EndpointTestCase):
                                       comment="comment", calibration_frequency=1)
         EquipmentModel.objects.create(vendor="vendor3", model_number="model_number", description="description",
                                       comment="comment", calibration_frequency=1)
-        request = self.factory.get("http://127.0.0.1:8000/vendors?vendor=vend")
+        request = self.factory.get(self.Endpoints.VENDORS.fill("vend"))
         force_authenticate(request, self.admin)
         view = VendorAutoCompleteViewSet.as_view()
         response = view(request)
