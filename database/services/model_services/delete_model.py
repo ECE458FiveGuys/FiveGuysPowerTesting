@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
 from database.exceptions import IllegalAccessException, EntryDoesNotExistException, UserError
-from database.models import Model
+from database.models import EquipmentModel
 from database.services.in_app_service import InAppService
 from database.services.instrument_services.select_instruments import SelectInstruments
 from database.services.model_services.select_models import SelectModels

@@ -1,17 +1,32 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework import permissions
 
-# Create your views here.
-from database import utils
-from database.services.model_services.select_models import SelectModels
+from database.models import EquipmentModel, Instrument, CalibrationEvent
+from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer
 
 
-def get_models(request):
-    utils.execute_api(api=SelectModels(
-        user_id=request.user_id,
-        password=request.password,
-        model_id=request.model_id,
-        vendor=request.vendor,
-        model_number=request.model_number,
-        description=request.description,
-        calibration_frequency=request.calibration_frequency
-    ))
+class EquipmentModelViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = EquipmentModel.objects.all()
+    serializer_class = EquipmentModelSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class InstrumentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Instrument.objects.all()
+    serializer_class = InstrumentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CalibrationEventViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = CalibrationEvent.objects.all()
+    serializer_class = CalibrationEventSerializer
+    permission_classes = [permissions.IsAuthenticated]
