@@ -1,6 +1,6 @@
 from django.db.models import Q
 
-from database.models import Model
+from database.models import EquipmentModel
 from database.services.in_app_service import InAppService
 from database.services.select_service import SelectService
 from database.services.service import Service
@@ -41,9 +41,9 @@ class SelectModels(SelectService):
             query = self.add_to_query(term=Q(calibration_frequency=self.calibration_frequency), query=query)
 
         if query is None:
-            return Model.objects.all()
+            return EquipmentModel.objects.all()
         else:
-            return Model.objects.filter(query)
+            return EquipmentModel.objects.filter(query)
 
 
 
