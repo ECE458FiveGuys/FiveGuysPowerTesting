@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from front import views as v
+from detailviews import views as dv
 
 urlpatterns = [
     path('models/', include('database.urls')),
     path('admin/', admin.site.urls),
     path('model/', v.modelpage),
-    path('instrument/', v.instrumentpage)
+    path('instrument/', v.instrumentpage),
+    path('testdetails/', dv.detailspage)
 ]
