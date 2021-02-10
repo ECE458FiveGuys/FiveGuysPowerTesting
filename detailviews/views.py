@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from database import views as db
 
 # Create your views here.
 def detailspage(request):
-    return render(request, 'detailpopup.html')
+    fields = db.
+    return render(request, 'modeldetails.html')

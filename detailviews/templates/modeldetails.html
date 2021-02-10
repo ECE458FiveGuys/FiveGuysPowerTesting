@@ -1,0 +1,18 @@
+{% extends "detailpopup.html" %}
+
+{% block title %}Model Details{% endblock %}
+
+{% block fields %}
+    {Instruments}
+{#{% for field in model_fields %}#}
+{#    <p>field</p>#}
+    {# list fields, need to define variables used above #}
+{#{% endfor %}#}
+{% endblock %}
+
+{% block instrumentlist %}
+    {% for instrument in instrument_list %}
+        <p>instrument</p>
+        {# list instruments, need to define variables used above USE HTML TABLE?? #}
+    {% endfor %}
+{% endblock %}
