@@ -22,12 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '&t60tb1s$pamsehr-e3q_2)^n+z#3mo(*ksabeyu3=71u*ik47'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 AUTH_USER_MODEL = 'user_portal.PowerUser'
 
-ALLOWED_HOSTS = ['127.0.0.1',
-                 'vcm-18605.vm.duke.edu']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
