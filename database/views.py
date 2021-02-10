@@ -2,14 +2,12 @@ from django.db.migrations import serializer
 from django.db.models import Q
 from rest_framework import permissions, serializers
 from rest_framework import viewsets, generics
-
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import action
 from rest_framework.response import Response
-
 from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
-    VendorSerializer
+    VendorSerializer, InstrumentSerializerResponse, EquipmentModelSerializerResponse
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
@@ -34,6 +32,12 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
         EquipmentModelEnum.VENDOR.value,
         EquipmentModelEnum.MODEL_NUMBER.value
     ]
+
+    @action(detail=True, methods=['get'])
+    def detail_view(self, request, pk):
+        detail = EquipmentModel.objects.get(pk=pk)
+        detail_serializer = EquipmentModelSerializerResponse(detail)
+        return Response(detail_serializer.data)
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
@@ -81,6 +85,12 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         InstrumentEnum.SERIAL_NUMBER.value,
         InstrumentEnum.COMMENT.value
     ]
+
+    @action(detail=True, methods=['get'])
+    def detail_view(self, request, pk):
+        detail = Instrument.objects.get(pk=pk)
+        detail_serializer = InstrumentSerializerResponse(detail)
+        return Response(detail_serializer.data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
