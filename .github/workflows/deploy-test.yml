@@ -24,7 +24,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
 
       - name: Stop the server
-        run: ssh staging 'echo "$SUDO_PASSWORD" | sudo -S systemctl stop gunicorn && sudo systemctl stop nginx'
+        run: ssh staging 'echo "$SUDO_PASSWORD" | sudo -S systemctl stop gunicorn && echo "$SUDO_PASSWORD" | sudo systemctl stop nginx'
         env: 
           SUDO_PASSWORD: ${{ secrets.DEPLOY_USER_PASSWORD }}
 
@@ -36,4 +36,6 @@ jobs:
         
       - name: Start the server
         if: ${{ always() }}
-        run: ssh staging 'echo "$SUDO_PASSWORD" | sudo -S systemctl start gunicorn && sudo systemctl start nginx'
+        run: ssh staging 'echo "$SUDO_PASSWORD" | sudo -S systemctl start gunicorn && echo "$SUDO_PASSWORD" | sudo systemctl start nginx'
+        env: 
+          SUDO_PASSWORD: ${{ secrets.DEPLOY_USER_PASSWORD }}
