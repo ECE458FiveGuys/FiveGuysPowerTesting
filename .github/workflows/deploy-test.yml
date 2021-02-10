@@ -1,27 +1,37 @@
-name: Deploy To Test Server
-
-on: [push]
-
+name: CI
+on: [push, pull_request]
 jobs:
-  build:
-
+  deploy:
+    name: "Deploy to staging"
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
-    - uses: actions/checkout@v1
-    - name: Install Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - name: Install npm dependencies
-      run: npm install
-    - name: Run build task
-      run: npm run build --if-present
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@v2.1.5
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }}
-          ARGS: "-rltgoDzvO --delete"
-          REMOTE_HOST: ${{ secrets.DEPLOY_HOST }}
-          REMOTE_USER: ${{ secrets.DEPLOY_USER }}
-          TARGET: ${{ secrets.DEPLOY_TARGET }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host staging
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/staging.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_KEY: ${{ secrets.DEPLOY_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+
+      - name: Stop the server
+        run: ssh staging 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
+
+      - name: Check out the source
+        run: ssh staging 'cd FiveGuysPowerTesting && git pull'
+        
+      - name: Perform migrations
+        run: ssh test_server 'cd FiveGuysPowerTesting && source env/bin/activate && python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput'
+        
+      - name: Start the server
+        if: ${{ always() }}
+        run: ssh staging 'sudo systemctl start gunicorn && sudo systemctl start nginx'
