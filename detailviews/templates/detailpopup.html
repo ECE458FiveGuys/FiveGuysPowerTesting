@@ -17,14 +17,9 @@
           </div>
           <div class="modal-body">
             <div class="row">
-              <div class="col-md-7">feilds\n here</div>
+              <div class="col-md-7">{% block fields %}fields here {% endblock %}</div>
               <div class="col-md-5">
-                  <button type="button" class="btn btn-primary" >
-                      Update Calibration
-                  </button>
-                  <button type="button" class="btn btn-primary" >
-                      Print Calibration Certificate
-                  </button>
+                  {% block buttons %} {% endblock %}
               </div>
             </div>
             <div class="row">
@@ -33,7 +28,9 @@
               <div class="col-*-*"></div>
             </div>
             <div class="row">
-             Hello World
+                {% block instruments %}
+                instruments here
+                {% endblock %}
             </div>
           </div>
 {#          <div class="modal-footer">#}

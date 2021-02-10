@@ -3,16 +3,28 @@
 {% block title %}Model Details{% endblock %}
 
 {% block fields %}
-    {Instruments}
-{#{% for field in model_fields %}#}
-{#    <p>field</p>#}
-    {# list fields, need to define variables used above #}
-{#{% endfor %}#}
+    <p>
+    model #: {{model.model_number}}
+    <br>description: {{model.description}}
+    <br>calibration frequency: {{model.calibration_frequency}}
+    <br>comment(optional): {{model.comment}}
+    <br>vendor: {{model.vendor}}
+    </p>
 {% endblock %}
 
-{% block instrumentlist %}
-    {% for instrument in instrument_list %}
-        <p>instrument</p>
-        {# list instruments, need to define variables used above USE HTML TABLE?? #}
+{% block instruments %}
+    <table>
+    <tr>
+        <th>serial #</th>
+        <th>model</th>
+        <th>comment</th>
+    </tr>
+    {% for instrument in instruments %}
+        <tr>
+            <td>{{ instrument.serial_number }}</td>
+            <td>{{ instrument.model.model_number }}</td>
+            <td>{{ instrument.comment }}</td>
+        </tr>
     {% endfor %}
+    </table>
 {% endblock %}

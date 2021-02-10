@@ -1,0 +1,22 @@
+{% extends "detailpopup.html" %}
+
+{% block title %}Instrument Details{% endblock %}
+
+{% block fields %}
+    <p>
+    model #: {{model.model_number}}
+    <br>description: {{model.description}}
+    <br>calibration frequency: {{model.calibration_frequency}}
+    <br>comment(optional): {{model.comment}}
+    <br>vendor: {{model.vendor}}
+    </p>
+{% endblock %}
+
+{% block buttons %}
+    <button type="button" class="btn btn-primary" >
+        Update Calibration
+    </button>
+  <button type="button" class="btn btn-primary" >
+      Print Calibration Certificate
+  </button>
+{% endblock %}

@@ -3,5 +3,8 @@ from database import views as db
 
 # Create your views here.
 def detailspage(request):
-    fields = db.
-    return render(request, 'modeldetails.html')
+    context = {
+        "model": db.EquipmentModelViewSet.queryset.first(),
+        "instruments": db.InstrumentViewSet.queryset
+    }
+    return render(request, 'modeldetails.html', context)
