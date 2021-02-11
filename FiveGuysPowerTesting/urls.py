@@ -13,11 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from enum import Enum
-
-from django.contrib import admin
 from django.urls import path, include, re_path
-from rest_framework import routers, serializers, viewsets
+from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
 from database.views import EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet, VendorAutoCompleteViewSet
