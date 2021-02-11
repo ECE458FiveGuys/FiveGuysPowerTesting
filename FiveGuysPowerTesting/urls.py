@@ -38,6 +38,8 @@ urlpatterns = [
     path('model/', v.modelpage),
     # path('instrument/', v.instrumentpage),
     path('testdetails/', dv.detailspage),
+    path('pdf/', dv.pdf_gen),
+    # re_path(r'^model(?P<serial>[0-9]+)',  EquipmentModelViewSet.as_view({'get': 'list'}),dv.detailspage),
     path('', include(router.urls)),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

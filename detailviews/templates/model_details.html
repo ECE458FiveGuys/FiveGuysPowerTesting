@@ -21,7 +21,7 @@
     </tr>
     {% for instrument in instruments %}
         <tr>
-            <td>{{ instrument.serial_number }}</td>
+            <td><a href="#">{{ instrument.serial_number }}</a></td>
             <td>{{ instrument.model.model_number }}</td>
             <td>{{ instrument.comment }}</td>
         </tr>

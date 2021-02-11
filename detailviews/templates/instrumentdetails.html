@@ -4,19 +4,20 @@
 
 {% block fields %}
     <p>
-    model #: {{model.model_number}}
-    <br>description: {{model.description}}
-    <br>calibration frequency: {{model.calibration_frequency}}
-    <br>comment(optional): {{model.comment}}
-    <br>vendor: {{model.vendor}}
+        model #: {{model.model_number}}
+        <br>description: {{model.description}}
+        <br>calibration frequency: {{model.calibration_frequency}}
+        <br>comment(optional): {{model.comment}}
+        <br>vendor: {{model.vendor}}
     </p>
 {% endblock %}
 
 {% block buttons %}
     <button type="button" class="btn btn-primary" >
         Update Calibration
+    <a ></a>
     </button>
-  <button type="button" class="btn btn-primary" >
-      Print Calibration Certificate
-  </button>
+    <button type="button" onclick="window.location.href='../pdf/';" class="btn btn-primary" >
+        Download Calibration Certificate
+    </button>
 {% endblock %}
