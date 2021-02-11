@@ -61,7 +61,7 @@ class InstrumentRetrieveSerializer(serializers.ModelSerializer):
         fields = [e.value for e in InstrumentEnum] + ['calibration_history']
 
 
-class InstrumentSerializer(serializers.ModelSerializer):
+class InstrumentListSerializer(serializers.ModelSerializer):
     calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
@@ -70,6 +70,19 @@ class InstrumentSerializer(serializers.ModelSerializer):
         fields = [InstrumentEnum.PK.value,
                   InstrumentEnum.SERIAL_NUMBER.value,
                   InstrumentEnum.MODEL.value] + ['calibration_history']
+
+
+class InstrumentSerializer(serializers.ModelSerializer):
+    calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Instrument
+        fields = [InstrumentEnum.PK.value,
+                  InstrumentEnum.SERIAL_NUMBER.value,
+                  InstrumentEnum.MODEL.value] + ['calibration_history']
+
+    def to_representation(self, instance):
+        return InstrumentListSerializer(instance).data
 
 
 class CalibrationEventSerializer(serializers.ModelSerializer):
