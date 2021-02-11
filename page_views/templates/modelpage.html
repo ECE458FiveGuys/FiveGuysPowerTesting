@@ -18,16 +18,22 @@
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="VENDOR" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="MODEL_NUM" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="DESCRIPTION" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
 
-                    <label for="Search Types">Search By:</label>
-                    <select name="Search Types" id="Search Types">
-                      <option value="vendor">Vendor</option>
-                      <option value="modelnum">Model Number</option>
-                      <option value="description">Description</option>
-                    </select>
-
+{#                    <label for="Search Types">Search By:</label>#}
+{#                    <select name="Search Types" id="Search Types">#}
+{#                      <option value="vendor">Vendor</option>#}
+{#                      <option value="modelnum">Model Number</option>#}
+{#                      <option value="description">Description</option>#}
+{#                    </select>#}
+                    <div class="input-group-append">
+                    </div>
+                </div>
+            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                <div class="sort-group">
                     <label for="Sort Types">Sort By:</label>
                     <select name="Sort Types" id="Sort Types">
                       <option value="vendor">Vendor</option>
@@ -35,10 +41,6 @@
                       <option value="description">Description</option>
                       <option value="calibrationfreq">Calibration Frequency</option>
                     </select>
-
-                    <div class="input-group-append">
-                    </div>
-
                 </div>
             </form>
             <!-- Navbar-->
@@ -96,6 +98,8 @@
                                                 <td>{{mod.model_number}}</td>
                                                 <td>{{mod.description}}</td>
                                                 <td>{{mod.calibration_frequency}}</td>
+                                                <td><button class="btn btn-primary btn-lg" id="button" href="#">Create User</button></td>
+
                                             </tr>
                                             {% endfor %}
                                             <tr>
