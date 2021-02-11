@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from database.model_enums import EquipmentModelEnum, InstrumentEnum, CalibrationEventEnum, UserEnum
+from database.model_enums import EquipmentModelEnum, InstrumentEnum, CalibrationEventEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
@@ -17,7 +17,7 @@ class InstrumentSerialNumberSerializer(serializers.ModelSerializer):
         fields = [InstrumentEnum.PK.value, InstrumentEnum.SERIAL_NUMBER.value]
 
 
-class EquipmentModelSerializerResponse(serializers.ModelSerializer):
+class EquipmentModelRetrieveSerializer(serializers.ModelSerializer):
     instruments = InstrumentSerialNumberSerializer(many=True, read_only=True)
 
     class Meta:
@@ -34,7 +34,7 @@ class EquipmentModelForInstrumentSerializer(serializers.ModelSerializer):
                   EquipmentModelEnum.DESCRIPTION.value]
 
 
-class CalibrationHistoryResponseSerializer(serializers.ModelSerializer):
+class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
     user = UserFieldsForCalibrationEventSerializer(many=False, read_only=True)
 
     class Meta:
@@ -52,8 +52,8 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
                   CalibrationEventEnum.DATE.value]
 
 
-class InstrumentSerializerResponse(serializers.ModelSerializer):
-    calibration_history = CalibrationHistoryResponseSerializer(many=True, read_only=True)
+class InstrumentRetrieveSerializer(serializers.ModelSerializer):
+    calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     class Meta:
@@ -67,7 +67,9 @@ class InstrumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Instrument
-        fields = [e.value for e in InstrumentEnum] + ['calibration_history']
+        fields = [InstrumentEnum.PK.value,
+                  InstrumentEnum.SERIAL_NUMBER.value,
+                  InstrumentEnum.MODEL.value] + ['calibration_history']
 
 
 class CalibrationEventSerializer(serializers.ModelSerializer):
