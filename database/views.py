@@ -7,6 +7,7 @@ from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
     VendorSerializer, InstrumentRetrieveSerializer, EquipmentModelRetrieveSerializer
+from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
@@ -14,7 +15,7 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = EquipmentModel.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         EquipmentModelEnum.VENDOR.value,
         EquipmentModelEnum.MODEL_NUMBER.value,
@@ -64,7 +65,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Instrument.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         'model__' + EquipmentModelEnum.VENDOR.value,
         'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
@@ -102,7 +103,7 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filter_backends = []
 
     @action(detail=False, methods=['get'])
