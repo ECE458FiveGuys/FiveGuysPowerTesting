@@ -25,6 +25,8 @@ class ImportService(Service):
                 raise UserError("Column headers incorrect")
             list_of_dict = list(reader)
             for row in list_of_dict:
+                if all(row[field] == '' for field in self.fields): # if all elements in row are empty, skip
+                    continue
                 obj = self.create_object_from_row(row)
                 created_objects.append(obj)
             return Response(self.serialize(created_objects).data)
