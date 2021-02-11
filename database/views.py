@@ -1,13 +1,13 @@
-from django.db.migrations import serializer
 from django.db.models import Q
-from rest_framework import permissions, serializers
+from rest_framework import permissions
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
-    VendorSerializer, InstrumentSerializerResponse, EquipmentModelSerializerResponse
+    VendorSerializer, InstrumentRetrieveSerializer, EquipmentModelRetrieveSerializer
+from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
@@ -15,8 +15,7 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = EquipmentModel.objects.all()
-    serializer_class = EquipmentModelSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         EquipmentModelEnum.VENDOR.value,
         EquipmentModelEnum.MODEL_NUMBER.value,
@@ -33,11 +32,14 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
         EquipmentModelEnum.MODEL_NUMBER.value
     ]
 
-    @action(detail=True, methods=['get'])
-    def detail_view(self, request, pk):
-        detail = EquipmentModel.objects.get(pk=pk)
-        detail_serializer = EquipmentModelSerializerResponse(detail)
-        return Response(detail_serializer.data)
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return EquipmentModelRetrieveSerializer  # 2.1.4
+        return EquipmentModelSerializer  # 2.1.3
+
+    @action(detail=False, methods=['get'])
+    def all(self, request):
+        return Response(EquipmentModelSerializer(self.queryset, many=True).data)
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
@@ -63,8 +65,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Instrument.objects.all()
-    serializer_class = InstrumentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         'model__' + EquipmentModelEnum.VENDOR.value,
         'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
@@ -86,11 +87,14 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         InstrumentEnum.COMMENT.value
     ]
 
-    @action(detail=True, methods=['get'])
-    def detail_view(self, request, pk):
-        detail = Instrument.objects.get(pk=pk)
-        detail_serializer = InstrumentSerializerResponse(detail)
-        return Response(detail_serializer.data)
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return InstrumentRetrieveSerializer  # 2.2.4
+        return InstrumentSerializer  # 2.2.3
+
+    @action(detail=False, methods=['get'])
+    def all(self, request):
+        return Response(InstrumentSerializer(self.queryset, many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
@@ -99,5 +103,9 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filter_backends = []
+
+    @action(detail=False, methods=['get'])
+    def all(self, request):
+        return Response(InstrumentSerializer(self.queryset, many=True).data)
