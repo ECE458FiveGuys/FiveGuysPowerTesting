@@ -5,8 +5,6 @@ from database.models import EquipmentModel
 from database.serializers import EquipmentModelSerializer
 from database.services.bulk_data_services.import_service import ImportService
 from database.services.bulk_data_services.table_enums import ModelTableColumnNames
-from database.services.dtos import EquipmentModelDTO
-from database.services.deprecated.model_services import create_equipment_model
 
 
 class ImportModelsService(ImportService):
@@ -31,9 +29,9 @@ class ImportModelsService(ImportService):
             except SyntaxError:
                 raise InvalidCalibrationFrequencyException(vendor, model_number)
         model = EquipmentModel.objects.create(vendor=vendor,
-                                                        model_number=model_number,
-                                                        description=description,
-                                                        comment=comment,
-                                                        calibration_frequency=calibration_frequency)
+                                              model_number=model_number,
+                                              description=description,
+                                              comment=comment,
+                                              calibration_frequency=calibration_frequency)
 
         return model

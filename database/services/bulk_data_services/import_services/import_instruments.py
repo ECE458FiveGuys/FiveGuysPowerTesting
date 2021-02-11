@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from database.exceptions import InvalidCalibrationFrequencyException, DoesNotExistException, UserDoesNotExistException
 from database.models import CalibrationEvent, Instrument, EquipmentModel
-from database.serializers import EquipmentModelSerializer, InstrumentSerializer, InstrumentSerializerResponse
+from database.serializers import EquipmentModelSerializer, InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
 from database.services.bulk_data_services.table_enums import ModelTableColumnNames, InstrumentTableColumnNames
 from user_portal.models import PowerUser
@@ -16,7 +16,7 @@ class ImportInstrumentsService(ImportService):
         super().__init__(import_file=file, fields=[e.value for e in InstrumentTableColumnNames])
 
     def serialize(self, created_objects):
-        return InstrumentSerializerResponse(created_objects, many=True)
+        return InstrumentSerializer(created_objects, many=True)
 
     def create_object_from_row(self, row):
         vendor = self.parse_field(row, InstrumentTableColumnNames.VENDOR.value)
