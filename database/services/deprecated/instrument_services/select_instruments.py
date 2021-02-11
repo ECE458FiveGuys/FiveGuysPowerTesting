@@ -1,9 +1,9 @@
 from django.db.models import Q
 
 from database.models import Instrument
-from database.services.in_app_service import InAppService
-from database.services.model_services.select_models import SelectModels
-from database.services.select_service import SelectService
+from database.services.deprecated.in_app_service import InAppService
+from database.services.deprecated.model_services import SelectModels
+from database.services.deprecated.select_service import SelectService
 from database.services.service import Service
 
 

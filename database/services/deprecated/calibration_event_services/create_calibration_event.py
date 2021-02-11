@@ -4,11 +4,11 @@ from django.db import IntegrityError
 from database.exceptions import IllegalAccessException, FieldCombinationNotUniqueException, \
     RequiredFieldsEmptyException, EntryDoesNotExistException, CalibrationEventRequiredFieldsEmptyException
 from database.models import Instrument, CalibrationEvent
-from database.services.calibration_event_services.select_calibration_events import SelectCalibrationEvents
-from database.services.calibration_event_services.utils import handle_calib_event_validation_error
-from database.services.in_app_service import InAppService
-from database.services.instrument_services.select_instruments import SelectInstruments
-from database.services.model_services.select_models import SelectModels
+from database.services.deprecated.calibration_event_services.select_calibration_events import SelectCalibrationEvents
+from database.services.deprecated.calibration_event_services.utils import handle_calib_event_validation_error
+from database.services.deprecated.in_app_service import InAppService
+from database.services.deprecated.instrument_services.select_instruments import SelectInstruments
+from database.services.deprecated.model_services import SelectModels
 from database.services.service import Service
 
 

@@ -1,8 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from database.exceptions import IllegalAccessException, EntryDoesNotExistException
-from database.services.in_app_service import InAppService
-from database.services.instrument_services.select_instruments import SelectInstruments
+from database.services.deprecated.in_app_service import InAppService
+from database.services.deprecated.instrument_services.select_instruments import SelectInstruments
 from database.services.service import Service
 
 

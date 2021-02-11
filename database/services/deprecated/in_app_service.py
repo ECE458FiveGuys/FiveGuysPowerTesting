@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from database.exceptions import UserError, InactiveUserException, IllegalAccessException, AuthenticationFailedException
 from database.models import User
-from database.services.utils.security_utils import encrypt
+from database.services.deprecated.utils import encrypt
 
 
 def verify_and_retrieve_user(user_id, password):

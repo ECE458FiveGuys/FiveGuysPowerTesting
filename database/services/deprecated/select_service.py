@@ -4,7 +4,7 @@ from tkinter import ALL
 from django.core.paginator import Paginator
 from django.db.models import Q
 
-from database.services.in_app_service import InAppService
+from database.services.deprecated.in_app_service import InAppService
 
 
 class SelectService(InAppService):

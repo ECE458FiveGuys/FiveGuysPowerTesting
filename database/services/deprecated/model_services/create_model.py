@@ -4,9 +4,9 @@ from django.core.exceptions import ValidationError
 from database.exceptions import FieldCombinationNotUniqueException
 from database.models import EquipmentModel
 
-from database.services.in_app_service import InAppService
-from database.services.model_services.utils import handle_model_validation_error
-from database.services.utils.constants import NOT_APPLICABLE
+from database.services.deprecated.in_app_service import InAppService
+from database.services.deprecated.model_services.utils import handle_model_validation_error
+from database.services.deprecated.utils import NOT_APPLICABLE
 
 
 class CreateModel(InAppService):

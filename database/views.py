@@ -109,3 +109,27 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def all(self, request):
         return Response(InstrumentSerializer(self.queryset, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_models(request):
+    return ExportModelsService().execute()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_instruments(request):
+    return ExportInstrumentsService().execute()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def import_models(request):
+    return ImportModelsService(request.FILES['file'].file).execute()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def import_instruments(request):
+    return ImportInstrumentsService(request.FILES['file'].file).execute()

@@ -5,10 +5,10 @@ from database.exceptions import IllegalAccessException, FieldCombinationNotUniqu
     RequiredFieldsEmptyException, EntryDoesNotExistException, InstrumentRequiredFieldsEmptyException, \
     InstrumentFieldCombinationNotUniqueException
 from database.models import Instrument
-from database.services.in_app_service import InAppService
-from database.services.instrument_services.select_instruments import SelectInstruments
-from database.services.instrument_services.utils import handle_instrument_validation_error
-from database.services.model_services.select_models import SelectModels
+from database.services.deprecated.in_app_service import InAppService
+from database.services.deprecated.instrument_services.select_instruments import SelectInstruments
+from database.services.deprecated.instrument_services.utils import handle_instrument_validation_error
+from database.services.deprecated.model_services import SelectModels
 from database.services.service import Service
 
 

@@ -13,10 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from enum import Enum
+
+from django.contrib import admin
 from django.urls import path, include, re_path
-from rest_framework import routers
+from rest_framework import routers, serializers, viewsets
 
 # Routers provide an easy way of automatically determining the URL conf.
+from database import views
 from database.views import EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet, VendorAutoCompleteViewSet
 
 router = routers.DefaultRouter()
@@ -29,6 +33,10 @@ router.register(r'calibration-events', CalibrationEventViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('', include('user_portal.urls')),
+    path('export-instruments/', views.export_instruments),
+    path('export-models/', views.export_models),
+    path('import-models/', views.import_models),
+    path('import-instruments/', views.import_instruments),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     re_path(r'^vendors(?P<vendor>.+)', VendorAutoCompleteViewSet.as_view())
 ]
