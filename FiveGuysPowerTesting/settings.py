@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '&t60tb1s$pamsehr-e3q_2)^n+z#3mo(*ksabeyu3=71u*ik47'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 AUTH_USER_MODEL = 'user_portal.PowerUser'
 
@@ -100,6 +100,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100
 }
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
