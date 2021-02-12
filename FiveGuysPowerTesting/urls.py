@@ -13,13 +13,33 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from page_views import views as v
+from enum import Enum
 
+from django.contrib import admin
+from page_views import views as v
+from django.urls import path, include, re_path
+from rest_framework import routers, serializers, viewsets
+from database import views
+from database.views import EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet, VendorAutoCompleteViewSet
+
+router = routers.DefaultRouter()
+router.register(r'models', EquipmentModelViewSet)
+router.register(r'instruments', InstrumentViewSet)
+router.register(r'calibration-events', CalibrationEventViewSet)
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('models/', include('database.urls')),
     path('admin/', admin.site.urls),
     path('model/', v.modelpage),
     path('instrument/', v.instrumentpage)
+    path('', include(router.urls)),
+    path('', include('user_portal.urls')),
+    path('export-instruments/', views.export_instruments),
+    path('export-models/', views.export_models),
+    path('import-models/', views.import_models),
+    path('import-instruments/', views.import_instruments),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    re_path(r'^vendors(?P<vendor>.+)', VendorAutoCompleteViewSet.as_view())
 ]
