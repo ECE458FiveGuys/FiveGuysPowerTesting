@@ -16,10 +16,9 @@ Including another URLconf
 from enum import Enum
 
 from django.contrib import admin
+from page_views import views as v
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
-
-# Routers provide an easy way of automatically determining the URL conf.
 from database import views
 from database.views import EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet, VendorAutoCompleteViewSet
 
@@ -31,6 +30,10 @@ router.register(r'calibration-events', CalibrationEventViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    path('models/', include('database.urls')),
+    path('admin/', admin.site.urls),
+    path('model/', v.modelpage),
+    path('instrument/', v.instrumentpage)
     path('', include(router.urls)),
     path('', include('user_portal.urls')),
     path('export-instruments/', views.export_instruments),
