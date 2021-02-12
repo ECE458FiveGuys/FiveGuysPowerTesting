@@ -1,13 +1,18 @@
 from django.db.models import Q
 from rest_framework import permissions
 from rest_framework import viewsets, generics
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes, api_view
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
     VendorSerializer, InstrumentRetrieveSerializer, EquipmentModelRetrieveSerializer
 from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
+from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
+from database.services.bulk_data_services.export_services.export_models import ExportModelsService
+from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
+from database.services.bulk_data_services.import_services.import_models import ImportModelsService
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
@@ -109,3 +114,27 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def all(self, request):
         return Response(InstrumentSerializer(self.queryset, many=True).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_models(request):
+    return ExportModelsService().execute()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export_instruments(request):
+    return ExportInstrumentsService().execute()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def import_models(request):
+    return ImportModelsService(request.FILES['file'].file).execute()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def import_instruments(request):
+    return ImportInstrumentsService(request.FILES['file'].file).execute()

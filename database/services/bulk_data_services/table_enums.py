@@ -1,23 +1,24 @@
 from enum import Enum
 
-class SheetNames(Enum):
-    CALIBRATION_EVENTS = "Calibration Events"
-    INSTRUMENTS = "Instruments"
-    MODELS = "Models"
+
+class ExportFileNames(Enum):
+    INSTRUMENTS = "instruments.csv"
+    MODELS = "models.csv"
+
 
 class ModelTableColumnNames(Enum):
     VENDOR = "Vendor"
-    MODEL_NUMBER = "Model Number"
-    MODEL_DESCRIPTION = "Short Description"
+    MODEL_NUMBER = "Model-Number"
+    MODEL_DESCRIPTION = "Short-Description"
     MODEL_COMMENT = "Comment"
-    CALIBRATION_FREQUENCY = "Calibration Frequency"
+    CALIBRATION_FREQUENCY = "Calibration-Frequency"
+
 
 class InstrumentTableColumnNames(Enum):
-    SERIAL_NUMBER = "Serial Number"
+    VENDOR = ModelTableColumnNames.VENDOR.value
+    MODEL_NUMBER = ModelTableColumnNames.MODEL_NUMBER.value
+    SERIAL_NUMBER = "Serial-Number"
     INSTRUMENT_COMMENT = "Comment"
-
-class CalibrationEventColumnNames(Enum):
-    CALIBRATION_USERNAME = "Calibration Username"
-    CALIBRATION_DATE = "Calibration Date"
-    CALIBRATION_COMMENT = "Calibration Comment"
-
+    CALIBRATION_USERNAME = "Calibration-Username"
+    CALIBRATION_DATE = "Calibration-Date"
+    CALIBRATION_COMMENT = "Calibration-Comment"

@@ -1,122 +1,51 @@
+import abc
 import csv
 import io
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
+from rest_framework import status
+from rest_framework.response import Response
 
-from openpyxl import Workbook, load_workbook
-from openpyxl.writer.excel import save_virtual_workbook
-
-from database.exceptions import UserError, EntryDoesNotExistException, BulkException
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames, InstrumentTableColumnNames, CalibrationEventColumnNames, SheetNames
-from database.services.calibration_event_services.create_calibration_event import CreateCalibrationEvent
-from database.services.calibration_event_services.select_calibration_events import SelectCalibrationEvents
-from database.services.in_app_service import InAppService
-from database.services.instrument_services.create_instrument import CreateInstrument
-from database.services.instrument_services.select_instruments import SelectInstruments
-from database.services.model_services.create_model import CreateModel
-from database.services.model_services.select_models import SelectModels
+from database.exceptions import UserError
+from database.services.service import Service
 
 
-class Import(InAppService):
-    def __init__(
-            self,
-            user_id,
-            password,
-            import_file
-    ):
-        self.import_file = import_file
-        self.errors = []
-        super().__init__(user_id=user_id, password=password, admin_only=True)
+class ImportService(Service):
+
+    def __init__(self, import_file, fields):
+        self.file = import_file
+        self.fields = fields
 
     def execute(self):
-        wb = load_workbook(self.import_file)
-        self.build_models(wb)
-        self.build_instruments(wb)
-        self.build_calibration_events(wb)
-        if len(self.errors) > 0:
-            raise BulkException(self.errors)
+        created_objects = []
+        try:
+            param_file = io.TextIOWrapper(self.file)
+            reader = csv.DictReader(param_file)
+            if set(reader.fieldnames) != set(self.fields):
+                raise UserError("Column headers incorrect")
+            list_of_dict = list(reader)
+            for row in list_of_dict:
+                if all(row[field] == '' for field in self.fields): # if all elements in row are empty, skip
+                    continue
+                obj = self.create_object_from_row(row)
+                created_objects.append(obj)
+            return Response(self.serialize(created_objects).data)
+        except UserError as e:
+            self.undo_object_creations(created_objects)
+            return Response(e.message, status=status.HTTP_400_BAD_REQUEST)
 
-    def build_models(self, workbook):
-        sheet = workbook.get_sheet_by_name(SheetNames.MODELS.value)
-        for column in range(1, sheet.max_column + 1):
-            vendor = sheet["A{}".format(column)].value
-            model_number = sheet["B{}".format(column)].value
-            description = sheet["C{}".format(column)].value
-            comment = sheet["D{}".format(column)].value
-            calibration_frequency = sheet["E{}".format(column)].value
-            try:
-                CreateModel(user_id=self.user.id,
-                            password=self.user.password,
-                            vendor=vendor,
-                            model_number=model_number,
-                            description=description,
-                            comment=comment,
-                            calibration_frequency=calibration_frequency)\
-                    .execute()
-            except UserError as e:
-                self.errors.add(e)
+    def undo_object_creations(self, created_objects):
+        for obj in created_objects:
+            obj.delete()
 
-    def build_instruments(self, workbook):
-        sheet = workbook.get_sheet_by_name(SheetNames.INSTRUMENTS.value)
-        for column in range(1, sheet.max_column + 1):
-            vendor = sheet["A{}".format(column)].value
-            model_number = sheet["B{}".format(column)].value
-            serial_number = sheet["C{}".format(column)].value
-            comment = sheet["D{}".format(column)].value
-            try:
-                model = SelectModels(user_id=self.user.id,
-                             password=self.user.password,
-                             vendor=vendor, model_number=model_number)\
-                    .execute()\
-                    .get(vendor=vendor, model_number=model_number)
-                try:
-                    CreateInstrument(user_id=self.user.id,
-                                     password=self.user.password,
-                                     model_id=model.id,
-                                     serial_number=serial_number,
-                                     comment=comment)\
-                        .execute()
-                except UserError as e:
-                     self.errors.add(e)
-            except ObjectDoesNotExist:
-                    self.errors.add(EntryDoesNotExistException(entry_type="model", entry_id="model number {} and vendor {}".format(model_number, vendor)))
+    def parse_field(self, row, key):
+        return None if row[key] == '' else row[key]
 
-    def build_calibration_events(self, workbook):
-        sheet = workbook.get_sheet_by_name(SheetNames.CALIBRATION_EVENTS.value)
-        for column in range(1, sheet.max_column + 1):
-            vendor = sheet["A{}".format(column)].value
-            model_number = sheet["B{}".format(column)].value
-            serial_number = sheet["C{}".format(column)].value
-            username = sheet["D{}".format(column)].value
-            date = sheet["E{}".format(column)].value
-            comment = sheet["F{}".format(column)].value
-            try:
-                model = SelectModels(user_id=self.user.id,
-                                     password=self.user.password,
-                                     vendor=vendor, model_number=model_number) \
-                    .execute() \
-                    .get(vendor=vendor, model_number=model_number)
-                try:
-                    instrument = SelectInstruments(user_id=self.user.id,
-                                     password=self.user.password,
-                                     model_id=model.id,
-                                     serial_number=serial_number) \
-                        .execute()\
-                        .get(model=model, serial_number=serial_number)
-                    try:
-                        CreateCalibrationEvent(user_id=self.user.id,
-                                     password=self.user.password,
-                                     instrument_id=instrument.id,
-                                     date=date,
-                                     comment=comment)
-                    except UserError as e:
-                        self.errors.add(e)
-                except ObjectDoesNotExist:
-                    self.errors.add(EntryDoesNotExistException(entry_type="instrument",
-                                                           entry_id="model number {} and vendor {} and serial number {}".format(
-                                                               model_number, vendor, serial_number)))
-            except ObjectDoesNotExist:
-                self.errors.add(EntryDoesNotExistException(entry_type="model",
-                                                           entry_id="model number {} and vendor {}".format(
-                                                               model_number, vendor)))
+    @abc.abstractmethod
+    def create_object_from_row(self, row):
+        pass
+
+    @abc.abstractmethod
+    def serialize(self, created_objects):
+        pass
+
