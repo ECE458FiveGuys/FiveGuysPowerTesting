@@ -20,7 +20,7 @@ class CreateModelTestCase(TestCase):
             EquipmentModel.objects.create(vendor=None, model_number=None, description=None).execute()
             self.fail("model without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "vendor and model_number and description are required fields for the model with vendor 'None' and model number 'None'":
+            if e.message != "Error: vendor and model_number and description are required fields for the model with vendor 'None' and model number 'None'":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)
             pass

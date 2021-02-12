@@ -24,6 +24,5 @@ class ExportInstrumentsService(ExportService):
                              instrument.model.model_number,
                              instrument.serial_number,
                              instrument.comment,
-                             None if latest_calibration_event is None else latest_calibration_event.user.username,
                              None if latest_calibration_event is None else latest_calibration_event.date,
                              None if latest_calibration_event is None else latest_calibration_event.comment])
