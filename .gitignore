@@ -55,3 +55,6 @@ db.sqlite3
 # virtual environment
 env/
 venv/
+
+
+migrations/
