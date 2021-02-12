@@ -66,7 +66,8 @@ class InstrumentListSerializer(serializers.ModelSerializer):
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     def get_calibration_history(self, obj):
-        query = CalibrationEvent.objects.filter(pk=obj.pk).latest('date')
+        """Redefine calibration_history field to return only most recent calibration event"""
+        query = CalibrationEvent.objects.filter(instrument=obj.pk).latest('date')
         serializer = CalibrationHistorySerializer(query, many=False, read_only=True)
         return serializer.data
 
