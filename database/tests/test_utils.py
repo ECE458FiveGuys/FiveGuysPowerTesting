@@ -13,7 +13,7 @@ TEST_ROOT = "http://127.0.0.1:8000/"
 OVERLONG_STRING = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(2001))
 
 
-def create_admin_and_model_and_instrument():
+def create_model_and_instrument():
     model = create_model()
     instrument = Instrument.objects.create(model=model, serial_number="serial_number")
     return model, instrument
@@ -28,10 +28,10 @@ def create_calibration_events():
     user = create_non_admin_user()
     model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description",
                                  comment="comment", calibration_frequency=1)
-    instrument = Instrument.objects.create(model=model, serial_number="serial_number", comment="comment")
-    earlier = localtime(now()).date()
-    later = localtime(now()).date().replace(month=earlier.month + 1)
-    latest = localtime(now()).date().replace(month=earlier.month + 2)
+    instrument = Instrument.objects.create(model=model, serial_number="serial_number")
+    latest = localtime(now()).date()
+    later = localtime(now()).date().replace(year=latest.year - 1)
+    earlier = localtime(now()).date().replace(year=latest.year - 2)
     calibration_event3 = CalibrationEvent.objects.create(instrument=instrument, user=user, date=latest)
     calibration_event = CalibrationEvent.objects.create(instrument=instrument, user=user, date=earlier)
     calibration_event2 = CalibrationEvent.objects.create(instrument=instrument, user=user, date=later)
@@ -55,6 +55,12 @@ class EndpointTestCase(TestCase):
         MODELS = TEST_ROOT + "models/"
         VENDORS = TEST_ROOT + "vendors?vendor={}"
         INSTRUMENT = TEST_ROOT + "models/"
+        EXPORT_MODELS = TEST_ROOT + "export-models/"
+        EXPORT_INSTRUMENTS = TEST_ROOT + "export-instruments/"
+        EXPORT_ALL = TEST_ROOT + "export/"
+        IMPORT_MODELS = TEST_ROOT + "import-models/"
+        IMPORT_INSTRUMENTS = TEST_ROOT + "import-instruments/"
+
 
         def fill(self, params):
             return self.value.format(*params)

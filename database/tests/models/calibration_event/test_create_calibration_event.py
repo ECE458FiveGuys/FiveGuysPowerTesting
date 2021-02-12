@@ -6,12 +6,12 @@ from database.models import User, CalibrationEvent
 
 from django.utils.timezone import localtime, now
 
-from database.tests.test_utils import create_admin_and_model_and_instrument, OVERLONG_STRING, create_non_admin_user
+from database.tests.test_utils import OVERLONG_STRING, create_non_admin_user, create_model_and_instrument
 
 
 class CreateCalibrationEventTestCase(TestCase):
     def test_create_calib_happy_case(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         user = create_non_admin_user()
         date = localtime(now()).date()
         calib_event = CalibrationEvent.objects.create(user=user, instrument=instrument, date=date.replace(year=date.year - 1))
@@ -21,7 +21,7 @@ class CreateCalibrationEventTestCase(TestCase):
 
 
     def test_create_instrument_without_required_fields_throws_exception(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         user = create_non_admin_user()
         try:
             CalibrationEvent.objects.create(user=None, instrument=None, date=None)
@@ -35,7 +35,7 @@ class CreateCalibrationEventTestCase(TestCase):
     # Field validity tests
 
     def test_overlong_comment_field_test(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         user = create_non_admin_user()
         date = localtime(now()).date()
         try:
@@ -45,7 +45,7 @@ class CreateCalibrationEventTestCase(TestCase):
             pass
 
     def test_invalid_date_field_test(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         user = create_non_admin_user()
         try:
             CalibrationEvent.objects.create(instrument=instrument, user=user, comment="comment", date="date")
