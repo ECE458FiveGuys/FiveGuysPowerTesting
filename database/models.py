@@ -15,7 +15,7 @@ MODEL_NUMBER_LENGTH = 40
 SERIAL_NUMBER_LENGTH = 40
 DESCRIPTION_LENGTH = 100
 COMMENT_LENGTH = 2000
-CALIBRATION_FREQUENCY_LENGTH = 10
+CALIBRATION_FREQUENCY_LENGTH = 10  # needs to be validated in manager, length not valid for integer field
 
 
 class EquipmentModelManager(models.Manager):
@@ -115,7 +115,7 @@ class EquipmentModel(models.Model):
     model_number = models.CharField(blank=False, null=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, null=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, null=True, max_length=COMMENT_LENGTH)
-    calibration_frequency = models.IntegerField(blank=True, null=True, max_length=CALIBRATION_FREQUENCY_LENGTH)
+    calibration_frequency = models.IntegerField(blank=True, null=True)
 
     objects = EquipmentModelManager()
 
