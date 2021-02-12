@@ -156,7 +156,7 @@ class CalibrationEvent(models.Model):
     objects = CalibrationEventManager()
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.instrument, self.date, self.user, self.comment

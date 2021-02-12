@@ -62,8 +62,13 @@ class InstrumentRetrieveSerializer(serializers.ModelSerializer):
 
 
 class InstrumentListSerializer(serializers.ModelSerializer):
-    calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
+    calibration_history = serializers.SerializerMethodField()
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
+
+    def get_calibration_history(self, obj):
+        query = CalibrationEvent.objects.all().latest('date')
+        serializer = CalibrationHistorySerializer(query, many=False, read_only=True)
+        return serializer.data
 
     class Meta:
         model = Instrument
