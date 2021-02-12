@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_list_or_404
-import database as db
+import database.views as db
 from django.core.paginator import Paginator
 
 # from django.view import generic
