@@ -130,7 +130,7 @@ class EquipmentModel(models.Model):
 
 
 class Instrument(models.Model):
-    model = models.ForeignKey(EquipmentModel, related_name='instruments', on_delete=models.DO_NOTHING)
+    model = models.ForeignKey(EquipmentModel, related_name='instruments', on_delete=models.PROTECT)
     serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH, blank=False)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
 
