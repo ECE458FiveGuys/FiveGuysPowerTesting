@@ -1,3 +1,4 @@
+import requests
 from PIL import Image
 from django.shortcuts import render, get_object_or_404
 
@@ -26,10 +27,8 @@ def instrument_detail_page(request, serial=None):
 
     # If this is a POST request then process the Form data
     if request.method == 'POST':
-        print(request.POST)
         # Create a form instance and populate it with data from the request (binding):
         form = CalibrationForm(request.POST)
-
         if not form.is_valid():
             print("form isn't valid")
 
@@ -37,6 +36,8 @@ def instrument_detail_page(request, serial=None):
             #TODO form submission response
         else:
             print("form is valid")
+            response = requests.post('http://'+request.get_host()+'/calibration-events/', data=form.data.dict())
+
 
     # If this is a GET (or any other method) create the default form.
     else:
