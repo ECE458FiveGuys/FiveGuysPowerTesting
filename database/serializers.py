@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from rest_framework import serializers
 
 from database.model_enums import EquipmentModelEnum, InstrumentEnum, CalibrationEventEnum
@@ -55,10 +57,16 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
     calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
+    calibration_expiration_date = serializers.SerializerMethodField()
+
+    def get_calibration_expiration_date(self, obj):
+        """Returns date when instrument will be out of calibration"""
+        most_recent_event = CalibrationEvent.objects.filter(instrument=obj.pk).latest('date')
+        return most_recent_event.date + timedelta(days=obj.model.calibration_frequency)
 
     class Meta:
         model = Instrument
-        fields = [e.value for e in InstrumentEnum] + ['calibration_history']
+        fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration_date']
 
 
 class InstrumentListSerializer(serializers.ModelSerializer):
@@ -66,7 +74,8 @@ class InstrumentListSerializer(serializers.ModelSerializer):
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     def get_calibration_history(self, obj):
-        query = CalibrationEvent.objects.all().latest('date')
+        """Redefine calibration_history field to return only most recent calibration event"""
+        query = CalibrationEvent.objects.filter(instrument=obj.pk).latest('date')
         serializer = CalibrationHistorySerializer(query, many=False, read_only=True)
         return serializer.data
 
