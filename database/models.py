@@ -130,7 +130,7 @@ class EquipmentModel(models.Model):
 
 
 class Instrument(models.Model):
-    model = models.ForeignKey(EquipmentModel, related_name='instruments', on_delete=models.DO_NOTHING)
+    model = models.ForeignKey(EquipmentModel, related_name='instruments', on_delete=models.PROTECT)
     serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH, blank=False)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
 
@@ -138,6 +138,7 @@ class Instrument(models.Model):
 
     class Meta:
         unique_together = ('model', 'serial_number')  # 2.2.1.2
+        ordering = ['model__vendor', 'model__model_number']
 
     def __str__(self):
         return self.model, self.serial_number, self.comment
@@ -155,7 +156,7 @@ class CalibrationEvent(models.Model):
     objects = CalibrationEventManager()
 
     class Meta:
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.instrument, self.date, self.user, self.comment
