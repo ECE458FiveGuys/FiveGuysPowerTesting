@@ -138,6 +138,7 @@ class Instrument(models.Model):
 
     class Meta:
         unique_together = ('model', 'serial_number')  # 2.2.1.2
+        ordering = ['model__vendor', 'model__model_number']
 
     def __str__(self):
         return self.model, self.serial_number, self.comment
