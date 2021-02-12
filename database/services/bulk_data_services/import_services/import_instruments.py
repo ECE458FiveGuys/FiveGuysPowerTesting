@@ -2,7 +2,8 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from database.exceptions import InvalidCalibrationFrequencyException, DoesNotExistException, UserDoesNotExistException
+from database.exceptions import InvalidCalibrationFrequencyException, DoesNotExistException, UserDoesNotExistException, \
+    ImpossibleCalibrationError
 from database.models import CalibrationEvent, Instrument, EquipmentModel
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
@@ -18,28 +19,31 @@ class ImportInstrumentsService(ImportService):
     def serialize(self, created_objects):
         return InstrumentSerializer(created_objects, many=True)
 
-    def create_object_from_row(self, row):
+    def create_objects_from_row(self, row):
         vendor = self.parse_field(row, InstrumentTableColumnNames.VENDOR.value)
         model_number = self.parse_field(row, InstrumentTableColumnNames.MODEL_NUMBER.value)
         serial_number = self.parse_field(row, InstrumentTableColumnNames.SERIAL_NUMBER.value)
         instrument_comment = self.parse_field(row, InstrumentTableColumnNames.INSTRUMENT_COMMENT.value)
-        calibration_username = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_USERNAME.value)
         calibration_date = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_DATE.value)
         calibration_comment = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_COMMENT.value)
-        if calibration_username is None:
-            calibration_username = 'admin'
-        if calibration_date is not None:
-            calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
         try:
-            user = PowerUser.objects.get(username=calibration_username)
+            user = PowerUser.objects.get(username='admin')
             try:
                 model = EquipmentModel.objects.get(vendor=vendor, model_number=model_number)
 
-                instrument = Instrument.objects.create(model=model, serial_number=serial_number, comment=instrument_comment)
-                CalibrationEvent.objects.create(instrument=instrument, user=user, date=calibration_date,
-                                                                    comment=calibration_comment)
-                return instrument
+                instrument = Instrument.objects.create(model=model, serial_number=serial_number,
+                                                       comment=instrument_comment)
+                if calibration_date is not None:
+                    if model.calibration_frequency is None:
+                        raise ImpossibleCalibrationError(vendor=vendor, model_number=model_number)
+                    calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
+                    calibration_event = CalibrationEvent.objects.create(instrument=instrument,
+                                                                        user=user,
+                                                                        date=calibration_date,
+                                                                        comment=calibration_comment)
+                    return [instrument, calibration_event]
+                return [instrument]
             except ObjectDoesNotExist:
                 raise DoesNotExistException(vendor=vendor, model_number=model_number)
         except ObjectDoesNotExist:
-            raise UserDoesNotExistException(user_name=calibration_username)
+            raise UserDoesNotExistException(user_name='admin')

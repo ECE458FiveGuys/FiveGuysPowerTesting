@@ -19,4 +19,4 @@ class ExportModelsService(ExportService):
                              model.model_number,
                              model.description,
                              model.comment,
-                             model.calibration_frequency])
+                             "N/A" if model.calibration_frequency is None else model.calibration_frequency])

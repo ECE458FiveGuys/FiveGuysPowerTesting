@@ -19,6 +19,5 @@ class InstrumentTableColumnNames(Enum):
     MODEL_NUMBER = ModelTableColumnNames.MODEL_NUMBER.value
     SERIAL_NUMBER = "Serial-Number"
     INSTRUMENT_COMMENT = "Comment"
-    CALIBRATION_USERNAME = "Calibration-Username"
     CALIBRATION_DATE = "Calibration-Date"
     CALIBRATION_COMMENT = "Calibration-Comment"

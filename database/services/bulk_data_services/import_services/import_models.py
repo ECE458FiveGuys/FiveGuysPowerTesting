@@ -15,18 +15,19 @@ class ImportModelsService(ImportService):
     def serialize(self, created_objects):
         return EquipmentModelSerializer(created_objects, many=True)
 
-    def create_object_from_row(self, row):
+    def create_objects_from_row(self, row):
         vendor = self.parse_field(row, ModelTableColumnNames.VENDOR.value)
         model_number = self.parse_field(row, ModelTableColumnNames.MODEL_NUMBER.value)
         description = self.parse_field(row, ModelTableColumnNames.MODEL_DESCRIPTION.value)
         comment = self.parse_field(row, ModelTableColumnNames.MODEL_COMMENT.value)
-        calibration_frequency = self.parse_field(row, ModelTableColumnNames.CALIBRATION_FREQUENCY.value)
+        calibration_frequency = None if row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value] == 'N/A' \
+            else row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]
         if calibration_frequency is not None:
             try:
                 calibration_frequency = int(calibration_frequency)
                 if calibration_frequency <= 0:
                     raise InvalidCalibrationFrequencyException(vendor, model_number)
-            except SyntaxError:
+            except (SyntaxError, ValueError):
                 raise InvalidCalibrationFrequencyException(vendor, model_number)
         model = EquipmentModel.objects.create(vendor=vendor,
                                               model_number=model_number,
@@ -34,4 +35,4 @@ class ImportModelsService(ImportService):
                                               comment=comment,
                                               calibration_frequency=calibration_frequency)
 
-        return model
+        return [model]

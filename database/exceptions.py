@@ -13,17 +13,17 @@ class UserError(Exception):
 
 class IllegalAccessException(UserError):
     def __init__(self):
-        super().__init__("This function is admin-only")
+        super().__init__("Error: This function is admin-only")
 
 
 class InvalidDateException(UserError):
     def __init__(self):
-        super().__init__("Date must be of form YYYY-MM-DD")
+        super().__init__("Error: Date must be of form YYYY-MM-DD")
 
 
 class EntryDoesNotExistException(UserError):
     def __init__(self, entry_type, entry_id):
-        super().__init__("The {0} with identifier {1} no longer exists".format(entry_type, entry_id))
+        super().__init__("Error: The {0} with identifier {1} no longer exists".format(entry_type, entry_id))
 
 
 class InactiveUserException(UserError):
@@ -63,7 +63,7 @@ class CalibrationEventFieldLengthException(FieldLengthException):
 
 class RequiredFieldsEmptyException(UserError):
     def __init__(self, object_type, required_fields_list, qualifications):
-        message = ""
+        message = "Error: "
         for i in range(len(required_fields_list)):
             message = message + "{0} "
             if i < len(required_fields_list) - 1:
@@ -99,7 +99,7 @@ class CalibrationEventRequiredFieldsEmptyException(RequiredFieldsEmptyException)
 
 class FieldCombinationNotUniqueException(UserError):
     def __init__(self, object_type, fields_list, qualifications):
-        message = "The combination of "
+        message = "Error: The combination of "
         for i in range(len(fields_list)):
             message = message + "{0} "
             if i < len(fields_list) - 1:
@@ -125,7 +125,7 @@ class InstrumentFieldCombinationNotUniqueException(FieldCombinationNotUniqueExce
 
 class BulkException(UserError):
     def __init__(self, errors):
-        message = "{} operations failed, reporting the following errors: \n"
+        message = "Error: {} operations failed, reporting the following errors: \n"
         for error in errors:
             message += "'{}',\n".format(error.message)
         super().__init__()
@@ -133,19 +133,30 @@ class BulkException(UserError):
 
 class InvalidCalibrationFrequencyException(UserError):
     def __init__(self, vendor, model_number, serial_number=None):
-        super().__init__("Calibration frequency not a positive integer for {}"
+        super().__init__("Malformed Input: Calibration frequency not a positive integer for {}"
                          .format(specify_model_or_instrument(vendor, model_number, serial_number)))
 
 
 class DoesNotExistException(UserError):
     def __init__(self, vendor, model_number, serial_number=None):
-        super().__init__("The {} does not exist"
+        super().__init__("Error: The {} does not exist"
                          .format(specify_model_or_instrument(vendor, model_number, serial_number)))
+
 
 class UserDoesNotExistException(UserError):
     def __init__(self, user_name):
-        super().__init__("The user \'{}\' does not exist".format(user_name))
+        super().__init__("Error: The user \'{}\' does not exist".format(user_name))
 
+
+class IllegalCharacterException(UserError):
+    def __init__(self, field_name):
+        super().__init__("Malformed Input: The {} field cannot contain multiple lines".format(field_name))
+
+
+class ImpossibleCalibrationError(UserError):
+    def __init__(self, vendor, model_number, serial_number=None):
+        super().__init__("Error: The {} has no calibration frequency but has a calibration date"
+                         .format(specify_model_or_instrument(vendor, model_number, serial_number)))
 
 
 def specify_model_or_instrument(vendor, model_number, serial_number=None):
@@ -161,5 +172,3 @@ def specify_model(vendor, model_number):
 
 def specify_instrument(vendor, model_number, serial_number):
     return INSTRUMENT_QUALIFIER.format(vendor, model_number, serial_number)
-
-

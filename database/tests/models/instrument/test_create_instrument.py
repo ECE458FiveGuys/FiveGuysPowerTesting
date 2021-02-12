@@ -20,7 +20,7 @@ class CreateInstrumentTestCase(TestCase):
             Instrument.objects.create(model=None, serial_number=None).execute()
             self.fail("instrument without required fields was created")
         except RequiredFieldsEmptyException as e:
-            if e.message != "model and serial_number are required fields for the " \
+            if e.message != "Error: model and serial_number are required fields for the " \
                             "instrument with vendor 'None' and model number 'None' and serial_number 'None'":
                 message = "incorrect error message thrown: {}".format(e.message)
                 self.fail(message)

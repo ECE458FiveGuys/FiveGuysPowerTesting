@@ -30,11 +30,9 @@ router.register(r'calibration-events', CalibrationEventViewSet)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('models/', include('database.urls')),
-    path('admin/', admin.site.urls),
-    path('model/', v.modelpage),
-    path('instrument/', v.instrumentpage)
     path('', include(router.urls)),
+    path('model/', v.modelpage),
+    path('instrument/', v.instrumentpage),
     path('', include('user_portal.urls')),
     path('export-instruments/', views.export_instruments),
     path('export-models/', views.export_models),
