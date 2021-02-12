@@ -1,3 +1,4 @@
+from PIL import Image
 from django.shortcuts import render, get_object_or_404
 from database import views as db
 import io
@@ -7,15 +8,15 @@ from reportlab.pdfgen import canvas
 # Create your views here.
 def detailspage(request, pk=None):
     # model = get_object_or_404(db.EquipmentModelViewSet.queryset, pk)
-    thing = request.GET.get('id')
+    # thing = request.GET.get('id')
     context = {
-        # "model": db.EquipmentModelViewSet.queryset.first(),
+        "model": db.EquipmentModelViewSet.queryset.get(id = pk),
         "instruments": db.InstrumentViewSet.queryset,
         # "model": get_object_or_404(db.EquipmentModelViewSet.queryset, pk)
     }
 
-    # return render(request, 'model_details.html', context)
-    return render(request, 'instrumentdetails.html', context)
+    return render(request, 'model_details.html', context)
+    # return render(request, 'instrumentdetails.html', context)
 
 def pdf_gen(request):
     # Create a file-like buffer to receive PDF data.
@@ -27,6 +28,9 @@ def pdf_gen(request):
     # Draw things on the PDF. Here's where the PDF generation happens.
     # See the ReportLab documentation for the full list of functionality.
     p.drawString(100, 100, "Instrument Calibration Certificate")
+    img = Image.open("detailviews/resources/image.png")
+    img = img.rotate(90)
+    p.drawInlineImage(img, 200, 500)
 
     # Close the PDF object cleanly, and we're done.
     p.showPage()
