@@ -6,7 +6,8 @@ from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 
-from database.exceptions import UserError
+from database.exceptions import UserError, IllegalCharacterException
+from database.services.bulk_data_services.table_enums import ModelTableColumnNames, InstrumentTableColumnNames
 from database.services.service import Service
 
 
@@ -27,8 +28,8 @@ class ImportService(Service):
             for row in list_of_dict:
                 if all(row[field] == '' for field in self.fields): # if all elements in row are empty, skip
                     continue
-                obj = self.create_object_from_row(row)
-                created_objects.append(obj)
+                objects = self.create_objects_from_row(row)
+                created_objects += objects
             return Response(self.serialize(created_objects).data)
         except UserError as e:
             self.undo_object_creations(created_objects)
@@ -39,10 +40,19 @@ class ImportService(Service):
             obj.delete()
 
     def parse_field(self, row, key):
+        if key != ModelTableColumnNames.MODEL_COMMENT.value \
+            and key != InstrumentTableColumnNames.INSTRUMENT_COMMENT.value \
+                and row[key].find("\n") != -1:
+            raise IllegalCharacterException(key)
         return None if row[key] == '' else row[key]
 
+
+    def check_illegal_characters(self, field, field_name):
+        if field.find("\n") != -1:
+            raise IllegalCharacterException(field_name)
+
     @abc.abstractmethod
-    def create_object_from_row(self, row):
+    def create_objects_from_row(self, row):
         pass
 
     @abc.abstractmethod
