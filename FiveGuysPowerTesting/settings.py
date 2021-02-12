@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'database.apps.DatabaseConfig',
     'front',
-    'detailviews',
+    'detail_views',
     'rest_framework',
     'django_filters',
     'rest_framework.authtoken',

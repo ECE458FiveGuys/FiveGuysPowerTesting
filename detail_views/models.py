@@ -1,3 +1,9 @@
 from django.db import models
-
-# Create your models here.
+# from django.forms import ModelForm
+# from database.models import CalibrationEvent
+#
+#
+# class CalibrationCreateView(ModelForm):
+#     class Meta:
+#         model = CalibrationEvent
+#         fields = '__all__'

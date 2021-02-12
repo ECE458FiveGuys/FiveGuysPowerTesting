@@ -18,7 +18,7 @@ from enum import Enum
 from django.contrib import admin
 from django.urls import path, include
 from front import views as v
-from detailviews import views as dv
+from detail_views import views as dv
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
 
@@ -34,12 +34,10 @@ router.register(r'calibration-event', CalibrationEventViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('models/', include('database.urls')),
-    # path('admin/', admin.site.urls),
     path('model/', v.modelpage),
-    # path('instrument/', v.instrumentpage),
-    path('testdetails/', dv.detailspage),
+    path('model-details/<int:pk>', dv.model_detail_page),
+    path('instrument-details/<int:serial>', dv.instrument_detail_page),
     path('pdf/', dv.pdf_gen),
-    # re_path(r'^model(?P<serial>[0-9]+)',  EquipmentModelViewSet.as_view({'get': 'list'}),dv.detailspage),
     path('', include(router.urls)),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
