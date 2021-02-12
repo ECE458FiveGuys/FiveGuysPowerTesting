@@ -14,12 +14,18 @@ VENDOR_LENGTH = 30
 MODEL_NUMBER_LENGTH = 40
 SERIAL_NUMBER_LENGTH = 40
 DESCRIPTION_LENGTH = 100
-COMMENT_LENGTH = 200
+COMMENT_LENGTH = 2000
+CALIBRATION_FREQUENCY_LENGTH = 10
 
 
 class EquipmentModelManager(models.Manager):
 
-    def create(self, vendor, model_number, description, comment, calibration_frequency):
+    def create(self,
+               vendor=None,
+               model_number=None,
+               description=None,
+               comment=None,
+               calibration_frequency=None):
         try:
             model = EquipmentModel(vendor=vendor, model_number=model_number,
                                    description=description,
@@ -46,7 +52,10 @@ class EquipmentModelManager(models.Manager):
 
 class InstrumentModelManager(models.Manager):
 
-    def create(self, model, serial_number, comment):
+    def create(self,
+               model=None,
+               serial_number=None,
+               comment=None):
         try:
             instrument = Instrument(model=model, serial_number=serial_number, comment=comment)
             instrument.full_clean()
@@ -55,7 +64,9 @@ class InstrumentModelManager(models.Manager):
         except ValidationError as e:
             for error_message in e.messages:
                 if NULL_FIELD_ERROR_MESSAGE in error_message:
-                    raise InstrumentRequiredFieldsEmptyException(model.vendor, model.model_number, serial_number)
+                    raise InstrumentRequiredFieldsEmptyException(None if model is None else model.vendor,
+                                                                 None if model is None else model.model_number,
+                                                                 serial_number)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(SERIAL_NUMBER_LENGTH) in error_message:
                     raise InstrumentFieldLengthException("serial number", SERIAL_NUMBER_LENGTH, model.vendor,
                                                          model.model_number,
@@ -64,12 +75,16 @@ class InstrumentModelManager(models.Manager):
                     raise InstrumentFieldLengthException("commment", COMMENT_LENGTH, model.vendor, model.model_number,
                                                          serial_number)
                 else:
-                    raise UserError(e.messages)
+                    raise UserError(error_message)
 
 
 class CalibrationEventManager(models.Manager):
 
-    def create(self, user, instrument, date, comment):
+    def create(self,
+               user=None,
+               instrument=None,
+               date=None,
+               comment=None):
         try:
             calibration_event = CalibrationEvent(instrument=instrument, user=user, date=date,
                                                  comment=comment)
@@ -79,20 +94,20 @@ class CalibrationEventManager(models.Manager):
         except ValidationError as e:
             for error_message in e.messages:
                 if NULL_FIELD_ERROR_MESSAGE in error_message:
-                    raise CalibrationEventRequiredFieldsEmptyException(vendor=instrument.model.vendor,
-                                                                       model_number=instrument.model.model_number,
-                                                                       serial_number=instrument.serial_number,
+                    raise CalibrationEventRequiredFieldsEmptyException(vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
+                                                                       model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
+                                                                       serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
                                                                        date=date)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
                     raise CalibrationEventFieldLengthException("commment", COMMENT_LENGTH,
-                                                               vendor=instrument.model.vendor,
-                                                               model_number=instrument.model.model_number,
-                                                               serial_number=instrument.serial_number,
+                                                               vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
+                                                               model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
+                                                               serial_number=None if instrument is None else instrument.serial_number,
                                                                date=date)
                 elif INVALID_DATE_FIELD_ERROR_MESSAGE in error_message:
                     raise InvalidDateException()
                 else:
-                    raise UserError(e.messages)
+                    raise UserError(error_message)
 
 
 class EquipmentModel(models.Model):
@@ -100,7 +115,7 @@ class EquipmentModel(models.Model):
     model_number = models.CharField(blank=False, null=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, null=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, null=True, max_length=COMMENT_LENGTH)
-    calibration_frequency = models.IntegerField(blank=True, null=True)
+    calibration_frequency = models.IntegerField(blank=True, null=True, max_length=CALIBRATION_FREQUENCY_LENGTH)
 
     objects = EquipmentModelManager()
 

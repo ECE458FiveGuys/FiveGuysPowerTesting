@@ -1,11 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import force_authenticate
 
-from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
-    IllegalAccessException, FieldLengthException
 from database.models import EquipmentModel
-from database.services.deprecated.model_services import CreateModel
-from database.services.deprecated.model_services import SelectModels
 from database.tests.test_utils import EndpointTestCase
 from database.views import EquipmentModelViewSet
 
