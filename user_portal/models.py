@@ -49,3 +49,7 @@ class PowerUser(AbstractBaseUser):
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["name", "email", "is_active"]
+
+    def __str__(self):
+        template = '(Username:{0.username}, Name:{0.name}, Email:{0.email}, Active:{0.is_active})'
+        return template.format(self)

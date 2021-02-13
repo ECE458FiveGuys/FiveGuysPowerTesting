@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Max, F, ExpressionWrapper, DurationField, DateField
 from rest_framework import permissions
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action, permission_classes, api_view
@@ -14,7 +14,6 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
 from database.services.bulk_data_services.import_services.import_models import ImportModelsService
-
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):
     """
@@ -70,7 +69,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Instrument.objects.all()
     permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         'model__' + EquipmentModelEnum.VENDOR.value,
@@ -90,8 +88,16 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + EquipmentModelEnum.DESCRIPTION.value,
         InstrumentEnum.MODEL.value,
         InstrumentEnum.SERIAL_NUMBER.value,
-        InstrumentEnum.COMMENT.value
+        InstrumentEnum.COMMENT.value,
+        'calibration_expiration'
     ]
+    ordering = ['model__vendor', 'model__model_number', 'serial_number']
+
+    def get_queryset(self):
+        most_recent_calibration = Max('calibration_history__date')
+        calibration_frequency = F('model__calibration_frequency')
+        expiration = ExpressionWrapper(most_recent_calibration + calibration_frequency, output_field=DateField())
+        return Instrument.objects.annotate(calibration_expiration=expiration)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

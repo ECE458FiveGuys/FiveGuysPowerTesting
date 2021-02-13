@@ -4,7 +4,7 @@ from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNo
     IllegalAccessException, FieldLengthException, UserError
 from database.models import EquipmentModel
 from database.tests.test_utils import OVERLONG_STRING
-from user_portal.models import PowerUser
+from datetime import datetime, timedelta
 
 
 class CreateModelTestCase(TestCase):
@@ -42,7 +42,7 @@ class CreateModelTestCase(TestCase):
         try:
             EquipmentModel.objects.create(vendor=OVERLONG_STRING,
                                           model_number="model_number", comment="comment", description="desc",
-                                          calibration_frequency=1).execute()
+                                          calibration_frequency=timedelta(seconds=1)).execute()
             self.fail("overlong vendor allowed")
         except FieldLengthException:
             pass
@@ -51,7 +51,7 @@ class CreateModelTestCase(TestCase):
         try:
             EquipmentModel.objects.create(vendor="vendor",
                                           model_number=OVERLONG_STRING, comment="comment", description="desc",
-                                          calibration_frequency=1).execute()
+                                          calibration_frequency=timedelta(seconds=1)).execute()
             self.fail("overlong model_num allowed")
         except FieldLengthException:
             pass
@@ -60,7 +60,7 @@ class CreateModelTestCase(TestCase):
         try:
             EquipmentModel.objects.create(vendor="vendor",
                                           model_number="model_number", comment=OVERLONG_STRING, description="desc",
-                                          calibration_frequency=1).execute()
+                                          calibration_frequency=timedelta(seconds=1)).execute()
             self.fail("overlong comment allowed")
         except FieldLengthException:
             pass
@@ -69,7 +69,7 @@ class CreateModelTestCase(TestCase):
         try:
             EquipmentModel.objects.create(vendor="vendor",
                                           model_number="model_number", comment="comment", description=OVERLONG_STRING,
-                                          calibration_frequency=1).execute()
+                                          calibration_frequency=timedelta(seconds=1)).execute()
             self.fail("overlong description allowed")
         except FieldLengthException:
             pass

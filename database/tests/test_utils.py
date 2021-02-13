@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import datetime, timedelta
 from enum import Enum
 
 from django.test import TestCase
@@ -9,12 +10,11 @@ from rest_framework.test import APIRequestFactory
 from database.models import Instrument, CalibrationEvent, EquipmentModel
 from user_portal.models import PowerUser
 
-
 OVERLONG_STRING = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(2001))
 
 
-def create_model_and_instrument():
-    model = create_model()
+def create_model_and_instrument(calibration_freq=None):
+    model = create_model(calibration_freq=calibration_freq)
     instrument = Instrument.objects.create(model=model, serial_number="serial_number")
     return model, instrument
 
@@ -23,14 +23,15 @@ def create_model(calibration_freq=None):
     if calibration_freq is None:
         model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description")
     else:
-        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description", calibration_frequency=calibration_freq)
+        model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description",
+                                              calibration_frequency=timedelta(seconds=calibration_freq))
     return model
 
 
 def create_calibration_events():
     user = create_non_admin_user()
     model = EquipmentModel.objects.create(vendor="vendor", model_number="model_number", description="description",
-                                 comment="comment", calibration_frequency=1)
+                                          comment="comment", calibration_frequency=timedelta(seconds=1))
     instrument = Instrument.objects.create(model=model, serial_number="serial_number")
     latest = localtime(now()).date()
     latest = localtime(now()).date().replace(year=latest.year - 1)
@@ -45,7 +46,7 @@ def create_calibration_events():
 def create_3_instruments(model, instrument):
     instrument2 = Instrument.objects.create(model=model, serial_number="serial_number2")
     model2 = EquipmentModel.objects.create(vendor="vendor2", model_number="model_number2", description="description2",
-                                  comment="comment2", calibration_frequency=2)
+                                           comment="comment2", calibration_frequency=2)
     instrument3 = Instrument.objects.create(model=model2, serial_number="serial_number2")
     return instrument, instrument2, instrument3, model, model2
 
