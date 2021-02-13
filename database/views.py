@@ -69,7 +69,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Instrument.objects.all()
     permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         'model__' + EquipmentModelEnum.VENDOR.value,
