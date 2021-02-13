@@ -74,7 +74,7 @@ class InstrumentModelManager(models.Manager):
                                                          model.model_number,
                                                          serial_number)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
-                    raise InstrumentFieldLengthException("commment", COMMENT_LENGTH, model.vendor, model.model_number,
+                    raise InstrumentFieldLengthException("comment", COMMENT_LENGTH, model.vendor, model.model_number,
                                                          serial_number)
                 else:
                     raise UserError(error_message)
@@ -101,7 +101,7 @@ class CalibrationEventManager(models.Manager):
                                                                        serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
                                                                        date=date)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
-                    raise CalibrationEventFieldLengthException("commment", COMMENT_LENGTH,
+                    raise CalibrationEventFieldLengthException("comment", COMMENT_LENGTH,
                                                                vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
                                                                model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
                                                                serial_number=None if instrument is None else instrument.serial_number,
