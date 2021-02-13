@@ -163,3 +163,7 @@ class CalibrationEvent(models.Model):
     def __str__(self):
         template = '(Instrument:{0.instrument}, Date:{0.date}, User:{0.user}, Comment:{0.comment})'
         return template.format(self)
+
+    def clean(self):
+        if not self.instrument.is_calibratable():
+            raise ValidationError("Cannot add Calibration Event to Instrument whose Model that cannot be calibrated")
