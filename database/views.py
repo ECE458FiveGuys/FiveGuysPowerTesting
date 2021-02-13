@@ -142,12 +142,12 @@ def export(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
 def import_models(request):
     return ImportModelsService(request.FILES['file'].file).execute()
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
 def import_instruments(request):
     return ImportInstrumentsService(request.FILES['file'].file).execute()
