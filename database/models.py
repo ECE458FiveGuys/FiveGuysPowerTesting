@@ -126,8 +126,9 @@ class EquipmentModel(models.Model):
         return self.calibration_frequency is not None
 
     def __str__(self):
-        return '{0.vendor} {0.model_number}'.format(self)
-        # return self.vendor, self.model_number, self.description, self.comment, self.calibration_frequency
+        template = '(Vendor:{0.vendor}, Model Number:{0.model_number}, Description:{0.description}, Comment:{' \
+                   '0.comment}, Calibration Frequency:{0.calibration_frequency})'
+        return template.format(self)
 
 
 class Instrument(models.Model):
@@ -142,7 +143,7 @@ class Instrument(models.Model):
         ordering = ['model__vendor', 'model__model_number']
 
     def __str__(self):
-        template = '{0.model} {0.serial_number} {0.comment}'
+        template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'
         return template.format(self)
 
     def is_calibratable(self):
@@ -161,5 +162,5 @@ class CalibrationEvent(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        template = '{0.instrument} {0.date} {0.user} {0.comment}'
+        template = '(Instrument:{0.instrument}, Date:{0.date}, User:{0.user}, Comment:{0.comment})'
         return template.format(self)
