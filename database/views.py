@@ -9,6 +9,7 @@ from database.models import EquipmentModel, Instrument, CalibrationEvent
 from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
     VendorSerializer, InstrumentRetrieveSerializer, EquipmentModelRetrieveSerializer
 from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
+from database.services.bulk_data_services.export_services.export_all import ExportAll
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
@@ -126,6 +127,12 @@ def export_models(request):
 @permission_classes([IsAuthenticated])
 def export_instruments(request):
     return ExportInstrumentsService().execute()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def export(request):
+    return ExportAll().execute()
 
 
 @api_view(['POST'])

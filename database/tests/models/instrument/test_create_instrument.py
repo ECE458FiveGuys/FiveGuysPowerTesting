@@ -3,14 +3,14 @@ from django.test import TestCase
 from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
     IllegalAccessException, EntryDoesNotExistException, FieldLengthException, UserError
 from database.models import EquipmentModel as Model, User, Instrument
-from database.tests.test_utils import create_admin_and_model_and_instrument, create_model, OVERLONG_STRING, \
-    create_non_admin_user
+from database.tests.test_utils import create_model, OVERLONG_STRING, \
+    create_non_admin_user, create_model_and_instrument
 
 
 class CreateInstrumentTestCase(TestCase):
 
     def test_create_instrument_happy_case(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         instruments = Instrument.objects.all()
         if instruments.count() != 1 or instruments.get(id=instrument.id) != instrument:
             self.fail("selected wrong instrument")
@@ -27,7 +27,7 @@ class CreateInstrumentTestCase(TestCase):
             pass
 
     def test_create_instrument_non_unique_throws_exception(self):
-        model, instrument = create_admin_and_model_and_instrument()
+        model, instrument = create_model_and_instrument()
         try:
             Instrument.objects.create(model=model, serial_number="serial_number")
             self.fail("non unqiue instrument was created")
