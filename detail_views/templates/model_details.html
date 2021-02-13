@@ -17,11 +17,12 @@
     <tr>
         <th>serial #</th>
         <th>model</th>
+        <th>vendor</th>
         <th>comment</th>
     </tr>
     {% for instrument in instruments %}
         <tr>
-            <td><a href="#">{{ instrument.serial_number }}</a></td>
+            <td><a href='{% url 'instrument-details' instrument.serial_number %}'>{{ instrument.serial_number }}</a></td>
             <td>{{ instrument.model.model_number }}</td>
             <td>{{ instrument.model.vendor }}</td>
             <td>{{ instrument.comment }}</td>

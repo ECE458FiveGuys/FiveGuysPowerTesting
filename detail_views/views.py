@@ -23,12 +23,14 @@ def model_detail_page(request, pk=None):
 
 def instrument_detail_page(request, serial=None):
     instrument = get_object_or_404(db.InstrumentViewSet.queryset.all(), serial_number=serial)
-    user = request.user
+    token = {'Authorization': 'Token 6817972dd66d13c114979cf5be22f93d374e31b2'}
+    user = request.user.id
 
     # If this is a POST request then process the Form data
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         form = CalibrationForm(request.POST)
+
         if not form.is_valid():
             print("form isn't valid")
 
@@ -36,7 +38,8 @@ def instrument_detail_page(request, serial=None):
             #TODO form submission response
         else:
             print("form is valid")
-            response = requests.post('http://'+request.get_host()+'/calibration-events/', data=form.data.dict())
+            formdict = form.data.dict()
+            response = requests.post('http://'+request.get_host()+'/calibration-events/', headers=token, data=formdict)
 
 
     # If this is a GET (or any other method) create the default form.

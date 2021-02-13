@@ -1,25 +1,19 @@
 {% extends "detail_base.html" %}
 
-{% block title %}Instrument {{model.pk }}{% endblock %}
+{% block title %}Instrument Details{% endblock %}
 
 {% block fields %}
     <p>
-        model #: {{model.model_number}}
-        <br>description: {{model.description}}
-        <br>calibration frequency: {{model.calibration_frequency}}
-        <br>comment(optional): {{model.comment}}
-        <br>vendor: {{model.vendor}}
+        model #: <a href='{% url 'model-details' model.pk %}'>{{model.model_number}}</a>
+        <br>serial #: {{instrument.serial_number}}
+        <br>comment(optional): {{instrument.comment}}
     </p>
-{% endblock %}
-
-{% block instrument_fields %}
-{{ instrument.comment }}
 {% endblock %}
 
 {% block buttons %}
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-      Launch demo modal
+      Record Calibration
     </button>
 
     <!-- Modal -->
@@ -27,7 +21,7 @@
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLongTitle">Record Calibration Event</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -38,17 +32,9 @@
                 {% csrf_token %}
                 {{ form }}
                   <input type="hidden" name="instrument" value={{ instrument.pk }} />
+                  <input type="hidden" name="user" value={{ user }} />
                 <input type="submit" value="Submit">
               </form>
-{#              <h1>{{ model.model_number }},{{ instrument.serial_number }}</h1>#}
-{##}
-{#            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}#}
-{##}
-{#            <label for="start">Date of Calibration:</label>#}
-{##}
-{#            <input type="date" id="calibration" name="calibration-date">#}
-{#            <p>user</p>#}
-{#            <textarea rows="4" cols="50" name="comment" form="comment">Comment ...</textarea>#}
           </div>
         </div>
       </div>
@@ -62,10 +48,28 @@
     </button>
 {% endblock %}
 
+{#{% block calibration_history %}#}
+{#    <li>{{ instrument.calibration_history }}</li>#}
+{#{% for entry in calibration_history %}#}
+{#    {{entry}}#}
+{#{% endfor %}#}
+{#{% endblock %}#}
+
 {% block calibration_history %}
-    <li>ydsdf</li>
-    <li>{{ instrument.calibration_history }}</li>
-{% for entry in calibration_history %}
-    <li>here</li>
-{% endfor %}
+    <table>
+    <tr>
+        <th>serial #</th>
+        <th>model</th>
+        <th>vendor</th>
+        <th>comment</th>
+    </tr>
+    {% for instrument in instruments %}
+        <tr>
+            <td><a href='{% url 'instrument-details' instrument.serial_number %}'>{{ instrument.serial_number }}</a></td>
+            <td>{{ instrument.model.model_number }}</td>
+            <td>{{ instrument.model.vendor }}</td>
+            <td>{{ instrument.comment }}</td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endblock %}
