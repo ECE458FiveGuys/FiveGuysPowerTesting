@@ -94,8 +94,9 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     ordering = ['model__vendor', 'model__model_number', 'serial_number']
 
     def get_queryset(self):
-        days = ExpressionWrapper(F('model__calibration_frequency') * (8.64 * 10 ** 10), output_field=DurationField())
-        expiration = ExpressionWrapper(Max('calibration_history__date') + days, output_field=DateField())
+        most_recent_calibration = Max('calibration_history__date')
+        calibration_frequency = F('model__calibration_frequency')
+        expiration = ExpressionWrapper(most_recent_calibration + calibration_frequency, output_field=DateField())
         return Instrument.objects.annotate(calibration_expiration=expiration)
 
     def get_serializer_class(self):

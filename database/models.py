@@ -27,6 +27,8 @@ class EquipmentModelManager(models.Manager):
                comment=None,
                calibration_frequency=None):
         try:
+            if calibration_frequency is not None:
+                calibration_frequency = calibration_frequency * 86400  # seconds to days
             model = EquipmentModel(vendor=vendor, model_number=model_number,
                                    description=description,
                                    comment=comment,
@@ -115,7 +117,7 @@ class EquipmentModel(models.Model):
     model_number = models.CharField(blank=False, null=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, null=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, null=True, max_length=COMMENT_LENGTH)
-    calibration_frequency = models.IntegerField(blank=True, null=True)
+    calibration_frequency = models.DurationField(blank=True, null=True)
 
     objects = EquipmentModelManager()
 
