@@ -16,6 +16,8 @@ Including another URLconf
 from enum import Enum
 
 from django.contrib import admin
+
+import database
 from page_views import views as v
 from django.urls import path, include
 from detail_views import views as dv
@@ -38,13 +40,9 @@ urlpatterns = [
     path('instrument-details/<int:serial>', dv.instrument_detail_page),
     path('pdf/', dv.pdf_gen),
     path('', include(router.urls)),
+    path('', include('database.urls')),
     path('model/', v.modelpage),
     path('instrument/', v.instrumentpage),
     path('', include('user_portal.urls')),
-    path('export-instruments/', views.export_instruments),
-    path('export-models/', views.export_models),
-    path('import-models/', views.import_models),
-    path('import-instruments/', views.import_instruments),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    re_path(r'^vendors(?P<vendor>.+)', VendorAutoCompleteViewSet.as_view())
 ]
