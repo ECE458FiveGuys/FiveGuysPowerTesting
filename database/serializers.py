@@ -55,9 +55,9 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 
 
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
+    calibration_expiration = serializers.DateField()
     calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
-    calibration_expiration = serializers.DateField()
 
     class Meta:
         model = Instrument
@@ -65,8 +65,8 @@ class InstrumentRetrieveSerializer(serializers.ModelSerializer):
 
 
 class InstrumentListSerializer(serializers.ModelSerializer):
-    calibration_history = serializers.SerializerMethodField()
     calibration_expiration = serializers.DateField()
+    calibration_history = serializers.SerializerMethodField()
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     def get_calibration_history(self, obj):
@@ -87,7 +87,7 @@ class InstrumentListSerializer(serializers.ModelSerializer):
                   'calibration_expiration']
 
 
-class InstrumentSerializer(serializers.ModelSerializer):
+class InstrumentBaseSerializer(serializers.ModelSerializer):
     calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
 
     class Meta:
@@ -96,8 +96,13 @@ class InstrumentSerializer(serializers.ModelSerializer):
                   InstrumentEnum.SERIAL_NUMBER.value,
                   InstrumentEnum.MODEL.value] + ['calibration_history']
 
+
+class InstrumentSerializer(InstrumentBaseSerializer):
     def to_representation(self, instance):
-        return InstrumentListSerializer(instance).data
+        try:
+            return InstrumentListSerializer(instance).data
+        except AttributeError:
+            return InstrumentBaseSerializer(instance).data
 
 
 class CalibrationEventSerializer(serializers.ModelSerializer):
