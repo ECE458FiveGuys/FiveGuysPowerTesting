@@ -5,6 +5,7 @@ from enum import Enum
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
+from database.models import Instrument
 from database.views import import_models
 from user_portal.models import PowerUser
 
@@ -40,3 +41,6 @@ class EndpointTestCase(TestCase):
         response = function(request)
         response.render()
         return response
+
+    def none_of_model_exist(self, model):
+        return model.objects.all().count() == 0

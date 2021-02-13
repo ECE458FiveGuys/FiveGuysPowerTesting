@@ -31,17 +31,19 @@ class ImportInstrumentsService(ImportService):
             try:
                 model = EquipmentModel.objects.get(vendor=vendor, model_number=model_number)
 
-                instrument = Instrument.objects.create(model=model, serial_number=serial_number,
-                                                       comment=instrument_comment)
                 if calibration_date is not None:
                     if model.calibration_frequency is None:
                         raise ImpossibleCalibrationError(vendor=vendor, model_number=model_number, serial_number=serial_number)
                     calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
+                    instrument = Instrument.objects.create(model=model, serial_number=serial_number,
+                                                           comment=instrument_comment)
                     calibration_event = CalibrationEvent.objects.create(instrument=instrument,
                                                                         user=user,
                                                                         date=calibration_date,
                                                                         comment=calibration_comment)
                     return [instrument, calibration_event]  # type of first object returned is the type which will be serialized and returned
+                instrument = Instrument.objects.create(model=model, serial_number=serial_number,
+                                                       comment=instrument_comment)
                 return [instrument]
             except ObjectDoesNotExist:
                 raise DoesNotExistException(vendor=vendor, model_number=model_number)

@@ -28,8 +28,6 @@ class ImportModelsTestCase(EndpointTestCase):
             self.fail("response failed with error: {}".format(response.content))
         instrument = Instrument.objects.get(serial_number="serial_number")
         calibration_event = CalibrationEvent.objects.get(instrument=instrument)
-        print(instrument)
-        print(calibration_event)
         if instrument.model.vendor != model.vendor \
             or instrument.model.model_number != model.model_number \
             or "serial_number" != instrument.serial_number \
@@ -51,6 +49,8 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_instruments)
         if response.content.decode('utf-8') != "\"Error: The model with vendor 'vendor' and model number 'model_number' does not exist\"":
             self.fail("Instrument created with invalid model")
+        if not self.none_of_model_exist(Instrument) or not self.none_of_model_exist(CalibrationEvent):
+            self.fail("database not cleared of inputs after failed import")
 
 
     def test_import_instrument_with_calibration_date_but_no_frequency(self):
@@ -66,3 +66,5 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_instruments)
         if response.content.decode('utf-8') != "\"Error: The instrument with vendor 'vendor', model number 'model_number', and serial number 'serial_number' has no calibration frequency but has a calibration date\"":
             self.fail("Instrument created with invalid model")
+        if not self.none_of_model_exist(Instrument) or not self.none_of_model_exist(CalibrationEvent):
+            self.fail("database not cleared of inputs after failed import")

@@ -43,6 +43,9 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_models)
         if response.content.decode('utf-8') != "\"Malformed Input: Calibration frequency not a positive integer for the model with vendor 'vendor' and model number 'model_number'\"":
             self.fail("invalid calibration frequency permitted on import")
+        if not self.none_of_model_exist(EquipmentModel):
+            self.fail("database not cleared of inputs after failed import")
+
 
     def test_import_model_non_positive_calibration_frequency(self):
         response = self.make_import(fields=[e.value for e in ModelTableColumnNames],
@@ -55,6 +58,9 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_models)
         if response.content.decode('utf-8') != "\"Malformed Input: Calibration frequency not a positive integer for the model with vendor 'vendor' and model number 'model_number'\"":
             self.fail("invalid calibration frequency permitted on import")
+        if not self.none_of_model_exist(EquipmentModel):
+            self.fail("database not cleared of inputs after failed import")
+
 
     def test_import_model_invalid_newline(self):
         response = self.make_import(fields=[e.value for e in ModelTableColumnNames],
@@ -67,4 +73,7 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_models)
         if response.content.decode('utf-8') != "\"Malformed Input: The {} field cannot contain multiple lines\"".format(ModelTableColumnNames.VENDOR.value):
             self.fail("invalid calibration frequency permitted on import")
+        if not self.none_of_model_exist(EquipmentModel):
+            self.fail("database not cleared of inputs after failed import")
+
 
