@@ -1,8 +1,6 @@
 from database.models import EquipmentModel
-from database.tests.test_utils import EndpointTestCase
+from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.views import VendorAutoCompleteViewSet, EquipmentModelViewSet
-from user_portal.models import PowerUser
-from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 
