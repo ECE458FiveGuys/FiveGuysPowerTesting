@@ -96,10 +96,11 @@ class CalibrationEventManager(models.Manager):
         except ValidationError as e:
             for error_message in e.messages:
                 if NULL_FIELD_ERROR_MESSAGE in error_message:
-                    raise CalibrationEventRequiredFieldsEmptyException(vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
-                                                                       model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
-                                                                       serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
-                                                                       date=date)
+                    raise CalibrationEventRequiredFieldsEmptyException(
+                        vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
+                        model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
+                        serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
+                        date=date)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
                     raise CalibrationEventFieldLengthException("comment", COMMENT_LENGTH,
                                                                vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
