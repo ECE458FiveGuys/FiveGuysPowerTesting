@@ -16,6 +16,8 @@ Including another URLconf
 from enum import Enum
 
 from django.contrib import admin
+
+import database
 from page_views import views as v
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
@@ -31,13 +33,9 @@ router.register(r'calibration-events', CalibrationEventViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
+    path('', include('database.urls')),
     path('model/', v.modelpage),
     path('instrument/', v.instrumentpage),
     path('', include('user_portal.urls')),
-    path('export-instruments/', views.export_instruments),
-    path('export-models/', views.export_models),
-    path('import-models/', views.import_models),
-    path('import-instruments/', views.import_instruments),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    re_path(r'^vendors(?P<vendor>.+)', VendorAutoCompleteViewSet.as_view())
 ]
