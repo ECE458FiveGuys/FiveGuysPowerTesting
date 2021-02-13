@@ -140,7 +140,6 @@ class Instrument(models.Model):
 
     class Meta:
         unique_together = ('model', 'serial_number')  # 2.2.1.2
-        ordering = ['model__vendor', 'model__model_number']
 
     def __str__(self):
         template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'

@@ -91,6 +91,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         InstrumentEnum.COMMENT.value,
         'calibration_expiration'
     ]
+    ordering = ['model__vendor', 'model__model_number', 'serial_number']
 
     def get_queryset(self):
         days = ExpressionWrapper(F('model__calibration_frequency') * (8.64 * 10 ** 10), output_field=DurationField())
