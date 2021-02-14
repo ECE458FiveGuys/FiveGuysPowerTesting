@@ -55,36 +55,27 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 
 
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
-    calibration_expiration = serializers.DateField()
+    calibration_expiration_date = serializers.DateField()
     calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
 
     class Meta:
         model = Instrument
-        fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration']
+        fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration_date']
 
 
 class InstrumentListSerializer(serializers.ModelSerializer):
-    calibration_expiration = serializers.DateField()
-    calibration_history = serializers.SerializerMethodField()
+    most_recent_calibration_date = serializers.DateField()
+    calibration_expiration_date = serializers.DateField()
     model = EquipmentModelForInstrumentSerializer(many=False, read_only=True)
-
-    def get_calibration_history(self, obj):
-        """Redefine calibration_history field to return only most recent calibration event"""
-        try:
-            query = CalibrationEvent.objects.filter(instrument=obj.pk).latest('date')
-            serializer = CalibrationHistorySerializer(query, many=False, read_only=True)
-            return serializer.data
-        except CalibrationEvent.DoesNotExist:
-            return None
 
     class Meta:
         model = Instrument
         fields = [InstrumentEnum.PK.value,
-                  InstrumentEnum.SERIAL_NUMBER.value,
                   InstrumentEnum.MODEL.value,
-                  'calibration_history',
-                  'calibration_expiration']
+                  InstrumentEnum.SERIAL_NUMBER.value,
+                  'most_recent_calibration_date',
+                  'calibration_expiration_date']
 
 
 class InstrumentBaseSerializer(serializers.ModelSerializer):

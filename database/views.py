@@ -15,6 +15,7 @@ from database.services.bulk_data_services.export_services.export_models import E
 from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
 from database.services.bulk_data_services.import_services.import_models import ImportModelsService
 
+
 class EquipmentModelViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
@@ -29,12 +30,13 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     search_fields = [
         EquipmentModelEnum.VENDOR.value,
         EquipmentModelEnum.MODEL_NUMBER.value,
-        EquipmentModelEnum.DESCRIPTION.value,
-        EquipmentModelEnum.CALIBRATION_FREQUENCY.value
+        EquipmentModelEnum.DESCRIPTION.value
     ]
     ordering_fields = [
         EquipmentModelEnum.VENDOR.value,
-        EquipmentModelEnum.MODEL_NUMBER.value
+        EquipmentModelEnum.MODEL_NUMBER.value,
+        EquipmentModelEnum.DESCRIPTION.value,
+        EquipmentModelEnum.CALIBRATION_FREQUENCY.value
     ]
 
     def get_serializer_class(self):
@@ -86,18 +88,17 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + EquipmentModelEnum.VENDOR.value,
         'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
         'model__' + EquipmentModelEnum.DESCRIPTION.value,
-        InstrumentEnum.MODEL.value,
         InstrumentEnum.SERIAL_NUMBER.value,
-        InstrumentEnum.COMMENT.value,
-        'calibration_expiration'
+        'most_recent_calibration_date',
+        'calibration_expiration_date'
     ]
     ordering = ['model__vendor', 'model__model_number', 'serial_number']
 
     def get_queryset(self):
-        most_recent_calibration = Max('calibration_history__date')
-        calibration_frequency = F('model__calibration_frequency')
-        expiration = ExpressionWrapper(most_recent_calibration + calibration_frequency, output_field=DateField())
-        return Instrument.objects.annotate(calibration_expiration=expiration)
+        mrc = Max('calibration_history__date')
+        cf = F('model__calibration_frequency')
+        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
+        return Instrument.objects.annotate(most_recent_calibration_date=mrc).annotate(calibration_expiration_date=expiration)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

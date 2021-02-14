@@ -1,5 +1,5 @@
 from rest_framework.request import Request
-
+from datetime import datetime, timedelta
 from database.exceptions import InvalidCalibrationFrequencyException
 from database.models import EquipmentModel
 from database.serializers import EquipmentModelSerializer
@@ -24,8 +24,8 @@ class ImportModelsService(ImportService):
             else row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]
         if calibration_frequency is not None:
             try:
-                calibration_frequency = int(calibration_frequency)
-                if calibration_frequency <= 0:
+                calibration_frequency = timedelta(seconds=int(calibration_frequency))
+                if calibration_frequency <= timedelta(seconds=0):
                     raise InvalidCalibrationFrequencyException(vendor, model_number)
             except (SyntaxError, ValueError):
                 raise InvalidCalibrationFrequencyException(vendor, model_number)
