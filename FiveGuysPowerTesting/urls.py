@@ -26,4 +26,5 @@ urlpatterns = [
     path('instrument/', v.instrumentpage),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('', include('front_lp.urls'))
 ]

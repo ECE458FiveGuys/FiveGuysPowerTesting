@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <head>
-<title> Create Model</title>
+<title> Create Instrument</title>
 </head>
 <body>
     <center>
-        <h1>Create Model</h1>
+        <h1>Create Instrument</h1>
         <form method="POST">
             {% csrf_token %}
         <table border="1">
@@ -23,7 +23,7 @@
         </table>
         <input type="submit" value = "Insert">
         </form>
-        <button onclick="window.location.href='http://127.0.0.1:8000/tempMainPage/';">
+        <button onclick="window.location.href='/tempMainPage/';">
           Return to Model/Instrument View
         </button>
         <br></br>
