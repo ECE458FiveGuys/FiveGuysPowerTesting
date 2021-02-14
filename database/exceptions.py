@@ -2,8 +2,8 @@ CHARACTER_LENGTH_ERROR_MESSAGE = "Ensure this value has at most {} characters"
 NULL_FIELD_ERROR_MESSAGE = "This field cannot be null."
 INVALID_DATE_FIELD_ERROR_MESSAGE = "value has an invalid date format."
 
-MODEL_QUALIFIER = "the model with vendor \'{}\' and model number \'{}\'"
-INSTRUMENT_QUALIFIER = "the instrument with vendor \'{}\', model number \'{}\' and serial number \'{}\'"
+MODEL_QUALIFIER = "model with vendor \'{}\' and model number \'{}\'"
+INSTRUMENT_QUALIFIER = "instrument with vendor \'{}\', model number \'{}\', and serial number \'{}\'"
 
 
 class UserError(Exception):
@@ -133,7 +133,7 @@ class BulkException(UserError):
 
 class InvalidCalibrationFrequencyException(UserError):
     def __init__(self, vendor, model_number, serial_number=None):
-        super().__init__("Malformed Input: Calibration frequency not a positive integer for {}"
+        super().__init__("Malformed Input: Calibration frequency not a positive integer for the {}"
                          .format(specify_model_or_instrument(vendor, model_number, serial_number)))
 
 

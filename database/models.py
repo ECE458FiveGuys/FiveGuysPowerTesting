@@ -27,6 +27,8 @@ class EquipmentModelManager(models.Manager):
                comment=None,
                calibration_frequency=None):
         try:
+            if calibration_frequency is not None:
+                calibration_frequency = calibration_frequency * 86400  # seconds to days
             model = EquipmentModel(vendor=vendor, model_number=model_number,
                                    description=description,
                                    comment=comment,
@@ -72,7 +74,7 @@ class InstrumentModelManager(models.Manager):
                                                          model.model_number,
                                                          serial_number)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
-                    raise InstrumentFieldLengthException("commment", COMMENT_LENGTH, model.vendor, model.model_number,
+                    raise InstrumentFieldLengthException("comment", COMMENT_LENGTH, model.vendor, model.model_number,
                                                          serial_number)
                 else:
                     raise UserError(error_message)
@@ -94,12 +96,13 @@ class CalibrationEventManager(models.Manager):
         except ValidationError as e:
             for error_message in e.messages:
                 if NULL_FIELD_ERROR_MESSAGE in error_message:
-                    raise CalibrationEventRequiredFieldsEmptyException(vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
-                                                                       model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
-                                                                       serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
-                                                                       date=date)
+                    raise CalibrationEventRequiredFieldsEmptyException(
+                        vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
+                        model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
+                        serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
+                        date=date)
                 elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
-                    raise CalibrationEventFieldLengthException("commment", COMMENT_LENGTH,
+                    raise CalibrationEventFieldLengthException("comment", COMMENT_LENGTH,
                                                                vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
                                                                model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
                                                                serial_number=None if instrument is None else instrument.serial_number,
@@ -115,7 +118,7 @@ class EquipmentModel(models.Model):
     model_number = models.CharField(blank=False, null=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, null=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, null=True, max_length=COMMENT_LENGTH)
-    calibration_frequency = models.IntegerField(blank=True, null=True)
+    calibration_frequency = models.DurationField(blank=True, null=True)
 
     objects = EquipmentModelManager()
 
@@ -126,8 +129,9 @@ class EquipmentModel(models.Model):
         return self.calibration_frequency is not None
 
     def __str__(self):
-        return '{0.vendor} {0.model_number}'.format(self)
-        # return self.vendor, self.model_number, self.description, self.comment, self.calibration_frequency
+        template = '(Vendor:{0.vendor}, Model Number:{0.model_number}, Description:{0.description}, Comment:{' \
+                   '0.comment}, Calibration Frequency:{0.calibration_frequency})'
+        return template.format(self)
 
 
 class Instrument(models.Model):
@@ -139,10 +143,9 @@ class Instrument(models.Model):
 
     class Meta:
         unique_together = ('model', 'serial_number')  # 2.2.1.2
-        ordering = ['model__vendor', 'model__model_number']
 
     def __str__(self):
-        template = '{0.model} {0.serial_number} {0.comment}'
+        template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'
         return template.format(self)
 
     def is_calibratable(self):
@@ -161,5 +164,9 @@ class CalibrationEvent(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        template = '{0.instrument} {0.date} {0.user} {0.comment}'
+        template = '(Instrument:{0.instrument}, Date:{0.date}, User:{0.user}, Comment:{0.comment})'
         return template.format(self)
+
+    def clean(self):
+        if not self.instrument.is_calibratable():
+            raise ValidationError("Cannot add Calibration Event to Instrument whose Model that cannot be calibrated")
