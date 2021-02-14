@@ -59,17 +59,15 @@
 {% block calibration_history %}
     <table>
     <tr>
-        <th>serial #</th>
-        <th>model</th>
-        <th>vendor</th>
+        <th>date</th>
+        <th>user</th>
         <th>comment</th>
     </tr>
-    {% for instrument in instruments %}
+    {% for calibration in calibrations %}
         <tr>
-            <td><a href='{% url 'instrument-details' instrument.serial_number %}'>{{ instrument.serial_number }}</a></td>
-            <td>{{ instrument.model.model_number }}</td>
-            <td>{{ instrument.model.vendor }}</td>
-            <td>{{ instrument.comment }}</td>
+            <td>{{ calibration.date }}</td>
+            <td>{{ calibration.user }}</td>
+            <td>{{ calibration.comment }}</td>
         </tr>
     {% endfor %}
     </table>
