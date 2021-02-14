@@ -1,1 +1,1 @@
--r server.txt
+-r requirements/core.txt
