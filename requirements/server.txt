@@ -1,2 +1,2 @@
--r requirements/common.txt
+-r common.txt
 gunicorn==20.0.4
