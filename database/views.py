@@ -2,7 +2,7 @@ from django.db.models import Q, Max, F, ExpressionWrapper, DurationField, DateFi
 from rest_framework import permissions
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action, permission_classes, api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from database.model_enums import EquipmentModelEnum, InstrumentEnum
 from database.models import EquipmentModel, Instrument, CalibrationEvent
@@ -142,12 +142,12 @@ def export(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
+@permission_classes([IsAdminUser])
 def import_models(request):
     return ImportModelsService(request.FILES['file'].file).execute()
 
 
 @api_view(['POST'])
-@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
+@permission_classes([IsAdminUser])
 def import_instruments(request):
     return ImportInstrumentsService(request.FILES['file'].file).execute()
