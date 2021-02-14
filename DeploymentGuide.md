@@ -75,13 +75,18 @@ ALLOWED_HOSTS = ['vcm-00000.vm.duke.edu']
 Also make sure to change `DEBUG = True` to `DEBUG = False` as we don't want all the debug information to be sent to anyone accessing our website as it is a security issue.
 ### Database setup
 
-Next, we migrate our database to SQLite
+Next, we migrate our database to SQLite. In this step, we will also create a superuser. As per the instructions, this initial user should have `username = admin`. 
 
 ```shell
 python manage.py makemigrations database
 python manage.py makemigrations user_portal
 python manage.py migrate
 python manage.py createsupseruser
+```
+ 
+Now, we can collect the static files for nginx to serve at a later step.
+
+```shell
 python manage.py collectstatic --noinput
 ```
 
