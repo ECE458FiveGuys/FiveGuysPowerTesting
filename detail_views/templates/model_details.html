@@ -1,0 +1,32 @@
+{% extends "detail_base.html" %}
+
+{% block title %}Model Details{% endblock %}
+
+{% block fields %}
+    <p>
+    model #: {{model.model_number}}
+    <br>description: {{model.description}}
+    <br>calibration frequency: {{model.calibration_frequency}}
+    <br>comment(optional): {{model.comment}}
+    <br>vendor: {{model.vendor}}
+    </p>
+{% endblock %}
+
+{% block instruments %}
+    <table>
+    <tr>
+        <th>serial #</th>
+        <th>model</th>
+        <th>vendor</th>
+        <th>comment</th>
+    </tr>
+    {% for instrument in instruments %}
+        <tr>
+            <td><a href='{% url 'instrument-details' instrument.serial_number %}'>{{ instrument.serial_number }}</a></td>
+            <td>{{ instrument.model.model_number }}</td>
+            <td>{{ instrument.model.vendor }}</td>
+            <td>{{ instrument.comment }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
