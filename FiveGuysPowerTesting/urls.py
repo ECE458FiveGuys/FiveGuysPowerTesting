@@ -38,7 +38,7 @@ urlpatterns = [
     path('models/', include('database.urls')),
     path('model-details/<str:pk>', dv.model_detail_page, name='model-details'),
     path('instrument-details/<str:serial>', dv.instrument_detail_page, name='instrument-details'),
-    path('pdf/', dv.pdf_gen),
+    path('pdf/<str:serial>', dv.pdf_gen),
     path('', include(router.urls)),
     path('', include('database.urls')),
     path('model/', v.modelpage),

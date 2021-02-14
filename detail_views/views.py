@@ -1,6 +1,10 @@
+from datetime import datetime
+
 import requests
 from PIL import Image
 from django.shortcuts import render, get_object_or_404
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
 
 from database import views as db
 import io
@@ -56,7 +60,7 @@ def instrument_detail_page(request, serial=None):
     return render(request, 'instrument_details.html', context)
 
 
-def pdf_gen(request):
+def pdf_gen(request, serial=None):
     # Create a file-like buffer to receive PDF data.
     buffer = io.BytesIO()
 
@@ -65,10 +69,58 @@ def pdf_gen(request):
 
     # Draw things on the PDF. Here's where the PDF generation happens.
     # See the ReportLab documentation for the full list of functionality.
-    p.drawString(100, 100, "Instrument Calibration Certificate")
-    img = Image.open("detail_views/resources/image.png")
-    img = img.rotate(90)
-    p.drawInlineImage(img, 200, 500)
+    # p.drawString(100, 100, "Instrument Calibration Certificate")
+    img = Image.open("detail_views/resources/htplogo.png")
+    # img = img.rotate(90)
+    p.drawInlineImage(img, 165, 450)
+
+    # style_sheet = getSampleStyleSheet()
+
+    # --------------------------------------------------------
+    # time = datetime.today()
+    # date = time.strftime("%h-%d-%Y %H:%M:%S")
+    # c = canvas.Canvas(self.__pdfName)
+    # p.setPageSize((16 * inch, 22 * inch))
+    # textobj = p.beginText()
+    # textobj.setTextOrigin(inch, 20 * inch)
+    # textobj.textLines('''
+    #             This is the scanning report of %s.
+    #             ''' , style_sheet['Heading1'])
+    # textobj.textLines('''
+    #             Date: %s
+    #             ''' % date)
+    # # for line in self.__text:
+    # #     textobj.textLine(line.strip())
+    # p.drawText(textobj)
+    # p.h1('Test')
+
+    # --------------------------------------------------------
+
+    instrument = get_object_or_404(db.InstrumentViewSet.queryset.all(), serial_number=serial)
+    model = instrument.model
+    token = {'Authorization': 'Token 6817972dd66d13c114979cf5be22f93d374e31b2'}
+    print(instrument.calibration_history)
+    p.setLineWidth(.3)
+    p.setFont('Helvetica-Bold', 32)
+    p.drawString(65, 775, 'CALIBRATION CERTIFICATE')
+    p.line(15,700,580,700)
+
+    p.setFont('Helvetica', 15)
+    p.drawString(65, 300, 'Model Number: '+model.model_number)
+    p.drawString(65, 275, 'Model Description: '+model.description)
+    p.drawString(65, 250, 'Date of Last Calibration: '+instrument.calibration_history[0].date)
+    p.drawString(65, 225, 'Exp. Date: '+'')
+    p.drawString(65, 200, 'Done by user: '+instrument.calibration_history[0].user)
+    p.drawString(65, 175, 'Comment: '+instrument.calibration_history[0].comment)
+
+    p.drawString(65, 150, 'Date of Report: '+date)
+
+
+
+
+
+
+
 
     # Close the PDF object cleanly, and we're done.
     p.showPage()
