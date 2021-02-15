@@ -29,6 +29,6 @@ urlpatterns = [
     path('', include('database.urls')),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('import_export/', v.import_export)
+    path('import_export/', v.import_export),
     path('', include('front_lp.urls'))
 ]
