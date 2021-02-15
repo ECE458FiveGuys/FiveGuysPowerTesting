@@ -28,6 +28,7 @@ def home(request):
         response = 'Token ' + str(read1.json().get('auth_token'))
         global token
         token = response
+        print(token)
         context = {'Token': response}
         if (len(response)>=20):
             return render(request, 'tempMainPage.html', context)
@@ -46,6 +47,7 @@ def createmodel(request):
         calibration_frequency = request.POST.get("calibration_frequency")
         data2 = {'vendor': vendor, 'model_number': model_number, 'description': description,
                  'comment':comment, 'calibration_frequency':calibration_frequency}
+        print(token)
         header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/models/', headers=header2, data=data2)
         context = {}
