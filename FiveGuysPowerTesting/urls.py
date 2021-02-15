@@ -21,6 +21,7 @@ from front_lp import views as v_lp
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    path('', include('detail_views.urls')),
     path('', include('database.urls')),
     path('model/', v.modelpage),
     path('instrument/', v.instrumentpage),
