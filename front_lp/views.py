@@ -56,6 +56,8 @@ def createmodel(request):
                        'description': 'Description: '+ description,
                        'comment': 'Comment: ' + comment,
                        'calibration_frequency': 'Calibration Frequency: ' + calibration_frequency}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createmodel.html', context)
     else:
         return render(request, 'createmodel.html')
@@ -70,13 +72,14 @@ def createinstrument(request):
                  'comment': comment}
         header2 = {'Authorization': token}
         read2 = requests.post('http://' + request.get_host() + '/instruments/', headers=header2, data=data2)
-        print(read2.json())
         context = {}
         if (str(read2.json().get('model'))==model):
             context = {'intro_phrase': 'Successfully added an instrument with the following information:',
                        'serial_number': 'Serial Number: ' + serial_number,
                        'model': 'Model: ' + model,
                        'comment': 'Comment: ' + comment}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createinstrument.html', context)
     else:
         return render(request, 'createinstrument.html')
@@ -94,13 +97,14 @@ def createuser(request):
                  'is_active': 'True'}
         header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/auth/users/', headers=header2, data=data2)
-        print(read2.json())
         context = {}
         if (str(read2.json().get('username')) == username):
             context = {'intro_phrase': 'Successfully added a user with the following information:',
                        'username': 'Username: ' + username,
                        'name': 'Name: ' + name,
                        'email': 'Email : ' + email}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createuser.html', context)
     else:
         return render(request, 'createuser.html')
