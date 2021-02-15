@@ -4,9 +4,6 @@ from django.http import HttpResponse
 import requests
 from django.utils.http import is_safe_url
 from django.conf import settings
-import page_views.views
-
-from page_views.views import modelpage
 
 token = ''
 
@@ -31,9 +28,9 @@ def home(request):
         response = 'Token ' + str(read1.json().get('auth_token'))
         global token
         token = response
-        context = {'Authorization': 'Token '+response}
+        context = {'Token': response}
         if (len(response)>=20):
-            modelpage(request, context)
+            return render(request, 'tempMainPage.html', context)
         else:
             render(request, 'home.html')
     return render(request, 'home.html')
