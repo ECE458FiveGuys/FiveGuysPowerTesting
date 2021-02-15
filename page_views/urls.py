@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-# from page_views import views as v
+from page_views import views as v
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
 from front_lp import views as v_lp
@@ -22,10 +22,9 @@ from front_lp import views as v_lp
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include('page_views.urls')),
-    path('', include('detail_views.urls')),
-    path('', include('database.urls')),
-    path('', include('user_portal.urls')),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('', include('front_lp.urls'))
+    re_path(r'^model/$', v.modelpage, name='modelpage'),
+    re_path(r'^model/all/$', v.modelpage_all, name='modelpage'),
+    re_path(r'^instrument/$', v.instrumentpage, name='instrumentpage'),
+    re_path(r'^instrument/all/$', v.instrumentpage_all, name='instrumentpage'),
+    re_path(r'^import_export/$', v.import_export, name='import_exportpage'),
 ]

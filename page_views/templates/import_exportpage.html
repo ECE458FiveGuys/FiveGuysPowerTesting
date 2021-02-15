@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Import/Export</title>
+
+</head>
+<body>
+    <div>
+        <a class="navbar-brand" href="/model/">Models</a>
+        <a class="navbar-brand" href="/instrument/">Instruments</a>
+    </div>
+    <div>
+        <button class="btn btn-primary btn-lg" id="export_mod" href="?export=export-models/">Export Models</button>
+        <button class="btn btn-primary btn-lg" id="export_instr" href="?export=export-instruments/">Export Instruments</button>
+        <button class="btn btn-primary btn-lg" id="export_all" href="?export=export/">Export All</button>
+    </div>
+    <div class="import-group">
+        <input type="file" id="file" accept=".csv" name="Import File"  aria-label="Import" aria-describedby="basic-addon2" />
+        <label for="import_type">Import Type:</label>
+            <select name="import_type" id="import_type">
+                <option value="instruments">Instruments</option>
+                <option value="Models">Models</option>
+            </select>
+        <button class="btn btn-primary" type="submit"> Submit <i class="fas fa-search"></i></button>
+    </div>
+
+</body>
+</html>
