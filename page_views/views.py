@@ -12,12 +12,12 @@ import json
 HOST_SERVER = 'http://127.0.0.1:8000/';
 
 testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
-context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
+# context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
 @login_required
-def modelpage(request):
+def modelpage(request, context):
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
     search_term = request.GET.get('search', None)
