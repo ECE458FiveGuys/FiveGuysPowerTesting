@@ -92,14 +92,14 @@
                                         </tfoot>
                                         <tbody>
 
-                                            {% for mod in modlist %}
+                                            {% for mod1 in modlist %}
                                             <tr>
-                                                <td>{{mod.vendor}}</td>
-                                                <td>{{mod.model_number}}</td>
-                                                <td>{{mod.description}}</td>
-                                                <td>{{mod.comment}}</td>
-                                                <td>{{mod.calibration_frequency}}</td>
-                                                <td><a href="/model-details/{{mod.pk}}/">Detailed View</a></td>
+                                                <td>{{mod1.1}}</td>
+                                                <td>{{mod1.2}}</td>
+                                                <td>{{mod1.3}}</td>
+                                                <td>{{mod1.4}}</td>
+                                                <td>{{mod1.5}}</td>
+                                                <td><a href="/model-details/{{mod1.0}}/">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -112,9 +112,9 @@
                   <div class="container p-4">
                     <div class="pagination justify-content-center">
                         <span class="step-links">
-                              <a href="page=1">&laquo; first</a>
-                              <a href="page={{page_num|add:-1}}">previous</a>
-                              <a href="page={{ page_num|add:1}}">next</a>
+                              <a href="{{c_path}}?page=1">&laquo; first</a>
+                              <a href="{{c_path}}?page={{page_num|add:-1}}">previous</a>
+                              <a href="{{c_path}}?page={{ page_num|add:1}}">next</a>
                         </span>
                         </div>
                     </div>

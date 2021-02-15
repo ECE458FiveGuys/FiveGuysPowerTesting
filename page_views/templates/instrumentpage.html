@@ -105,14 +105,14 @@
                                         <tbody>
                                             {% for instr in instrlist %}
                                             <tr>
-                                                <td >{{instr.model.vendor}}</td>
-                                                <td>{{instr.model.model_number}}</td>
-                                                <td>{{instr.serial_number}}</td>
-                                                <td>{{instr.model.description}}</td>
-                                                <td>{{instr.calibration_history.0}}</td>
-                                                <td>{{instr.calibration_expiration_date}}</td>
-                                                <td>{{calibration_expiration_date}}</td>
-                                                <td><a href="/instrument-details/{{instr.serial}}/">Detailed View</a></td>
+                                                <td >{{instr.0}}</td>
+                                                <td>{{instr.1}}</td>
+                                                <td>{{instr.2}}</td>
+                                                <td>{{instr.3}}</td>
+                                                <td>{{instr.4}</td>
+                                                <td>{{instr.5}}</td>
+                                                <td>{{instr.6}}</td>
+                                                <td><a href="/instrument-details/{{instr.2}}/">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

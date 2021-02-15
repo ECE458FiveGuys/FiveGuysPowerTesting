@@ -1,14 +1,14 @@
 from django.shortcuts import render, get_list_or_404
 import requests
+from datetime import date
 import database.views as db
 from django.core.paginator import Paginator
 import json
-from types import SimpleNamespace
 
 # from django.view import generic
 # Create your views here.
-token = 'f5fbf500f318d33eabd627af173e63e9f538fedb'
-context = {'Token': token}
+token = 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'
+context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
@@ -19,19 +19,25 @@ def modelpage(request):
     desc = request.GET.get('description', None)
     ord = request.GET.get('ordering', None)
 
-    data = {'Authorization': token, 'page': page_num, 'vendor': vend,
+    data = {'page': page_num, 'vendor': vend,
             'model_number': mod_num, 'description': desc, 'ordering': ord}
-    modjson = requests.get('http://127.0.0.1:8000/models/', data)
+    header = context
+    message = requests.get('http://127.0.0.1:8000/models/', headers=header, data=data)
+    modjson = message.json()
 
+    results = []
     modlist = []
-    for j in modjson:
-        model = json.loads(j, object_hook=lambda d: SimpleNamespace(**d))
+    for key, value in modjson.items():
+        if key == 'results':
+            results = value
+    for j in results:
+        model = [j["pk"], j["vendor"], j["model_number"], j["description"], j["comment"], j["calibration_frequency"]]
         modlist.append(model)
 
     # paginator = Paginator(modlist, 25)
     # page_obj = paginator.get_page(page_number)
-    return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
-
+    return render(request, 'modelpage.html', {'modlist': modlist,
+                                              'page_num': page_num, 'c_path': get_current_path(request)})
 
 def instrumentpage(request):
     page_num = request.GET.get('page', startpage)
@@ -42,19 +48,28 @@ def instrumentpage(request):
     serial_num = request.GET.get('serial', '')
     ord = request.GET.get('ordering', '')
 
-    data = {'Authorization': token, 'page': page_num, 'vendor': vend,
+    data = {'page': page_num, 'vendor': vend,
             'model_number': mod_num, 'description': descr,
             'serial_number': serial_num, 'ordering': ord}
-    instrjson = requests.get('http://127.0.0.1:8000/models/', data, header=context)
+    message = requests.get('http://127.0.0.1:8000/models/', data=data, headers=context)
+    instrjson = message.json()
 
+    results = []
     instrlist = []
-    for j in instrjson:
-        instr = json.loads(j, object_hook=lambda d: SimpleNamespace(**d))
+    for key, value in instrjson.items():
+        if key == 'results':
+            results = value
+    for j in results:
+        temp_model = j["model"]
+        instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
+                 j["calibration_history"], j["calibration_expiration_date"],
+                 datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
     # paginator = Paginator(instrlist, 25)
     # page_obj = paginator.get_page(page_number)
-    return render(request, 'instrumentpage.html', {'instrlist': instrlist, 'page_num': page_num})
+    return render(request, 'instrumentpage.html',
+                  {'instrlist': instrlist, 'page_num': page_num, 'c_path': get_current_path(request)} )
 
 
 def import_export(request):
@@ -65,3 +80,22 @@ def pagecheck(val):
     if val < 1:
         val = 1
     return val
+
+
+def datecheck(event):
+    if event == '':
+        return "Noncalibratable"
+    else:
+        event = datetime.datetime.strptime(event, "%Y-%m-%d").date()
+        diff = event - date.today()
+        if event < date.today():
+            return "Expired"
+        else:
+            if diff.days < 30:
+                return "Expiring Soon"
+            else:
+                return "Calibration Stable"
+
+
+def get_current_path(request):
+    return request.get_full_path()

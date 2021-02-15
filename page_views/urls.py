@@ -26,4 +26,5 @@ urlpatterns = [
     re_path(r'^model/(?P<page>\w+)/$', v.modelpage),
     re_path(r'^instrument/$', v.instrumentpage),
     re_path(r'^instrument/(?P<page>\w+)/$', v.instrumentpage),
+    path('import_export/', v.import_export),
 ]
