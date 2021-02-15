@@ -7,9 +7,9 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Models</title>
-        <link href="css/styles.css" rel="stylesheet" />
-        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+<!--        <link href="css/styles.css" rel="stylesheet" />-->
+<!--        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />-->
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>-->
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -18,9 +18,9 @@
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" name="VENDOR" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="MODEL_NUM" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="DESCRIPTION" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="vendor" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
 
 {#                    <label for="Search Types">Search By:</label>#}
@@ -34,8 +34,8 @@
                 </div>
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="sort-group">
-                    <label for="Sort Types">Sort By:</label>
-                    <select name="Sort Types" id="Sort Types">
+                    <label for="ordering">Sort By:</label>
+                    <select name="ordering" id="ordering">
                       <option value="vendor">Vendor</option>
                       <option value="modelnum">Model Number</option>
                       <option value="description">Description</option>
@@ -52,7 +52,7 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        {{ request.user}}
+                        {{ request.username}}
                     </div>
                 </nav>
             </div>
@@ -78,8 +78,7 @@
                                                 <th>Model Number</th>
                                                 <th>Description</th>
                                                 <th>Calibration Frequency</th>
-                                                <th>Edit</th>
-                                                <th>Delete</th>
+                                                <th>Detailed View</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
@@ -97,17 +96,11 @@
                                                 <td>{{mod.vendor}}</td>
                                                 <td>{{mod.model_number}}</td>
                                                 <td>{{mod.description}}</td>
+                                                <td>{{mod.comment}}</td>
                                                 <td>{{mod.calibration_frequency}}</td>
-                                                <td><button class="btn btn-primary btn-lg" id="button" href="#">Create User</button></td>
-
+                                                <td><a href="/model-details/{{mod.pk}}/">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
-                                            <tr>
-                                                <td>Duratool</td>
-                                                <td>389284</td>
-                                                <td>Multimeter</td>
-                                                <td>90 days</td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -115,46 +108,27 @@
                         </div>
                     </main>
                 </div>
-                    <div class="pagination">
-                      <a href="#">&laquo;</a>
-                      <a href="#">1</a>
-                      <a class="active" href="#">2</a>
-                      <a href="#">3</a>
-                      <a href="#">4</a>
-                      <a href="#">5</a>
-                      <a href="#">6</a>
-                      <a href="#">&raquo;</a>
+                  <div class="container p-4">
+                    <div class="pagination justify-content-center">
+                        <span class="step-links">
+                              <a href="?page=1">&laquo; first</a>
+                              <a href="?page={{page_num|add:-1}}">previous</a>
+                              <a href="?page={{ page_num|add:1}}">next</a>
+                        </span>
+                        </div>
                     </div>
                 <footer class="py-4 bg-light mt-auto">
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if page_obj.has_previous %}
-                                <a href="?page=1">&laquo; first</a>
-                                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                            </span>
-
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                            {% endif %}
-                        </span>
-                    </div>
                 </footer>
             </div>
-        </div>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="js/scripts.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="assets/demo/chart-area-demo.js"></script>
-        <script src="assets/demo/chart-bar-demo.js"></script>
-        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
-        <script src="assets/demo/datatables-demo.js"></script>
+<!--        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>-->
+<!--        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>-->
+<!--        <script src="js/scripts.js"></script>-->
+<!--        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>-->
+<!--        <script src="assets/demo/chart-area-demo.js"></script>-->
+<!--        <script src="assets/demo/chart-bar-demo.js"></script>-->
+<!--        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>-->
+<!--        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>-->
+<!--        <script src="assets/demo/datatables-demo.js"></script>-->
     </body>
 </html>
 

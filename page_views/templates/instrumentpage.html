@@ -18,14 +18,14 @@
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" name="VENDOR" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="MODEL_NUM" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="SERIAL_NUM" placeholder="Serial Number" aria-label="Serial Number" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="DESCRIPTION" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="vendor" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="serial" placeholder="Serial Number" aria-label="Serial Number" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
 
-{#                    <label for="Search Types">Search By:</label>#}
-{#                    <select name="Search Types" id="Search Types">#}
+{#                    <label for="ordering">ordering:</label>#}
+{#                    <select name="ordering" id="ordering">#}
 {#                      <option value="vendor">Vendor</option>#}
 {#                      <option value="modelnum">Model Number</option>#}
 {#                      <option value="serial">Serial Number</option>#}
@@ -103,23 +103,16 @@
                                         <tbody>
                                             {% for instr in instrlist %}
                                             <tr>
-                                                <td>{{instr.vendor}}</td>
-                                                <td>{{instr.model_number}}</td>
+                                                <td >{{instr.model.vendor}}</td>
+                                                <td>{{instr.model.model_number}}</td>
                                                 <td>{{instr.serial_number}}</td>
-                                                <td>{{instr.description}}</td>
-                                                <td>{{instr.model_number}}</td>
-                                                <td>{{instr.model_number}}</td>
-                                                <td>{{instr.model_number}}</td>
+                                                <td>{{instr.model.description}}</td>
+                                                <td>{{instr.calibration_history.0}}</td>
+                                                <td>{{instr.calibration_expiration_date}}</td>
+                                                <td>{{calibration_expiration_date}}</td>
+                                                <td><a href="/instrument-details/{{instr.serial}}/">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
-
-                                            <tr>
-                                                <td>Duratool</td>
-                                                <td>389284</td>
-                                                <td>90 days</td>
-                                                <td><button type="button" class="btn btn-primary btn-lg" onclick="editModel()">Edit</button></td>
-                                                <td><button type="button" class="btn btn-primary btn-lg" onclick="deleteModel()">Delete</button></td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -127,34 +120,16 @@
                         </div>
                     </main>
                     </div>
-                    <div class="pagination">
-                      <a href="#">&laquo;</a>
-                      <a href="#">1</a>
-                      <a class="active" href="#">2</a>
-                      <a href="#">3</a>
-                      <a href="#">4</a>
-                      <a href="#">5</a>
-                      <a href="#">6</a>
-                      <a href="#">&raquo;</a>
+                  <div class="container p-4">
+                    <div class="pagination justify-content-center">
+                        <span class="step-links">
+                              <a href="?page=1">&laquo; first</a>
+                              <a href="?page={{page_num|add:-1}}">previous</a>
+                              <a href="?page={{ page_num|add:1}}">next</a>
+                        </span>
+                        </div>
                     </div>
                 <footer class="py-4 bg-light mt-auto">
-                    <div class="pagination">
-                        <span class="step-links">
-                            {% if page_obj.has_previous %}
-                                <a href="?page=1">&laquo; first</a>
-                                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                            </span>
-
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                            {% endif %}
-                        </span>
-                    </div>
                 </footer>
             </div>
         </div>
