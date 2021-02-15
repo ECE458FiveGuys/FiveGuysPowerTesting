@@ -107,7 +107,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def all(self, request):
-        return Response(InstrumentSerializer(self.queryset, many=True).data)
+        return Response(InstrumentSerializer(self.get_queryset(), many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
