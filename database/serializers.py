@@ -83,7 +83,8 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
         model = Instrument
         fields = [InstrumentEnum.PK.value,
                   InstrumentEnum.SERIAL_NUMBER.value,
-                  InstrumentEnum.MODEL.value] + ['calibration_history']
+                  InstrumentEnum.MODEL.value,
+                  InstrumentEnum.COMMENT.value] + ['calibration_history']
 
 
 class InstrumentSerializer(InstrumentBaseSerializer):
