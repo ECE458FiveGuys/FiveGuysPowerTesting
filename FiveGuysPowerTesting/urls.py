@@ -16,19 +16,16 @@ Including another URLconf
 
 from page_views import views as v
 from django.urls import path, include
-# from detail_views import views as dv
-from django.urls import path, include, re_path
-from rest_framework import routers, serializers, viewsets
-
+from front_lp import views as v_lp
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    # path('models/', include('database.urls')),
     path('', include('detail_views.urls')),
     path('', include('database.urls')),
     path('model/', v.modelpage),
     path('instrument/', v.instrumentpage),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('', include('front_lp.urls'))
 ]

@@ -3,7 +3,7 @@ import tempfile
 
 from rest_framework.test import force_authenticate
 
-from database.exceptions import InvalidCalibrationFrequencyException
+from datetime import datetime, timedelta
 from database.models import EquipmentModel
 from database.services.bulk_data_services.table_enums import ModelTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
@@ -18,7 +18,7 @@ class ImportModelsTestCase(EndpointTestCase):
                                          "model_number",
                                          "description",
                                          "comment",
-                                         "N/A"],
+                                         "1"],
                                     endpoint=self.Endpoints.IMPORT_MODELS.value,
                                     function=import_models)
         if response.status_code != 200:
@@ -28,7 +28,7 @@ class ImportModelsTestCase(EndpointTestCase):
             or "model_number" != model.model_number \
             or "description" != model.description \
             or "comment" != model.comment\
-            or model.calibration_frequency is not None:
+            or timedelta(days=1) != model.calibration_frequency:
             self.fail("created model not found")
 
 
