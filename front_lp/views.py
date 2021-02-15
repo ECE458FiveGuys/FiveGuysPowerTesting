@@ -47,7 +47,6 @@ def createmodel(request):
         calibration_frequency = request.POST.get("calibration_frequency")
         data2 = {'vendor': vendor, 'model_number': model_number, 'description': description,
                  'comment':comment, 'calibration_frequency':calibration_frequency}
-        print(token)
         header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/models/', headers=header2, data=data2)
         context = {}
@@ -59,7 +58,7 @@ def createmodel(request):
                        'comment': 'Comment: ' + comment,
                        'calibration_frequency': 'Calibration Frequency: ' + calibration_frequency}
         else:
-            context = {'intro_phrase': read2.json()}
+            context = {'intro_phrase': read2.json(), 'vendor':token}
         return render(request, 'createmodel.html', context)
     else:
         return render(request, 'createmodel.html')
