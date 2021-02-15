@@ -56,6 +56,8 @@ def createmodel(request):
                        'description': 'Description: '+ description,
                        'comment': 'Comment: ' + comment,
                        'calibration_frequency': 'Calibration Frequency: ' + calibration_frequency}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createmodel.html', context)
     else:
         return render(request, 'createmodel.html')
@@ -77,6 +79,8 @@ def createinstrument(request):
                        'serial_number': 'Serial Number: ' + serial_number,
                        'model': 'Model: ' + model,
                        'comment': 'Comment: ' + comment}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createinstrument.html', context)
     else:
         return render(request, 'createinstrument.html')
@@ -101,6 +105,8 @@ def createuser(request):
                        'username': 'Username: ' + username,
                        'name': 'Name: ' + name,
                        'email': 'Email : ' + email}
+        else:
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createuser.html', context)
     else:
         return render(request, 'createuser.html')
