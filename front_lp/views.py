@@ -28,7 +28,6 @@ def home(request):
         response = 'Token ' + str(read1.json().get('auth_token'))
         global token
         token = response
-        print(token)
         context = {'Token': response}
         if (len(response)>=20):
             return render(request, 'tempMainPage.html', context)
@@ -58,7 +57,7 @@ def createmodel(request):
                        'comment': 'Comment: ' + comment,
                        'calibration_frequency': 'Calibration Frequency: ' + calibration_frequency}
         else:
-            context = {'intro_phrase': read2.json(), 'vendor':token}
+            context = {'intro_phrase': read2.json()}
         return render(request, 'createmodel.html', context)
     else:
         return render(request, 'createmodel.html')
@@ -73,7 +72,6 @@ def createinstrument(request):
                  'comment': comment}
         header2 = {'Authorization': token}
         read2 = requests.post('http://' + request.get_host() + '/instruments/', headers=header2, data=data2)
-        print(read2.json())
         context = {}
         if (str(read2.json().get('model'))==model):
             context = {'intro_phrase': 'Successfully added an instrument with the following information:',
@@ -99,7 +97,6 @@ def createuser(request):
                  'is_active': 'True'}
         header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/auth/users/', headers=header2, data=data2)
-        print(read2.json())
         context = {}
         if (str(read2.json().get('username')) == username):
             context = {'intro_phrase': 'Successfully added a user with the following information:',
