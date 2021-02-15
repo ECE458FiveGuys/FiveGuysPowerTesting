@@ -33,14 +33,14 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-def instrumentpage(request, page=1, vendor='', modelnum='', description='', serial='', ordering=''):
-    page_num = request.GET.get('page', page)
+def instrumentpage(request):
+    page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
-    vend = request.GET.get('vendor', vendor)
-    mod_num = request.GET.get('modelnum', modelnum)
-    descr = request.GET.get('description', description)
-    serial_num = request.GET.get('serial', serial)
-    ord = request.GET.get('ordering', ordering)
+    vend = request.GET.get('vendor', '')
+    mod_num = request.GET.get('modelnum', '')
+    descr = request.GET.get('description', '')
+    serial_num = request.GET.get('serial', '')
+    ord = request.GET.get('ordering', '')
 
     data = {'Authorization': token, 'page': page_num, 'vendor': vend,
             'model_number': mod_num, 'description': descr,
