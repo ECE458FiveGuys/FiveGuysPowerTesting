@@ -1,4 +1,4 @@
-from django.db.models import Q
+from django.db.models import Q, Max, F, ExpressionWrapper, DurationField, DateField
 from rest_framework import permissions
 from rest_framework import viewsets, generics
 from rest_framework.decorators import action, permission_classes, api_view
@@ -30,12 +30,13 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
     search_fields = [
         EquipmentModelEnum.VENDOR.value,
         EquipmentModelEnum.MODEL_NUMBER.value,
-        EquipmentModelEnum.DESCRIPTION.value,
-        EquipmentModelEnum.CALIBRATION_FREQUENCY.value
+        EquipmentModelEnum.DESCRIPTION.value
     ]
     ordering_fields = [
         EquipmentModelEnum.VENDOR.value,
-        EquipmentModelEnum.MODEL_NUMBER.value
+        EquipmentModelEnum.MODEL_NUMBER.value,
+        EquipmentModelEnum.DESCRIPTION.value,
+        EquipmentModelEnum.CALIBRATION_FREQUENCY.value
     ]
 
     def get_serializer_class(self):
@@ -70,7 +71,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Instrument.objects.all()
     permission_classes = [IsAdminOrAuthenticatedAndSafeMethod]
     filterset_fields = [
         'model__' + EquipmentModelEnum.VENDOR.value,
@@ -88,10 +88,17 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + EquipmentModelEnum.VENDOR.value,
         'model__' + EquipmentModelEnum.MODEL_NUMBER.value,
         'model__' + EquipmentModelEnum.DESCRIPTION.value,
-        InstrumentEnum.MODEL.value,
         InstrumentEnum.SERIAL_NUMBER.value,
-        InstrumentEnum.COMMENT.value
+        'most_recent_calibration_date',
+        'calibration_expiration_date'
     ]
+    ordering = ['model__vendor', 'model__model_number', 'serial_number']
+
+    def get_queryset(self):
+        mrc = Max('calibration_history__date')
+        cf = F('model__calibration_frequency')
+        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
+        return Instrument.objects.annotate(most_recent_calibration_date=mrc).annotate(calibration_expiration_date=expiration)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -136,12 +143,12 @@ def export(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
 def import_models(request):
     return ImportModelsService(request.FILES['file'].file).execute()
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
 def import_instruments(request):
     return ImportInstrumentsService(request.FILES['file'].file).execute()

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+<title> Create Model</title>
+</head>
+<body>
+    <center>
+        <h1>Create Model</h1>
+        <form method="POST">
+            {% csrf_token %}
+        <table border="1">
+            <tr>
+                <td>Vendor Name</td>
+                <td><input type="text" placeholder="required" name="vendor"></td>
+            </tr>
+            <tr>
+                <td>Model Number</td>
+                <td><input type="text" placeholder="required" name="model_number"></td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td><input type="text" placeholder="required" name="description"></td>
+            </tr>
+            <tr>
+                <td>Comment</td>
+                <td><input type="text" placeholder="optional" name="comment"></td>
+            </tr>
+            <tr>
+                <td>Calibration Frequency</td>
+                <td><input type="text" placeholder="optional (integer)" name="calibration_frequency"></td>
+            </tr>
+        </table>
+        <input type="submit" value = "Insert">
+        </form>
+        <button onclick="window.location.href='/tempMainPage/';">
+          Return to Model/Instrument View
+        </button>
+        <br></br>
+        {{ intro_phrase }}
+        <br></br>
+        {{ vendor }}
+        <br></br>
+        {{ model_number }}
+        <br></br>
+        {{ description }}
+        <br></br>
+        {{ comment }}
+        <br></br>
+        {{ calibration_frequency }}
+
+    </center>
+</body>
+</html>

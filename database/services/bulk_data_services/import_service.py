@@ -19,8 +19,9 @@ class ImportService(Service):
 
     def execute(self):
         created_objects = []
+        objects_to_return = []
         try:
-            param_file = io.TextIOWrapper(self.file)
+            param_file = io.TextIOWrapper(self.file, encoding="utf-8")
             reader = csv.DictReader(param_file)
             if set(reader.fieldnames) != set(self.fields):
                 raise UserError("Column headers incorrect")
@@ -28,9 +29,10 @@ class ImportService(Service):
             for row in list_of_dict:
                 if all(row[field] == '' for field in self.fields): # if all elements in row are empty, skip
                     continue
-                objects = self.create_objects_from_row(row)
+                objects = self.create_objects_from_row(row) # returns all objects created
                 created_objects += objects
-            return Response(self.serialize(created_objects).data)
+                objects_to_return.append(objects[0])  # first object returned is the type to be serialized and returned
+            return Response(self.serialize(objects_to_return).data)
         except UserError as e:
             self.undo_object_creations(created_objects)
             return Response(e.message, status=status.HTTP_400_BAD_REQUEST)

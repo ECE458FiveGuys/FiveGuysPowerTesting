@@ -5,9 +5,11 @@ import tempfile
 from rest_framework.test import force_authenticate
 
 from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
+from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.tests.test_utils import create_model, create_non_admin_user, \
-    create_calibration_events, EndpointTestCase
+    create_calibration_events
 from database.views import export_instruments
+
 
 class CreateInstrumentsTestCase(EndpointTestCase):
 
@@ -33,10 +35,10 @@ class CreateInstrumentsTestCase(EndpointTestCase):
         row = list_of_dict[0]
         if row[InstrumentTableColumnNames.VENDOR.value] != model.vendor \
                 or row[InstrumentTableColumnNames.MODEL_NUMBER.value] != model.model_number \
-                or row[InstrumentTableColumnNames.INSTRUMENT_COMMENT.value] != ""\
+                or row[InstrumentTableColumnNames.INSTRUMENT_COMMENT.value] != "" \
                 or row[InstrumentTableColumnNames.SERIAL_NUMBER.value] != instrument.serial_number \
-                or row[InstrumentTableColumnNames.CALIBRATION_DATE.value] != "{}/{}/{}".format(calibration_event3.date.month,
-                                                                                         calibration_event3.date.day,
-                                                                                         calibration_event3.date.year):
-
+                or row[InstrumentTableColumnNames.CALIBRATION_DATE.value] != "{}/{}/{}".format(
+            calibration_event3.date.month,
+            calibration_event3.date.day,
+            calibration_event3.date.year):
             self.fail("created instrument not found")
