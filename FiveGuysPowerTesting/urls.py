@@ -33,7 +33,9 @@ router.register(r'calibration-events', CalibrationEventViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     re_path(r'^model/$', v.modelpage),
+    re_path(r'^model/(?P<page>\w+)/$', v.modelpage),
     re_path(r'^instrument/$', v.instrumentpage),
+    re_path(r'^instrument/(?P<page>\w+)/$', v.instrumentpage),
     path('', include(router.urls)),
     path('', include('database.urls')),
     path('', include('user_portal.urls')),

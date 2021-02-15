@@ -11,6 +11,7 @@ token = 'f5fbf500f318d33eabd627af173e63e9f538fedb'
 context = {'Token': token}
 startpage = 1
 
+
 def modelpage(request):
     page_num = request.GET.get('page', startpage)
     vend = request.GET.get('vendor', None)
@@ -32,8 +33,9 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-def instrumentpage(request, page=1, vendor='',modelnum='', description='',serial='', ordering=''):
+def instrumentpage(request, page=1, vendor='', modelnum='', description='', serial='', ordering=''):
     page_num = request.GET.get('page', page)
+    page_num = pagecheck(page_num)
     vend = request.GET.get('vendor', vendor)
     mod_num = request.GET.get('modelnum', modelnum)
     descr = request.GET.get('description', description)
@@ -43,7 +45,7 @@ def instrumentpage(request, page=1, vendor='',modelnum='', description='',serial
     data = {'Authorization': token, 'page': page_num, 'vendor': vend,
             'model_number': mod_num, 'description': descr,
             'serial_number': serial_num, 'ordering': ord}
-    instrjson = requests.get('http://127.0.0.1:8000/models/', data)
+    instrjson = requests.get('http://127.0.0.1:8000/models/', data, header=context)
 
     instrlist = []
     for j in instrjson:
@@ -54,5 +56,12 @@ def instrumentpage(request, page=1, vendor='',modelnum='', description='',serial
     # page_obj = paginator.get_page(page_number)
     return render(request, 'instrumentpage.html', {'instrlist': instrlist, 'page_num': page_num})
 
+
 def import_export(request):
     return render(request)
+
+
+def pagecheck(val):
+    if val < 1:
+        val = 1
+    return val
