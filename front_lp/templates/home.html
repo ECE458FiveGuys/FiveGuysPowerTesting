@@ -1,0 +1,12 @@
+<center>
+    <form action = "" method = "POST">
+        {% csrf_token %}
+        <label for="username">Your username: </label>
+        <input id="username" type="text" name="username">
+        <br></br>
+        <label for="password">Your password: </label>
+        <input id="password" type="password" name="password">
+        <br></br>
+        <input type="submit" value="OK">
+    </form>
+</center>
