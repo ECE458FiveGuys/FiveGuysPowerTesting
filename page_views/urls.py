@@ -23,8 +23,8 @@ from front_lp import views as v_lp
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     re_path(r'^model/$', v.modelpage, name='modelpage'),
-    re_path(r'^model/(?P<page>\w+)/$', v.modelpage, name='modelpage'),
+    re_path(r'^model/all/$', v.modelpage_all, name='modelpage'),
     re_path(r'^instrument/$', v.instrumentpage, name='instrumentpage'),
-    re_path(r'^instrument/(?P<page>\w+)/$', v.instrumentpage, name='instrumentpage'),
+    re_path(r'^instrument/all/$', v.instrumentpage_all, name='instrumentpage'),
     re_path(r'^import_export/$', v.import_export, name='import_exportpage'),
 ]

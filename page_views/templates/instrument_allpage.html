@@ -20,36 +20,6 @@
             <button class="btn btn-primary btn-lg" id="imp_exp" onclick="window.location.href='/import_export/';">Bulk Import/Export</button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-                <div class="input-group">
-<!--                    <input class="form-control" type="text" name="vendor" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />-->
-<!--                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />-->
-<!--                    <input class="form-control" type="text" name="serial" placeholder="Serial Number" aria-label="Serial Number" aria-describedby="basic-addon2" />-->
-<!--                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />-->
-
-                    <label for="ordering">ordering:</label>
-                    <select name="ordering" id="ordering">
-                      <option value="vendor">Vendor</option>
-                      <option value="-vendor">Inverted Vendor</option>
-                      <option value="modelnum">Model Number</option>
-                      <option value="serial">Serial Number</option>
-                      <option value="description">Description</option>
-                    </select>
-                    <button class="btn btn-primary" type="submit">Submit<i class="fas fa-search"></i></button>
-
-<!--                    <label for="Sort Type">Sort By:</label>-->
-<!--                    <select name="Sort Type" id="Sort Type">-->
-<!--                      <option value="vendor">Vendor</option>-->
-<!--                      <option value="modelnum">Model Number</option>-->
-<!--                      <option value="serial">Serial Number</option>-->
-<!--                      <option value="description">Description</option>-->
-<!--                      <option value="calibration_recent">Most Recent Calibration</option>-->
-<!--                      <option value="calibration_expiration">Calibration Expiry Date</option>-->
-<!--                      <option value="calibration_status">Calibration Status</option>-->
-<!--                    </select>-->
-
-                    <div class="input-group-append">
-                    </div>
-                </div>
             </form>
             <!-- Navbar-->
             <ul class="navbar-nav ml-auto ml-md-0">
@@ -77,8 +47,7 @@
                                 <i class="fas fa-table mr-1"></i>
                                 Instrument List:
                             </div>
-                            <button class="btn btn-primary btn-lg" id="button" href="">View All</button>
-                            <div class="card-body">
+                            <button class="btn btn-primary btn-lg" id="button" onclick="window.location.href='/instrument/';">Back to Model Search</button>                            <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
@@ -124,15 +93,6 @@
                             </div>
                         </div>
                     </main>
-                    </div>
-                  <div class="container p-4">
-                    <div class="pagination justify-content-center">
-                        <span class="step-links">
-                              <a href="?{% query_transform request page=1 %}">&laquo; first</a>
-                              <a href="?{% query_transform request page=page_num|add:-1 %}">previous</a>
-                              <a href="?{% query_transform request page=page_num|add:1 %}">next</a>
-                        </span>
-                        </div>
                     </div>
                 <footer class="py-4 bg-light mt-auto">
                 </footer>

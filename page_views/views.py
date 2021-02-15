@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 from datetime import date
+from django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
@@ -8,13 +9,15 @@ import json
 
 # from django.view import generic
 # Create your views here.
-token = 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'
-context = {'Authorization': 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'}
+HOST_SERVER = 'http://127.0.0.1:8000/';
+
+testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
+context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
+@login_required
 def modelpage(request):
-
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
     search_term = request.GET.get('search', None)
@@ -27,7 +30,7 @@ def modelpage(request):
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
     header = context
-    message = requests.get('http://127.0.0.1:8000/models/', headers=header, params=data)
+    message = requests.get('http://'+request.get_host()+'/models/', headers=header, params=data)
     modjson = message.json()
 
     results = []
@@ -44,6 +47,23 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
+@login_required
+def modelpage_all(request):
+    header = context
+    message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
+    modjson = message.json()
+
+    modlist = []
+    for j in modjson:
+        model = [j["pk"], j["vendor"], j["model_number"], j["description"], j["comment"], j["calibration_frequency"]]
+        modlist.append(model)
+
+    # paginator = Paginator(modlist, 25)
+    # page_obj = paginator.get_page(page_number)
+    return render(request, 'model_allpage.html', {'modlist': modlist})
+
+
+@login_required
 def instrumentpage(request):
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
@@ -58,7 +78,7 @@ def instrumentpage(request):
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': descr, 'serial_number': serial_num, 'ordering': ord,
             'search': search_term, 'search_field': search_type}
-    message = requests.get('http://127.0.0.1:8000/instruments/', params=data, headers=context)
+    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=context)
     instrjson = message.json()
 
     results = []
@@ -79,6 +99,26 @@ def instrumentpage(request):
                   {'instrlist': instrlist, 'page_num': page_num})
 
 
+@login_required
+def instrumentpage_all(request):
+    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=context)
+    instrjson = message.json()
+
+    instrlist = []
+    for j in instrjson:
+        temp_model = j["model"]
+        instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
+                 j["calibration_history"], j["calibration_expiration_date"],
+                 datecheck(j["calibration_expiration_date"])]
+        instrlist.append(instr)
+
+    # paginator = Paginator(instrlist, 25)
+    # page_obj = paginator.get_page(page_number)
+    return render(request, 'instrumentpage.html',
+                  {'instrlist': instrlist})
+
+
+@user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     header = context
     exp = request.GET.get('export', None)

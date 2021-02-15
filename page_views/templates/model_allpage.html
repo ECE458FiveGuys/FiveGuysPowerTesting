@@ -21,30 +21,9 @@
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" name="search" placeholder="Search For" aria-label="search" aria-describedby="basic-addon2" />
-<!--                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />-->
-<!--                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />-->
-
-                    <label for="search_field">Search By:</label>
-                    <select name="search_field" id="search_field">
-                      <option value="vendor">Vendor</option>
-                      <option value="modelnum">Model Number</option>
-                      <option value="description">Description</option>
-                    </select>
-                    <button class="btn btn-primary" type="submit">Submit<i class="fas fa-search"></i></button>
-                    <div class="input-group-append">
-                    </div>
                 </div>
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="sort-group">
-                    <label for="ordering">Sort By:</label>
-                    <select name="ordering" id="ordering">
-                      <option value="vendor">Vendor</option>
-                      <option value="-vendor">Inverted Vendor</option>
-                      <option value="modelnum">Model Number</option>
-                      <option value="description">Description</option>
-                      <option value="calibrationfreq">Calibration Frequency</option>
-                    </select>
                 </div>
             </form>
             <!-- Navbar-->
@@ -73,7 +52,7 @@
                                 <i class="fas fa-table mr-1"></i>
                                 Model List:
                             </div>
-                            <button class="btn btn-primary btn-lg" id="button" onclick="window.location.href='all/';">View All</button>
+                            <button class="btn btn-primary btn-lg" id="button" onclick="window.location.href='/model/';">Back to Model Search</button>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -114,14 +93,7 @@
                     </main>
                 </div>
                   <div class="container p-4">
-                    <div class="pagination justify-content-center">
-                        <span class="step-links">
-                              <a href="?{% query_transform request page=1 %}">&laquo; first</a>
-                              <a href="?{% query_transform request page=page_num|add:-1 %}">previous</a>
-                              <a href="?{% query_transform request page=page_num|add:1 %}">next</a>
-                        </span>
-                        </div>
-                    </div>
+                  </div>
                 <footer class="py-4 bg-light mt-auto">
                 </footer>
             </div>
