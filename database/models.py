@@ -1,8 +1,8 @@
 from datetime import date
 
 from django.core.exceptions import ValidationError
-from django.db import models, IntegrityError
 from django.core.validators import MaxValueValidator
+from django.db import models
 
 from database.exceptions import NULL_FIELD_ERROR_MESSAGE, ModelRequiredFieldsEmptyException, \
     CHARACTER_LENGTH_ERROR_MESSAGE, ModelFieldLengthException, UserError, InstrumentRequiredFieldsEmptyException, \

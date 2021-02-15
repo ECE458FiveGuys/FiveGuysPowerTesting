@@ -1,11 +1,6 @@
-import csv
-
-from django.http import HttpResponse
-
-from database.models import EquipmentModel
 from database.services.bulk_data_services.export_service import ExportService
 from database.services.bulk_data_services.export_services.export_utils import write_model_file
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames, ExportFileNames
+from database.services.bulk_data_services.table_enums import ExportFileNames
 
 
 class ExportModelsService(ExportService):

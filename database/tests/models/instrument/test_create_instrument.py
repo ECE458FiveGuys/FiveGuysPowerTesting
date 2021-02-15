@@ -1,10 +1,8 @@
 from django.test import TestCase
 
-from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
-    IllegalAccessException, EntryDoesNotExistException, FieldLengthException, UserError
-from database.models import EquipmentModel as Model, User, Instrument
-from database.tests.test_utils import create_model, OVERLONG_STRING, \
-    create_non_admin_user, create_model_and_instrument
+from database.exceptions import FieldLengthException, RequiredFieldsEmptyException, UserError
+from database.models import Instrument
+from database.tests.test_utils import OVERLONG_STRING, create_model, create_model_and_instrument
 
 
 class CreateInstrumentTestCase(TestCase):

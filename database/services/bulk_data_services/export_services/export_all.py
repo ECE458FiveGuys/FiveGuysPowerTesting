@@ -2,18 +2,12 @@ import csv
 import os
 import shutil
 import tempfile
-import zipfile
-from io import StringIO, BytesIO
-from os.path import basename
-from wsgiref.util import FileWrapper
+from io import BytesIO
 from zipfile import ZipFile
 
 from django.http import HttpResponse
 
-from database.models import CalibrationEvent, EquipmentModel, Instrument
 from database.services.bulk_data_services.export_services.export_utils import write_instrument_file, write_model_file
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames, InstrumentTableColumnNames
-
 # file name of folder inside zip:
 from database.services.service import Service
 
@@ -21,11 +15,11 @@ zip_subdir = "inventory"
 # file name of outer zip folder:
 zip_filename = "%s.zip" % zip_subdir
 
+
 class ExportAll(Service):
 
     def __init__(self):
         super().__init__()
-
 
     def execute(self):
         s = BytesIO()
@@ -34,20 +28,19 @@ class ExportAll(Service):
         # create zipfile object:
         zf = ZipFile(s, 'w')
         self.add_spreadsheet_to_zip(sprdsheet_file_name="models.csv",
-                               zip_file=zf,
-                               write_function=write_model_file,
-                               tmp_dir=tmp_dir)
+                                    zip_file=zf,
+                                    write_function=write_model_file,
+                                    tmp_dir=tmp_dir)
         self.add_spreadsheet_to_zip(sprdsheet_file_name="instruments.csv",
-                               zip_file=zf,
-                               write_function=write_instrument_file,
-                               tmp_dir=tmp_dir)
+                                    zip_file=zf,
+                                    write_function=write_instrument_file,
+                                    tmp_dir=tmp_dir)
 
         zf.close()
         shutil.rmtree(tmp_dir)
         response = HttpResponse(s.getvalue(), content_type='application/x-zip-compressed')
         response['Content-Disposition'] = 'attachment; filename=%s' % zip_filename
         return response
-
 
     def add_spreadsheet_to_zip(self, sprdsheet_file_name, zip_file, write_function, tmp_dir):
         file_path = os.path.join(tmp_dir, sprdsheet_file_name)
