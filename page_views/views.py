@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 from datetime import date
+#from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
 import json
@@ -14,6 +15,7 @@ startpage = 1
 
 def modelpage(request):
     page_num = request.GET.get('page', startpage)
+    page_num = pagecheck(page_num)
     vend = request.GET.get('vendor', None)
     mod_num = request.GET.get('modelnum', None)
     desc = request.GET.get('description', None)
@@ -38,6 +40,7 @@ def modelpage(request):
     # page_obj = paginator.get_page(page_number)
     return render(request, 'modelpage.html', {'modlist': modlist,
                                               'page_num': page_num, 'c_path': get_current_path(request)})
+
 
 def instrumentpage(request):
     page_num = request.GET.get('page', startpage)
@@ -69,7 +72,7 @@ def instrumentpage(request):
     # paginator = Paginator(instrlist, 25)
     # page_obj = paginator.get_page(page_number)
     return render(request, 'instrumentpage.html',
-                  {'instrlist': instrlist, 'page_num': page_num, 'c_path': get_current_path(request)} )
+                  {'instrlist': instrlist, 'page_num': page_num, 'c_path': get_current_path(request)})
 
 
 def import_export(request):
@@ -77,7 +80,7 @@ def import_export(request):
 
 
 def pagecheck(val):
-    if val < 1:
+    if int(val) == 0:
         val = 1
     return val
 
