@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 from datetime import date
-#from templatetags import page_view_tags
+# from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
 import json
@@ -9,22 +9,25 @@ import json
 # from django.view import generic
 # Create your views here.
 token = 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'
-context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
+context = {'Authorization': 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'}
 startpage = 1
 
 
 def modelpage(request):
+
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
+    search_term = request.GET.get('search', None)
+    search_type = request.GET.get('search_field', None)
     vend = request.GET.get('vendor', None)
     mod_num = request.GET.get('modelnum', None)
     desc = request.GET.get('description', None)
     ord = request.GET.get('ordering', None)
 
-    data = {'page': page_num, 'vendor': vend,
-            'model_number': mod_num, 'description': desc, 'ordering': ord}
+    data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
+            'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
     header = context
-    message = requests.get('http://127.0.0.1:8000/models/', headers=header, data=data)
+    message = requests.get('http://127.0.0.1:8000/models/', headers=header, params=data)
     modjson = message.json()
 
     results = []
@@ -38,23 +41,24 @@ def modelpage(request):
 
     # paginator = Paginator(modlist, 25)
     # page_obj = paginator.get_page(page_number)
-    return render(request, 'modelpage.html', {'modlist': modlist,
-                                              'page_num': page_num, 'c_path': get_current_path(request)})
+    return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
 def instrumentpage(request):
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
-    vend = request.GET.get('vendor', '')
-    mod_num = request.GET.get('modelnum', '')
-    descr = request.GET.get('description', '')
-    serial_num = request.GET.get('serial', '')
-    ord = request.GET.get('ordering', '')
+    vend = request.GET.get('vendor', None)
+    mod_num = request.GET.get('modelnum', None)
+    descr = request.GET.get('description', None)
+    serial_num = request.GET.get('serial', None)
+    ord = request.GET.get('ordering', None)
+    search_term = request.GET.get('search', None)
+    search_type = request.GET.get('search_field', None)
 
-    data = {'page': page_num, 'vendor': vend,
-            'model_number': mod_num, 'description': descr,
-            'serial_number': serial_num, 'ordering': ord}
-    message = requests.get('http://127.0.0.1:8000/models/', data=data, headers=context)
+    data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
+            'description': descr, 'serial_number': serial_num, 'ordering': ord,
+            'search': search_term, 'search_field': search_type}
+    message = requests.get('http://127.0.0.1:8000/instruments/', params=data, headers=context)
     instrjson = message.json()
 
     results = []
@@ -72,11 +76,16 @@ def instrumentpage(request):
     # paginator = Paginator(instrlist, 25)
     # page_obj = paginator.get_page(page_number)
     return render(request, 'instrumentpage.html',
-                  {'instrlist': instrlist, 'page_num': page_num, 'c_path': get_current_path(request)})
+                  {'instrlist': instrlist, 'page_num': page_num})
 
 
 def import_export(request):
-    return render(request)
+    header = context
+    exp = request.GET.get('export', None)
+    imp = request.GET.get('import', None)
+    file = request.GET.get('file', startpage)
+
+    return render(request, 'import_exportpage.html')
 
 
 def pagecheck(val):

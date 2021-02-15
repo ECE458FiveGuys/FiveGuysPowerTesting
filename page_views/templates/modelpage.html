@@ -17,21 +17,21 @@
             <a class="navbar-brand" href="/instrument/">Instruments</a>
             <button class="btn btn-primary btn-lg" id="c_user" href="#">Create User</button>
             <button class="btn btn-primary btn-lg" id="c_model" href="#">Create Model</button>
-            <button class="btn btn-primary btn-lg" id="imp_exp" href="#">Bulk Import/Export</button>
+            <button class="btn btn-primary btn-lg" id="imp_exp" onclick="window.location.href='/import_export/';">Bulk Import/Export</button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" name="vendor" placeholder="Vendor" aria-label="Vendor" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />
-                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />
+                    <input class="form-control" type="text" name="search" placeholder="Search For" aria-label="search" aria-describedby="basic-addon2" />
+<!--                    <input class="form-control" type="text" name="modelnum" placeholder="Model Number" aria-label="Model Number" aria-describedby="basic-addon2" />-->
+<!--                    <input class="form-control" type="text" name="description" placeholder="Description" aria-label="Description" aria-describedby="basic-addon2" />-->
                     <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
 
-{#                    <label for="Search Types">Search By:</label>#}
-{#                    <select name="Search Types" id="Search Types">#}
-{#                      <option value="vendor">Vendor</option>#}
-{#                      <option value="modelnum">Model Number</option>#}
-{#                      <option value="description">Description</option>#}
-{#                    </select>#}
+                    <label for="search_field">Search By:</label>
+                    <select name="search_field" id="search_field">
+                      <option value="vendor">Vendor</option>
+                      <option value="modelnum">Model Number</option>
+                      <option value="description">Description</option>
+                    </select>
                     <div class="input-group-append">
                     </div>
                 </div>
@@ -40,6 +40,7 @@
                     <label for="ordering">Sort By:</label>
                     <select name="ordering" id="ordering">
                       <option value="vendor">Vendor</option>
+                      <option value="-vendor">Inverted Vendor</option>
                       <option value="modelnum">Model Number</option>
                       <option value="description">Description</option>
                       <option value="calibrationfreq">Calibration Frequency</option>
@@ -55,7 +56,7 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        {{ request.username}}
+                        {{ request.user}}
                     </div>
                 </nav>
             </div>
@@ -115,7 +116,6 @@
                   <div class="container p-4">
                     <div class="pagination justify-content-center">
                         <span class="step-links">
-                              <a href="">
                               <a href="?{% query_transform request page=1 %}">&laquo; first</a>
                               <a href="?{% query_transform request page=page_num|add:-1 %}">previous</a>
                               <a href="?{% query_transform request page=page_num|add:1 %}">next</a>
