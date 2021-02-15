@@ -12,12 +12,13 @@ import json
 HOST_SERVER = 'http://127.0.0.1:8000/';
 
 testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
-context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
+#context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
-@login_required
+#@login_required
 def modelpage(request):
+    context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
     search_term = request.GET.get('search', None)
@@ -47,8 +48,9 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-@login_required
+#@login_required
 def modelpage_all(request):
+    context = request.COOKIES['token']
     header = context
     message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
     modjson = message.json()
@@ -63,8 +65,9 @@ def modelpage_all(request):
     return render(request, 'model_allpage.html', {'modlist': modlist})
 
 
-@login_required
+#@login_required
 def instrumentpage(request):
+    context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
     vend = request.GET.get('vendor', None)
@@ -99,8 +102,9 @@ def instrumentpage(request):
                   {'instrlist': instrlist, 'page_num': page_num})
 
 
-@login_required
+#@login_required
 def instrumentpage_all(request):
+    context = request.COOKIES['token']
     message = requests.get('http://'+request.get_host()+'/instruments/all', headers=context)
     instrjson = message.json()
 
@@ -118,8 +122,9 @@ def instrumentpage_all(request):
                   {'instrlist': instrlist})
 
 
-@user_passes_test(lambda u: u.is_superuser)
+#@user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
+    context = request.COOKIES['token']
     header = context
     exp = request.GET.get('export', None)
     imp = request.GET.get('import', None)
