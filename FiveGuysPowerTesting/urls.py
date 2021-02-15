@@ -23,6 +23,7 @@ from front_lp import views as v_lp
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include('page_views.urls')),
+    path('', include('detail_views.urls')),
     path('', include('database.urls')),
     path('', include('user_portal.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

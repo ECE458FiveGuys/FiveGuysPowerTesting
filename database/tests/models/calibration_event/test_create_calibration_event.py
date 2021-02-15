@@ -1,12 +1,9 @@
 from django.test import TestCase
-
-from database.exceptions import IllegalAccessException, EntryDoesNotExistException, RequiredFieldsEmptyException, \
-    FieldLengthException, InvalidDateException
-from database.models import User, CalibrationEvent, Instrument
-
 from django.utils.timezone import localtime, now
 
-from database.tests.test_utils import OVERLONG_STRING, create_non_admin_user, create_model_and_instrument
+from database.exceptions import FieldLengthException, InvalidDateException, RequiredFieldsEmptyException
+from database.models import CalibrationEvent, Instrument
+from database.tests.test_utils import OVERLONG_STRING, create_model_and_instrument, create_non_admin_user
 
 
 class CreateCalibrationEventTestCase(TestCase):

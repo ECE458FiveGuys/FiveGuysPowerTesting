@@ -1,9 +1,10 @@
 from datetime import timedelta
 
+from rest_framework.test import force_authenticate
+
 from database.models import EquipmentModel
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
-from database.views import VendorAutoCompleteViewSet, EquipmentModelViewSet
-from rest_framework.test import APIRequestFactory, force_authenticate
+from database.views import VendorAutoCompleteViewSet
 
 
 class VendorAutoCompleteTestCase(EndpointTestCase):

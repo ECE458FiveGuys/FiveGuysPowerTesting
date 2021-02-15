@@ -2,12 +2,11 @@ from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from database.exceptions import InvalidCalibrationFrequencyException, DoesNotExistException, UserDoesNotExistException, \
-    ImpossibleCalibrationError
-from database.models import CalibrationEvent, Instrument, EquipmentModel
-from database.serializers import EquipmentModelSerializer, InstrumentSerializer
+from database.exceptions import DoesNotExistException, ImpossibleCalibrationError, UserDoesNotExistException
+from database.models import CalibrationEvent, EquipmentModel, Instrument
+from database.serializers import InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames, InstrumentTableColumnNames
+from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
 from user_portal.models import PowerUser
 
 

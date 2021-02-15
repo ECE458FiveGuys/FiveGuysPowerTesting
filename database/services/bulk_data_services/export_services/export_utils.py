@@ -20,6 +20,7 @@ def write_instrument_file(writer):
                                 latest_calibration_event.date.year),
                          None if latest_calibration_event is None else latest_calibration_event.comment])
 
+
 def write_model_file(writer):
     models = EquipmentModel.objects.all()
     writer.writerow([e.value for e in ModelTableColumnNames])

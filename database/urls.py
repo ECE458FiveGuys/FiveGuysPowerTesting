@@ -1,8 +1,8 @@
-from django.urls import re_path, path, include
+from django.urls import include, path, re_path
 from rest_framework import routers
 
 from database import views
-from database.views import VendorAutoCompleteViewSet, EquipmentModelViewSet, InstrumentViewSet, CalibrationEventViewSet
+from database.views import CalibrationEventViewSet, EquipmentModelViewSet, InstrumentViewSet, VendorAutoCompleteViewSet
 
 router = routers.DefaultRouter()
 router.register(r'models', EquipmentModelViewSet)

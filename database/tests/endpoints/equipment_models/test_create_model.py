@@ -1,4 +1,3 @@
-from django.test import TestCase
 from rest_framework.test import force_authenticate
 
 from database.models import EquipmentModel
@@ -19,10 +18,9 @@ class CreateModelTestCase(EndpointTestCase):
             self.fail("model could not be created")
         model = EquipmentModel.objects.get(vendor="vendor")
         if model.vendor != 'vendor' \
-            or model.model_number != 'model_number' \
-            or model.description != "description":
+                or model.model_number != 'model_number' \
+                or model.description != "description":
             self.fail("created model not found")
-
 
     def test_create_model_required_(self):
         request = self.factory.put(self.Endpoints.MODELS, {})

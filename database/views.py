@@ -1,14 +1,11 @@
-from django.db.models import Q, Max, F, ExpressionWrapper, DurationField, DateField
-from rest_framework import permissions
-from rest_framework import viewsets, generics
-from rest_framework.decorators import action, permission_classes, api_view
+from django.db.models import DateField, ExpressionWrapper, F, Max, Q
+from rest_framework import generics, permissions, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from database.model_enums import EquipmentModelEnum, InstrumentEnum
-from database.models import EquipmentModel, Instrument, CalibrationEvent
-from database.serializers import EquipmentModelSerializer, InstrumentSerializer, CalibrationEventSerializer, \
-    VendorSerializer, InstrumentRetrieveSerializer, EquipmentModelRetrieveSerializer
+
 from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
+from database.serializers import *
 from database.services.bulk_data_services.export_services.export_all import ExportAll
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
@@ -107,7 +104,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def all(self, request):
-        return Response(InstrumentSerializer(self.queryset, many=True).data)
+        return Response(InstrumentSerializer(self.get_queryset(), many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):

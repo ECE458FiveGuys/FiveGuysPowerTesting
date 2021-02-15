@@ -1,5 +1,5 @@
-from rest_framework.request import Request
-from datetime import datetime, timedelta
+from datetime import timedelta
+
 from database.exceptions import InvalidCalibrationFrequencyException
 from database.models import EquipmentModel
 from database.serializers import EquipmentModelSerializer
