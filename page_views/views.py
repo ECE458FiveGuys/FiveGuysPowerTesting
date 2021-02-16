@@ -30,7 +30,7 @@ def modelpage(request):
 
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
-    header = context
+    header = {'Authorization': context}
     message = requests.get('http://'+request.get_host()+'/models/', headers=header, params=data)
     modjson = message.json()
 
@@ -51,7 +51,8 @@ def modelpage(request):
 #@login_required
 def modelpage_all(request):
     context = request.COOKIES['token']
-    header = context
+    header = {'Authorization': context}
+
     message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
     modjson = message.json()
 
@@ -78,10 +79,12 @@ def instrumentpage(request):
     search_term = request.GET.get('search', None)
     search_type = request.GET.get('search_field', None)
 
+    header = {'Authorization': context}
+
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': descr, 'serial_number': serial_num, 'ordering': ord,
             'search': search_term, 'search_field': search_type}
-    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=context)
+    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=header)
     instrjson = message.json()
 
     results = []
@@ -105,7 +108,9 @@ def instrumentpage(request):
 #@login_required
 def instrumentpage_all(request):
     context = request.COOKIES['token']
-    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=context)
+    header = {'Authorization': context}
+
+    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=header)
     instrjson = message.json()
 
     instrlist = []
@@ -125,7 +130,7 @@ def instrumentpage_all(request):
 #@user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     context = request.COOKIES['token']
-    header = context
+    header = {'Authorization': context}
     exp = request.GET.get('export', None)
     imp = request.GET.get('import', None)
     file = request.GET.get('file', startpage)
