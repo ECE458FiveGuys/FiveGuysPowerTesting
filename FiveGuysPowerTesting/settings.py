@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'user_portal',
-    'front_lp'
+    'create_pages'
 ]
 
 MIDDLEWARE = [
