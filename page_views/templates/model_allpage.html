@@ -35,7 +35,6 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        {{ request.user}}
                     </div>
                 </nav>
             </div>
@@ -82,7 +81,7 @@
                                                 <td>{{mod1.3}}</td>
                                                 <td>{{mod1.4}}</td>
                                                 <td>{{mod1.5}}</td>
-                                                <td><a href="/model-details/{{mod1.0}}/">Detailed View</a></td>
+                                                <td><a href="/model-details/{{mod1.0}}">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>

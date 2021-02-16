@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
-from datetime import date
-from django.contrib.auth.decorators import login_required, user_passes_test
+import datetime
+#django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
@@ -30,7 +30,7 @@ def modelpage(request):
 
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
-    header = context
+    header = {'Authorization': context}
     message = requests.get('http://'+request.get_host()+'/models/', headers=header, params=data)
     modjson = message.json()
 
@@ -51,7 +51,8 @@ def modelpage(request):
 #@login_required
 def modelpage_all(request):
     context = request.COOKIES['token']
-    header = context
+    header = {'Authorization': context}
+
     message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
     modjson = message.json()
 
@@ -78,10 +79,12 @@ def instrumentpage(request):
     search_term = request.GET.get('search', None)
     search_type = request.GET.get('search_field', None)
 
+    header = {'Authorization': context}
+
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': descr, 'serial_number': serial_num, 'ordering': ord,
             'search': search_term, 'search_field': search_type}
-    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=context)
+    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=header)
     instrjson = message.json()
 
     results = []
@@ -92,7 +95,7 @@ def instrumentpage(request):
     for j in results:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
@@ -105,14 +108,16 @@ def instrumentpage(request):
 #@login_required
 def instrumentpage_all(request):
     context = request.COOKIES['token']
-    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=context)
+    header = {'Authorization': context}
+
+    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=header)
     instrjson = message.json()
 
     instrlist = []
     for j in instrjson:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
@@ -125,7 +130,7 @@ def instrumentpage_all(request):
 #@user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     context = request.COOKIES['token']
-    header = context
+    header = {'Authorization': context}
     exp = request.GET.get('export', None)
     imp = request.GET.get('import', None)
     file = request.GET.get('file', startpage)
@@ -140,12 +145,12 @@ def pagecheck(val):
 
 
 def datecheck(event):
-    if event == '':
+    if event == None:
         return "Noncalibratable"
     else:
         event = datetime.datetime.strptime(event, "%Y-%m-%d").date()
-        diff = event - date.today()
-        if event < date.today():
+        diff = event - datetime.date.today()
+        if event < datetime.date.today():
             return "Expired"
         else:
             if diff.days < 30:
