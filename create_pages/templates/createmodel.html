@@ -11,7 +11,7 @@
                     <td>Vendor</td>
                     <input type="text" list="citylist" Placeholder="required" class="form-control" style="width:200px;" name = "vendor">
                     <datalist id="citylist">
-                 {% for results in showcity %}
+                 {% for results in models %}
                         <option value="{{ results }}">
                  {% endfor %}
                     </datalist>
