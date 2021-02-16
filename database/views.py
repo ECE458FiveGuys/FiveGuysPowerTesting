@@ -48,20 +48,40 @@ class EquipmentModelViewSet(viewsets.ModelViewSet):
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint to get a list of vendors matching query
     """
-    serializer_class = VendorSerializer
+    serializer_class = VendorAutocompleteSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return EquipmentModel.objects.filter(
-            Q(vendor__contains=self.request.query_params.get('vendor'))
-        )
+        if self.request.query_params.get('vendor') is not None:
+            return EquipmentModel.objects.filter(vendor__contains=self.request.query_params.get('vendor'))
+        return EquipmentModel.objects.all()
 
     def list(self, request, **kwargs):
         vendor_list = list({model.vendor for model in self.get_queryset()})
         vendor_list.sort()
         return Response(vendor_list)
+
+
+class ModelAutocompleteViewSet(generics.ListAPIView):
+    """
+    API endpoint to get a list of models matching query
+    """
+    serializer_class = ModelAutocompleteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = EquipmentModel.objects.all()
+        if self.request.query_params.get('vendor') is not None:
+            qs = qs.filter(vendor__contains=self.request.query_params.get('vendor'))
+            if self.request.query_params.get('model_number') is not None:
+                return qs.filter(model_number__contains=self.request.query_params.get('model_number'))
+        return qs
+
+    def list(self, request, **kwargs):
+        model_list = list({model.model_number for model in self.get_queryset()})
+        return Response(model_list)
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
@@ -95,7 +115,8 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         mrc = Max('calibration_history__date')
         cf = F('model__calibration_frequency')
         expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
-        return Instrument.objects.annotate(most_recent_calibration_date=mrc).annotate(calibration_expiration_date=expiration)
+        return Instrument.objects.annotate(most_recent_calibration_date=mrc).annotate(
+            calibration_expiration_date=expiration)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
