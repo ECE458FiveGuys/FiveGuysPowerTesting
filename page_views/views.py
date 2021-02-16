@@ -1,12 +1,16 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 import datetime
+from django.http import HttpResponse
+import csv
+from django.template import loader
 from django.views.static import serve
 # django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
 import json
+import os.path
 
 from pathlib import Path
 
@@ -19,6 +23,10 @@ testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
 startpage = 1
 downloads_path = str(Path.home() / "Downloads")
 
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+export_data = None
+import_data = None
+downloads_file = None
 
 # @login_required
 def modelpage(request):
@@ -138,32 +146,83 @@ def instrumentpage_all(request):
 def import_export(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
-    import_data = []
+    download_file = None
+    global export_data
+    global import_data
+    stats = None
     if request.method == "GET":
         exp = request.GET.get('export', None)
         if exp != None:
             if exp == '/export-models/':
-                data = requests.get('http://' + request.get_host() + exp, headers=header)
-                new_file = open(downloads_path+'/mod_export.csv', 'wb').write(data.content)
+                export_data = requests.get('http://' + request.get_host() + exp, headers=header)
+                download_file = open('instr_export.csv', 'wb').write(export_data.content)
             if exp == '/export-instruments/':
-                data = requests.get('http://' + request.get_host() + exp, headers=header)
-                new_file = open(downloads_path+'/instr_export.csv', 'wb').write(data.content)
+                export_data = requests.get('http://' + request.get_host() + exp, headers=header)
+                download_file = open('instr_export.csv', 'wb').write(export_data.content)
             if exp == '/export/':
-                data = requests.get('http://' + request.get_host() + exp, headers=header)
-                new_file = open(downloads_path+'/all_export.zip', 'wb').write(data.content)
+                export_data = requests.get('http://' + request.get_host() + exp, headers=header)
+                download_file = open('all_export.zip', 'wb').write(export_data.content)
 
-    if request.method == "PUT":
-        csv_file = request.FILE['file']
-        type = request.POST.get('import_type')
-
-        if type == 'models':
-            data = requests.post('http://' + request.get_host() + '/import-models', headers=header, file=csv_file)
-
+    if request.method == "POST":
+        csv_file = request.FILES['file']
+        csv_data = csv_file.read()
+        import_type = request.POST.get('import_type')
+        if import_type == 'models':
+            import_data = requests.post('http://' + request.get_host() + '/import-models/', headers=header, files={'file': csv_data})
+            if import_data.status_code != 200:
+                stats = import_data.content
         else:
-            if type == 'instruments':
-                data = requests.post('http://' + request.get_host() + '/import-instruments', headers=header, file=csv_file)
+            if import_type == 'instruments':
+                import_data = requests.post('http://' + request.get_host() + '/import-instruments/', headers=header, files={'file': csv_data})
+                if import_data.status_code != 200:
+                    stats = import_data.content
 
-    return render(request, 'import_exportpage.html')
+    return render(request, 'import_exportpage.html', {'download_file': download_file, 'status': stats})
+
+
+# def export(request):
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="export.csv"'
+#     csv.writer(download_file, export_data.content)
+#     csv_dat = csv.reader(download_file)
+#     t = loader.get_template('csvtemp.txt')
+#     c = {'data': csv_dat}
+#     response.write(t.render(c))
+#     return response
+
+
+def import_model(request):
+    if import_data != None:
+        modjson = import_data.json()
+
+        results = []
+        modlist = []
+        count = 0
+        for key, value in modjson.items():
+            if key == 'results':
+                results = value
+        for j in results:
+            model = [j["pk"], j["vendor"], j["model_number"], j["description"], j["comment"],
+                     j["calibration_frequency"]]
+            modlist.append(model)
+            count = count + 1
+        return render(request, 'model_allpage.html', {'modlist': modlist, 'count': count})
+
+
+def import_instrument(request):
+    if import_data != None:
+        instrjson = import_data.json()
+        instrlist = []
+        count = 0
+        for j in instrjson:
+            temp_model = j["model"]
+            instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"],
+                     temp_model["description"],
+                     j["most_recent_calibration_date"], j["calibration_expiration_date"],
+                     datecheck(j["calibration_expiration_date"])]
+            count = count + 1
+            instrlist.append(instr)
+        return render(request, 'instrument_allpage.html', {'instrlist': instrlist, 'count': count})
 
 
 def pagecheck(val):
