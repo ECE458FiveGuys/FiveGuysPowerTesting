@@ -41,12 +41,14 @@ def intermediatepage(request):
 
 def createmodel(request):
     data2 = {'vendor': ''}
-    header2 = {'Authorization': request.COOKIES['token']}
-    print(header2)
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     read2 = requests.get('http://' + request.get_host() + '/vendors/', headers=header2, data=data2)
     results = read2.json
-    print(results)
-    context = {"showcity": results}
+    context = {"models": results}
     if request.method =="POST":
         vendor = request.POST.get("vendor")
         model_number = request.POST.get("model_number")
@@ -72,6 +74,11 @@ def createmodel(request):
         return render(request, 'createmodel.html', context)
 
 def createinstrument(request):
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     if request.method =="POST":
         model = request.POST.get("model")
         serial_number = request.POST.get("serial_number")
@@ -79,7 +86,6 @@ def createinstrument(request):
         data2 = {'model': model,
                  'serial_number': serial_number,
                  'comment': comment}
-        header2 = {'Authorization': token}
         read2 = requests.post('http://' + request.get_host() + '/instruments/', headers=header2, data=data2)
         context = {}
         if (str(read2.json().get('model'))==model):
