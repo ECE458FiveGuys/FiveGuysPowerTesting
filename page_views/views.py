@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_list_or_404
 import requests
-from datetime import date
+from datetime import date, datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
