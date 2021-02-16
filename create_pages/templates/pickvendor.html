@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+<title> Pick Vendor</title>
+</head>
+<body>
+    <center>
+        <h1>Pick Vendor</h1>
+        <form method="POST">
+            {% csrf_token %}
+                {% block content %}
+                    <td>Vendor</td>
+                    <input type="text" list="citylist" Placeholder="required" class="form-control" style="width:200px;" name = "vendor">
+                    <datalist id="citylist">
+                 {% for results in availableVendors %}
+                        <option value="{{ results }}">
+                 {% endfor %}
+                    </datalist>
+                {% endblock %}
+        <input type="submit" value = "Insert">
+        </form>
+        <button onclick="window.location.href='/pickmodelnumber/';">
+          Next Input
+        </button>
+    </center>
+</body>
+</html>
