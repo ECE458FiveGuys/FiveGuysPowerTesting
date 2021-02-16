@@ -5,15 +5,16 @@
 <body>
     <center>
         <h1>Create Instrument</h1>
-        <br></br>
-        Vendor: {{ vendor }}
-        <br></br>
-        Model Number: {{ model_number }}
         <form method="POST">
             {% csrf_token %}
         <table border="1">
+            <tr>
                 <td>Serial Number</td>
                 <td><input type="text" placeholder="required (integer)" name="serial_number"></td>
+            </tr>
+            <tr>
+                <td>Model</td>
+                <td><input type="text" placeholder="required (integer)" name="model"></td>
             </tr>
             <tr>
                 <td>Comment</td>
