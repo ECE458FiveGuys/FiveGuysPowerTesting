@@ -1,22 +1,26 @@
 from django.shortcuts import render, get_list_or_404
 import requests
-from datetime import date
-from django.contrib.auth.decorators import login_required, user_passes_test
+import datetime
+from django.views.static import serve
+# django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
 import json
+
+from pathlib import Path
 
 # from django.view import generic
 # Create your views here.
 HOST_SERVER = 'http://127.0.0.1:8000/';
 
 testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
-#context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
+# context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
+downloads_path = str(Path.home() / "Downloads")
 
 
-#@login_required
+# @login_required
 def modelpage(request):
     context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
@@ -31,7 +35,7 @@ def modelpage(request):
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
     header = {'Authorization': context}
-    message = requests.get('http://'+request.get_host()+'/models/', headers=header, params=data)
+    message = requests.get('http://' + request.get_host() + '/models/', headers=header, params=data)
     modjson = message.json()
 
     results = []
@@ -48,12 +52,12 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-#@login_required
+# @login_required
 def modelpage_all(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
 
-    message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
+    message = requests.get('http://' + request.get_host() + '/models/all', headers=header)
     modjson = message.json()
 
     modlist = []
@@ -66,7 +70,7 @@ def modelpage_all(request):
     return render(request, 'model_allpage.html', {'modlist': modlist})
 
 
-#@login_required
+# @login_required
 def instrumentpage(request):
     context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
@@ -79,12 +83,15 @@ def instrumentpage(request):
     search_term = request.GET.get('search', None)
     search_type = request.GET.get('search_field', None)
 
+    if search_type in ['vendor', 'model_number', 'description']:
+        search_type = 'model__' + search_type
+
     header = {'Authorization': context}
 
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': descr, 'serial_number': serial_num, 'ordering': ord,
             'search': search_term, 'search_field': search_type}
-    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=header)
+    message = requests.get('http://' + request.get_host() + '/instruments/', params=data, headers=header)
     instrjson = message.json()
 
     results = []
@@ -95,7 +102,7 @@ def instrumentpage(request):
     for j in results:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
@@ -105,19 +112,19 @@ def instrumentpage(request):
                   {'instrlist': instrlist, 'page_num': page_num})
 
 
-#@login_required
+# @login_required
 def instrumentpage_all(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
 
-    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=header)
+    message = requests.get('http://' + request.get_host() + '/instruments/all', headers=header)
     instrjson = message.json()
 
     instrlist = []
     for j in instrjson:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
@@ -127,13 +134,34 @@ def instrumentpage_all(request):
                   {'instrlist': instrlist})
 
 
-#@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
-    exp = request.GET.get('export', None)
-    imp = request.GET.get('import', None)
-    file = request.GET.get('file', startpage)
+    import_data = []
+    if request.method == "GET":
+        exp = request.GET.get('export', None)
+        if exp != None:
+            if exp == '/export-models/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/mod_export.csv', 'wb').write(data.content)
+            if exp == '/export-instruments/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/instr_export.csv', 'wb').write(data.content)
+            if exp == '/export/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/all_export.zip', 'wb').write(data.content)
+
+    if request.method == "PUT":
+        csv_file = request.FILE['file']
+        type = request.POST.get('import_type')
+
+        if type == 'models':
+            data = requests.post('http://' + request.get_host() + '/import-models', headers=header, file=csv_file)
+
+        else:
+            if type == 'instruments':
+                data = requests.post('http://' + request.get_host() + '/import-instruments', headers=header, file=csv_file)
 
     return render(request, 'import_exportpage.html')
 
@@ -145,12 +173,12 @@ def pagecheck(val):
 
 
 def datecheck(event):
-    if event == '':
+    if event == None:
         return "Noncalibratable"
     else:
         event = datetime.datetime.strptime(event, "%Y-%m-%d").date()
-        diff = event - date.today()
-        if event < date.today():
+        diff = event - datetime.date.today()
+        if event < datetime.date.today():
             return "Expired"
         else:
             if diff.days < 30:

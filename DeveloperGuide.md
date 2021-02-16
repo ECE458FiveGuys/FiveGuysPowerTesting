@@ -1,25 +1,85 @@
-# Instructions
+# Developer Guide
 
-run `python manage.py runserver`
+## Overview
 
-Make GET request to <http://127.0.0.1:8000/auth/token/login/>
+This entire project is written using the Django framework. A back end enveloped in the Django REST Framework processes requests made 
+to access the inventory, handling validation, sorting, and other business logic. The front end is constructed using HTML templates, which 
+behave as a structural skeleton that frames logic-handling views. 
 
-Save the TOKEN received
+The database app contains all the inventory-related models and the REST API. The other apps handle the structure and logic of the interface:
+front_lp handles various functions like logging in and creating models, detail_views handles pages for individual models and instruments, 
+and page_views handle the table views of models and instruments, along with the bulk or the functional dashboards.
 
-For subsequent queries, we will need token to be sent with the request. To do this, we must have the token in the 
-headers by using the key `Authorization` and value `Token ######`, which is to say the word "Token" + SPACE + Token Value
+## Technologies
 
-To received list of models, make GET request to <http://127.0.0.1:8000/models>
+### SQLITE
 
-To make a model, make POST request to <http://127.0.0.1:8000/models> with body form-data with at least the keys `vendor`
-, `model_number` and `description`.
+We use SQLITE as our database. It is the default database for Django and is stored on the same server as the project.
 
-To make an instrument, make POST request to <http://127.0.0.1:8000/instruments> with body form-data with at least the
-keys `model` (where here `model` is the PK of an existing model) and `serial_number`.
+### Django
 
-Queries can be made to endpoints for models and instruments how one would usually do queries. For example, if I wanted
-to make a query to get all instruments from vendor `VENDOR_NAME`, I would make a POST request with the following query parameters:
-<http://127.0.0.1:8000/instruments?vendor=VENDOR_NAME>. If I wanted the instrument with `serial_number = 69` from the same
-vendor, the POST request would be written instead like <http://127.0.0.1:8000/instruments?vendor=VENDOR_NAME&serial_number=69>
+We use Django for both the frontend and backend. 
 
-For questions about which fields can be queried from models and instruments, please refer to the sprint 1 requirements.
+### Django REST framework
+
+We use the Django REST framework to communicate between the frontend and backend. We made a conscious, if not regrettable, decision to completely separate the frontend and backend and have them communicate using REST API calls. The one good thing about this decision is that it allows us to change our frontend without any changes to the backend if we wish.
+
+### Djoser
+
+Djoser is used to deal with user authorization. Since we are using Django frontend and backend, we could have used Django sessions, but Djoser allows for the frontend to be changed without any modifications to backend.
+
+### Gunicorn
+
+Gunicorn is a Python WSGI HTTP Server for UNIX. Moderately popular. Used on dev and prod servers.
+
+### nginx
+
+nginx is a webserver. Easier to configure than apache in the humble opinion of the dev ops guy.
+
+## Configuration
+
+### Development Environment
+
+```shell
+git clone git@github.com:ECE458FiveGuys/FiveGuysPowerTesting.git
+cd FiveGuysPowerTesting
+python3 -m venv env
+source env/bin/activate # may differ based on OS: Windows uses env/Scripts
+pip install -r requirements.txt
+python manage.py makemigrations database
+python manage.py makemigrations user_portal
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py collectstatic
+python manage.py runserver
+```
+
+Running all of the above commands, in order, one-by-one, will result in a functioning dev environment. Using your favorite browser, you should be able to navigate to <http://127.0.0.1:8000/login> and login using the superuser that you created. 
+
+### Production Environment
+
+See the Deployment Guide.
+
+## Database Schema
+
+### Users
+
+User authorization is done using the Djoser library. The code can be found in `user_portal`. Here, we have the model `PowerUser` that inherits from `Abstract User`. It has a manager `PowerUserManager` that defines the `PowerUser.objects.create()` function. When creating a superuser, the fields `is_staff` and `is_superuser` are both set `True`. Otherwise, they are `False`. When creating a standard user, the only fields that are required are `username`, `name`, `email`, and `password`. The field `is_active` is not required but is set to `True` if no value is given. 
+
+![user](images/PowerUser.png)
+
+### Models
+
+Models are handled by the `EquipmentModel` class. Originally named `Model`, we changed it because Django has a lot of references to another Model class. In the database, each `EquipmentModel` object has 4 fields: `vendor, model_number, description, comment, instruments`. The model has a uniqueness constraint where `vendor` and `model_number` must form a unique pair. The `instruments` field is a `ForeignKey` in the `Instrument` Model and holds a list of all instruments of that model. Note that one cannot delete a model that has any instruments linked to it.
+
+![model](images/EquipmentModel.png)
+### Instruments
+
+Instruments are handled by the `Instrument` class. In the database, each `Instrument` object has 4 fields: `model, serial_number, comment, calibration_history`. The model has a uniqueness constraint where `model` and `serial_number` must form a unique pair. The `instruments` field is a `ForeignKey` in the `CalibrationEvent` Model and holds a list of all calibration events of that instrument. It should be noted that depending on the query, you might either get a list of the calibration events or a single field `most_recent_calibration_date` indicating the date of the most recent `CalibrationEvent` object associated with that instrument. Also of note, there is another annotation (not stored in the database) called `calibration_expiration_date` that is calculated as `model__calibration_date` + `most_recent_calibration_date`. 
+
+![instrument](images/Instrument.png)
+### Calibration Events
+
+Calibration Events are handled by the `CalibrationEvent` class. In the database, each `CalibrationEvent` object has 4 fields: `instrument, date, user, comment`. The model does not have any uniqueness constraint. The `instrument` field and the`user` field are both `ForeignKey` objects. It should be noted that it is not possible to create a calibration event for a model that is not calibratable.
+
+![calibration event](images/CalibrationEvent.png)

@@ -17,7 +17,7 @@ Including another URLconf
 from page_views import views as v
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
-from front_lp import views as v_lp
+from create_pages import views as v_lp
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.

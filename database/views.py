@@ -1,3 +1,4 @@
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db.models import DateField, ExpressionWrapper, F, Max, Q
 from rest_framework import generics, permissions, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -161,12 +162,12 @@ def export(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
+@permission_classes([IsAdminUser])
 def import_models(request):
     return ImportModelsService(request.FILES['file'].file).execute()
 
 
 @api_view(['POST'])
-@permission_classes([IsAdminOrAuthenticatedAndSafeMethod])
+@permission_classes([IsAdminUser])
 def import_instruments(request):
     return ImportInstrumentsService(request.FILES['file'].file).execute()

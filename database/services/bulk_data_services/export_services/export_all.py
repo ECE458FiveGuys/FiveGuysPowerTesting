@@ -44,7 +44,7 @@ class ExportAll(Service):
 
     def add_spreadsheet_to_zip(self, sprdsheet_file_name, zip_file, write_function, tmp_dir):
         file_path = os.path.join(tmp_dir, sprdsheet_file_name)
-        with open(file_path, "w+", newline="") as file:
+        with open(file_path, "w+", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             write_function(writer)
             file.seek(0)
