@@ -14,13 +14,14 @@ from reportlab.pdfgen import canvas
 # Create your views here.
 from detail_views.forms import *
 
-token = {'Authorization': 'Token eadb51c79b15f8eb55d49e0a9228beea6b468c64'}
+#token = {'Authorization': 'Token eadb51c79b15f8eb55d49e0a9228beea6b468c64'}
 
 
 def model_detail_page(request, pk=None):
+    header2 = {'Authorization': request.COOKIES['token']}
 
-    modeldata = requests.get('http://' + request.get_host() + '/models/', headers=token, params={'pk': pk})
-    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=token, params={})
+    modeldata = requests.get('http://' + request.get_host() + '/models/', headers=header2, params={'pk': pk})
+    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2, params={})
 
     model = modeldata.json()['results'][0]
     instruments = instrumentsdata.json()['results']
@@ -40,19 +41,20 @@ def model_detail_page(request, pk=None):
 
 
 def instrument_detail_page(request, serial=None):
+    header2 = {'Authorization': request.COOKIES['token']}
 
-    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=token,
+    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2ß,
                                    params={'serial_number': serial})
 
     instrument = instrumentsdata.json()['results'][0]
 
-    calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=token,
+    calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=header2,
                                    params={'instrument': instrument['pk']})
 
     model = instrument['model']
     calibrations = calibrationdata.json()['results']
 
-    user_data = requests.get('http://' + request.get_host() + '/auth/users/me/', headers=token)
+    user_data = requests.get('http://' + request.get_host() + '/auth/users/me/', headers=header2)
     user = user_data.json()['id']
 
     # If this is a POST request then process the Form data
@@ -69,7 +71,7 @@ def instrument_detail_page(request, serial=None):
         else:
             print("form is valid")
             formdict = form.data.dict()
-            response = requests.post('http://' + request.get_host() + '/calibration-events/', headers=token,
+            response = requests.post('http://' + request.get_host() + '/calibration-events/', headers=header2,
                                      data=formdict)
             print(formdict)
 
@@ -90,6 +92,7 @@ def instrument_detail_page(request, serial=None):
 
 
 def edit_instrument(request, pk=None, serial=None):
+    header2 = {'Authorization': request.COOKIES['token']}
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
@@ -102,7 +105,7 @@ def edit_instrument(request, pk=None, serial=None):
         else:
             print("form is valid")
             formdict = form.data.dict()
-            response = requests.put('http://' + request.get_host() + '/instruments/'+pk+'/', headers=token, data=formdict)
+            response = requests.put('http://' + request.get_host() + '/instruments/'+pk+'/', headers=header2, data=formdict)
             print(response)
             print(formdict)
 
@@ -110,14 +113,14 @@ def edit_instrument(request, pk=None, serial=None):
     return ret
 
 def delete_instrument(request, pk=None):
-
+    header2 = {'Authorization': request.COOKIES['token']}
 
     # Create a form instance and populate it with data from the request (binding):
 
     # redirect to a new URL:
     #TODO form submission response
     print("form is valid")
-    response = requests.delete('http://' + request.get_host() + '/instruments/'+pk+'/', headers=token)
+    response = requests.delete('http://' + request.get_host() + '/instruments/'+pk+'/', headers=header2)
     print(response)
 
     ret = redirect('/instrument/')#TODO
@@ -125,7 +128,7 @@ def delete_instrument(request, pk=None):
 
 
 def pdf_gen(request, serial=None):
-
+    header2 = {'Authorization': request.COOKIES['token']}
     # Create a file-like buffer to receive PDF data.
     buffer = io.BytesIO()
 
@@ -138,13 +141,13 @@ def pdf_gen(request, serial=None):
     time = datetime.today()
     date = time.strftime("%h-%d-%Y %H:%M:%S")
 
-    instrumentdata = requests.get('http://' + request.get_host() + '/instruments/', headers=token,
+    instrumentdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2,
                                   params={'serial_number': serial})
 
     instrument = instrumentdata.json()['results'][0]
     model = instrument['model']
 
-    calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=token,
+    calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=header2,
                                    params={'pk': instrument['calibration_history']['pk']})
 
     calibration = calibrationdata.json()['results'][0]
