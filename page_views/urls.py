@@ -27,4 +27,7 @@ urlpatterns = [
     re_path(r'^instrument/$', v.instrumentpage, name='instrumentpage'),
     re_path(r'^instrument/all/$', v.instrumentpage_all, name='instrumentpage'),
     re_path(r'^import_export/$', v.import_export, name='import_exportpage'),
+    # re_path(r'^import_export/export/$', v.export, name='import_exportpage'),
+    # re_path(r'^import_export/instrument/$', v.import_instrument, name='import_exportpage'),
+    # re_path(r'^import_export/instrument/$', v.import_instrument, name='import_exportpage'),
 ]
