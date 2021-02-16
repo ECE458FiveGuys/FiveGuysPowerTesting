@@ -100,6 +100,11 @@ def createinstrument(request):
         return render(request, 'createinstrument.html')
 
 def createuser(request):
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     if request.method =="POST":
         username = request.POST.get("username")
         name = request.POST.get("name")
@@ -110,7 +115,6 @@ def createuser(request):
                  'email': email,
                  'password': password,
                  'is_active': 'True'}
-        header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/auth/users/', headers=header2, data=data2)
         context = {}
         if (str(read2.json().get('username')) == username):
