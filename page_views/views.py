@@ -79,6 +79,9 @@ def instrumentpage(request):
     search_term = request.GET.get('search', None)
     search_type = request.GET.get('search_field', None)
 
+    if search_type in ['vendor', 'model_number', 'description']:
+        search_type = 'model__'+search_type
+
     header = {'Authorization': context}
 
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
