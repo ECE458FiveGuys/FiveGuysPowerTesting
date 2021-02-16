@@ -4,8 +4,12 @@ from django.http import HttpResponse
 import requests
 from django.utils.http import is_safe_url
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 token = ''
+
+def getToken():
+    return token
 
 def loginpage(request):
     return render(request, 'loginpage.html')
@@ -28,16 +32,21 @@ def home(request):
         response = 'Token ' + str(read1.json().get('auth_token'))
         global token
         token = response
-        context = {'Token': response}
-        if (len(response)>=20):
-            return render(request, 'tempMainPage.html', context)
-        else:
-            render(request, 'home.html')
+        context = {'Authorization': response}
+        response = render(request, 'home.html')
+        response.set_cookie('token', context)
+        return response
+        #if (len(response)>=20):
+            #requests.post('http://'+request.get_host()+'/createmodel/', context)
+            #createmodel(request, context)
+        #else:
+            #render(request, 'home.html')
     return render(request, 'home.html')
 
 
-
+#@login_required(login_url = 'http://127.0.0.1:8000/home/')
 def createmodel(request):
+    print(request.COOKIES['token'])
     if request.method =="POST":
         vendor = request.POST.get("vendor")
         model_number = request.POST.get("model_number")
