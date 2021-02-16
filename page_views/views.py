@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
-from datetime import date, datetime
-from django.contrib.auth.decorators import login_required, user_passes_test
+import datetime
+#django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
@@ -145,7 +145,7 @@ def pagecheck(val):
 
 
 def datecheck(event):
-    if event == '':
+    if event == None:
         return "Noncalibratable"
     else:
         event = datetime.datetime.strptime(event, "%Y-%m-%d").date()
