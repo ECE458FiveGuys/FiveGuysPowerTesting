@@ -81,7 +81,7 @@ Next, we migrate our database to SQLite. In this step, we will also create a sup
 python manage.py makemigrations database
 python manage.py makemigrations user_portal
 python manage.py migrate
-python manage.py createsupseruser
+python manage.py createsuperuser
 ```
  
 Now, we can collect the static files for nginx to serve at a later step.

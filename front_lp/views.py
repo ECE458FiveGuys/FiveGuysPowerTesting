@@ -4,40 +4,46 @@ from django.http import HttpResponse
 import requests
 from django.utils.http import is_safe_url
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
-token = ''
-
-def loginpage(request):
-    return render(request, 'loginpage.html')
-
-def tempMainPage(request):
-    return render(request, 'tempMainPage.html')
+from django.shortcuts import render
+from front_lp.models import City
 
 
-def deleteconfirmation(request):
-    text = "hello world"
-    context = {'mytext': text}
-    return render(request, 'deleteconfirmation.html', context)
+def showlist(request):
+    data2 = {'vendor': ''}
+    header2 = {'Authorization': request.COOKIES['token']}
+    print(header2)
+    read2 = requests.get('http://' + request.get_host() + '/vendors/', headers=header2, data=data2)
+    results = read2.json
+    print(results)
+    return render(request, "home.html", {"showcity": results})
 
-def home(request):
+def login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
         data1 = {'username':username, 'password':password}
         read1 = requests.post('http://'+request.get_host()+'/auth/token/login/', data=data1)
-        response = 'Token ' + str(read1.json().get('auth_token'))
-        global token
-        token = response
-        context = {'Token': response}
-        if (len(response)>=20):
-            return render(request, 'tempMainPage.html', context)
+        tokenString = 'Token ' + str(read1.json().get('auth_token'))
+        if (len(tokenString)>=20):
+            response = render(request, 'createmodel.html')
+            response.set_cookie('token', tokenString)
+            return response
         else:
-            render(request, 'home.html')
-    return render(request, 'home.html')
-
-
+            print(read1.json())
+            context = {'response': read1.json()}
+            return render(request, 'login.html', context)
+    return render(request, 'login.html')
 
 def createmodel(request):
+    data2 = {'vendor': ''}
+    header2 = {'Authorization': request.COOKIES['token']}
+    print(header2)
+    read2 = requests.get('http://' + request.get_host() + '/vendors/', headers=header2, data=data2)
+    results = read2.json
+    print(results)
+    context = {"showcity": results}
     if request.method =="POST":
         vendor = request.POST.get("vendor")
         model_number = request.POST.get("model_number")
@@ -46,9 +52,9 @@ def createmodel(request):
         calibration_frequency = request.POST.get("calibration_frequency")
         data2 = {'vendor': vendor, 'model_number': model_number, 'description': description,
                  'comment':comment, 'calibration_frequency':calibration_frequency}
-        header2 = {'Authorization': token}
+        header2 = {'Authorization': request.COOKIES['token']}
+        print(header2)
         read2 = requests.post('http://'+request.get_host()+'/models/', headers=header2, data=data2)
-        context = {}
         if (str(read2.json().get('vendor'))==vendor):
             context = {'intro_phrase': 'Successfully added a model with the following information:',
                        'vendor': 'Vendor Name: ' + vendor,
@@ -60,7 +66,7 @@ def createmodel(request):
             context = {'intro_phrase': read2.json()}
         return render(request, 'createmodel.html', context)
     else:
-        return render(request, 'createmodel.html')
+        return render(request, 'createmodel.html', context)
 
 def createinstrument(request):
     if request.method =="POST":

@@ -1,5 +1,6 @@
 import abc
 
+
 class Service:
 
     @abc.abstractmethod

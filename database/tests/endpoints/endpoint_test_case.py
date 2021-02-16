@@ -5,11 +5,10 @@ from enum import Enum
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from database.models import Instrument
-from database.views import import_models
 from user_portal.models import PowerUser
 
 TEST_ROOT = "http://127.0.0.1:8000/"
+
 
 class EndpointTestCase(TestCase):
     class Endpoints(Enum):
@@ -21,7 +20,6 @@ class EndpointTestCase(TestCase):
         EXPORT_ALL = TEST_ROOT + "export/"
         IMPORT_MODELS = TEST_ROOT + "import-models/"
         IMPORT_INSTRUMENTS = TEST_ROOT + "import-instruments/"
-
 
         def fill(self, params):
             return self.value.format(*params)

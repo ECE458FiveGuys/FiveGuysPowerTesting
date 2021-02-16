@@ -1,10 +1,10 @@
+from datetime import timedelta
+
 from django.test import TestCase
 
-from database.exceptions import RequiredFieldsEmptyException, FieldCombinationNotUniqueException, \
-    IllegalAccessException, FieldLengthException, UserError
+from database.exceptions import FieldLengthException, RequiredFieldsEmptyException, UserError
 from database.models import EquipmentModel
 from database.tests.test_utils import OVERLONG_STRING
-from datetime import datetime, timedelta
 
 
 class CreateModelTestCase(TestCase):

@@ -56,6 +56,9 @@ db.sqlite3
 env/
 venv/
 
+#Secrets
+FiveGuysPowerTesting/secret_settings.py
+
 .idea/
 .DS_Store
 migrations/

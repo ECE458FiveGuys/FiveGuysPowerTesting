@@ -7,31 +7,31 @@
         <h1>Create Model</h1>
         <form method="POST">
             {% csrf_token %}
-        <table border="1">
-            <tr>
-                <td>Vendor Name</td>
-                <td><input type="text" placeholder="required" name="vendor"></td>
-            </tr>
-            <tr>
+                {% block content %}
+                    <td>Vendor</td>
+                    <input type="text" list="citylist" Placeholder="required" class="form-control" style="width:200px;" name = "vendor">
+                    <datalist id="citylist">
+                 {% for results in showcity %}
+                        <option value="{{ results }}">
+                 {% endfor %}
+                    </datalist>
+                {% endblock %}
+        <br></br>
                 <td>Model Number</td>
                 <td><input type="text" placeholder="required" name="model_number"></td>
-            </tr>
-            <tr>
+        <br></br>
                 <td>Description</td>
                 <td><input type="text" placeholder="required" name="description"></td>
-            </tr>
-            <tr>
+        <br></br>
                 <td>Comment</td>
                 <td><input type="text" placeholder="optional" name="comment"></td>
-            </tr>
-            <tr>
+        <br></br>
                 <td>Calibration Frequency</td>
                 <td><input type="text" placeholder="optional (integer)" name="calibration_frequency"></td>
-            </tr>
-        </table>
+        <br></br>
         <input type="submit" value = "Insert">
         </form>
-        <button onclick="window.location.href='/tempMainPage/';">
+        <button onclick="window.location.href='/model/';">
           Return to Model/Instrument View
         </button>
         <br></br>

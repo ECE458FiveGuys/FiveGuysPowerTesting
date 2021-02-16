@@ -1,9 +1,7 @@
-from datetime import timedelta
-
 from rest_framework import serializers
 
-from database.model_enums import EquipmentModelEnum, InstrumentEnum, CalibrationEventEnum
-from database.models import EquipmentModel, Instrument, CalibrationEvent
+from database.model_enums import CalibrationEventEnum, EquipmentModelEnum, InstrumentEnum
+from database.models import CalibrationEvent, EquipmentModel, Instrument
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
 
@@ -79,13 +77,12 @@ class InstrumentListSerializer(serializers.ModelSerializer):
 
 
 class InstrumentBaseSerializer(serializers.ModelSerializer):
-    calibration_history = CalibrationHistorySerializer(many=True, read_only=True)
-
     class Meta:
         model = Instrument
         fields = [InstrumentEnum.PK.value,
+                  InstrumentEnum.MODEL.value,
                   InstrumentEnum.SERIAL_NUMBER.value,
-                  InstrumentEnum.MODEL.value] + ['calibration_history']
+                  InstrumentEnum.COMMENT.value]
 
 
 class InstrumentSerializer(InstrumentBaseSerializer):
@@ -102,7 +99,13 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
         fields = [e.value for e in CalibrationEventEnum]
 
 
-class VendorSerializer(serializers.ModelSerializer):
+class VendorAutocompleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = EquipmentModel
         fields = [EquipmentModelEnum.VENDOR.value]
+
+
+class ModelAutocompleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentModel
+        fields = [EquipmentModelEnum.MODEL_NUMBER.value]
