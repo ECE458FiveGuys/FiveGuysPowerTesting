@@ -95,7 +95,7 @@ def instrumentpage(request):
     for j in results:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 
@@ -117,7 +117,7 @@ def instrumentpage_all(request):
     for j in instrjson:
         temp_model = j["model"]
         instr = [temp_model["vendor"], temp_model["model_number"], j["serial_number"], temp_model["description"],
-                 j["calibration_history"], j["calibration_expiration_date"],
+                 j["most_recent_calibration_date"], j["calibration_expiration_date"],
                  datecheck(j["calibration_expiration_date"])]
         instrlist.append(instr)
 

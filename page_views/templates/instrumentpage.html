@@ -60,7 +60,6 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        {{ request.user}}
                     </div>
                 </nav>
             </div>
@@ -115,7 +114,7 @@
                                                 <td>{{instr.4}</td>
                                                 <td>{{instr.5}}</td>
                                                 <td>{{instr.6}}</td>
-                                                <td><a href="/instrument-details/{{instr.2}}/">Detailed View</a></td>
+                                                <td><a href="/instrument-details/{{instr.2}}">Detailed View</a></td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
