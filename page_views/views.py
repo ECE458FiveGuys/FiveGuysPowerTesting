@@ -1,11 +1,14 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 import datetime
+from django.views.static import serve
 # django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
 import json
+
+from pathlib import Path
 
 # from django.view import generic
 # Create your views here.
@@ -14,6 +17,7 @@ HOST_SERVER = 'http://127.0.0.1:8000/';
 testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
 # context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
+downloads_path = str(Path.home() / "Downloads")
 
 
 # @login_required
@@ -134,10 +138,19 @@ def instrumentpage_all(request):
 def import_export(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
+    import_data = []
     if request.method == "GET":
         exp = request.GET.get('export', None)
         if exp != None:
-            requests.get('http://' + request.get_host() + exp, headers=header)
+            if exp == '/export-models/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/mod_export.csv', 'wb').write(data.content)
+            if exp == '/export-instruments/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/instr_export.csv', 'wb').write(data.content)
+            if exp == '/export/':
+                data = requests.get('http://' + request.get_host() + exp, headers=header)
+                new_file = open(downloads_path+'/all_export.zip', 'wb').write(data.content)
 
     if request.method == "PUT":
         csv_file = request.FILE['file']
@@ -145,6 +158,7 @@ def import_export(request):
 
         if type == 'models':
             data = requests.post('http://' + request.get_host() + '/import-models', headers=header, file=csv_file)
+
         else:
             if type == 'instruments':
                 data = requests.post('http://' + request.get_host() + '/import-instruments', headers=header, file=csv_file)

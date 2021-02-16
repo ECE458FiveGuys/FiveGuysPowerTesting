@@ -12,7 +12,7 @@ class ExportService(Service):
         self.file_name = file_name
 
     def execute(self):
-        response = HttpResponse(content_type='application/csv')
+        response = HttpResponse(content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename=%s' % self.file_name
         writer = csv.writer(response)
         self.write_file(writer)
