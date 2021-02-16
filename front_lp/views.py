@@ -6,47 +6,27 @@ from django.utils.http import is_safe_url
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
-token = ''
-
 def getToken():
     return token
 
-def loginpage(request):
-    return render(request, 'loginpage.html')
-
-def tempMainPage(request):
-    return render(request, 'tempMainPage.html')
-
-
-def deleteconfirmation(request):
-    text = "hello world"
-    context = {'mytext': text}
-    return render(request, 'deleteconfirmation.html', context)
-
-def home(request):
+def login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
         data1 = {'username':username, 'password':password}
         read1 = requests.post('http://'+request.get_host()+'/auth/token/login/', data=data1)
-        response = 'Token ' + str(read1.json().get('auth_token'))
-        global token
-        token = response
-        context = {'Authorization': response}
-        response = render(request, 'home.html')
-        response.set_cookie('token', context)
-        return response
-        #if (len(response)>=20):
-            #requests.post('http://'+request.get_host()+'/createmodel/', context)
-            #createmodel(request, context)
-        #else:
-            #render(request, 'home.html')
-    return render(request, 'home.html')
+        tokenString = 'Token ' + str(read1.json().get('auth_token'))
+        if (len(tokenString)>=20):
+            response = render(request, 'createmodel.html')
+            response.set_cookie('token', tokenString)
+            return response
+        else:
+            print(read1.json())
+            context = {'response': read1.json()}
+            return render(request, 'login.html', context)
+    return render(request, 'login.html')
 
-
-#@login_required(login_url = 'http://127.0.0.1:8000/home/')
 def createmodel(request):
-    print(request.COOKIES['token'])
     if request.method =="POST":
         vendor = request.POST.get("vendor")
         model_number = request.POST.get("model_number")
@@ -55,7 +35,8 @@ def createmodel(request):
         calibration_frequency = request.POST.get("calibration_frequency")
         data2 = {'vendor': vendor, 'model_number': model_number, 'description': description,
                  'comment':comment, 'calibration_frequency':calibration_frequency}
-        header2 = {'Authorization': token}
+        header2 = {'Authorization': request.COOKIES['token']}
+        print(header2)
         read2 = requests.post('http://'+request.get_host()+'/models/', headers=header2, data=data2)
         context = {}
         if (str(read2.json().get('vendor'))==vendor):
