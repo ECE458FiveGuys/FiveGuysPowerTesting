@@ -75,12 +75,22 @@
                             <button class="btn btn-primary btn-lg" id="button" onclick="window.location.href='all/';">View All</button>
                             <div class="card-body">
                                 <div class="table-responsive">
+                                    <style>
+                                        table {
+                                            border-collapse: collapse;
+                                        }
+
+                                        table, td, th {
+                                            border: 1px solid black;
+                                        }
+                                    </style>
                                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>Vendor</th>
                                                 <th>Model Number</th>
                                                 <th>Description</th>
+                                                <th>Comment</th>
                                                 <th>Calibration Frequency</th>
                                                 <th>Detailed View</th>
                                             </tr>
@@ -90,7 +100,9 @@
                                                 <th>Vendor</th>
                                                 <th>Model Number</th>
                                                 <th>Description</th>
+                                                <th>Comment</th>
                                                 <th>Calibration Frequency</th>
+                                                <th>Detailed View</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_list_or_404
 import requests
 import datetime
-#django.contrib.auth.decorators import login_required, user_passes_test
+# django.contrib.auth.decorators import login_required, user_passes_test
 # from templatetags import page_view_tags
 import database.views as db
 from django.core.paginator import Paginator
@@ -12,11 +12,11 @@ import json
 HOST_SERVER = 'http://127.0.0.1:8000/';
 
 testtoken = 'Token 9378e8bf088a5165f59afcb30bca52af53e0c2ac'
-#context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
+# context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
-#@login_required
+# @login_required
 def modelpage(request):
     context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
@@ -31,7 +31,7 @@ def modelpage(request):
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': desc, 'ordering': ord, 'search': search_term, 'search_field': search_type}
     header = {'Authorization': context}
-    message = requests.get('http://'+request.get_host()+'/models/', headers=header, params=data)
+    message = requests.get('http://' + request.get_host() + '/models/', headers=header, params=data)
     modjson = message.json()
 
     results = []
@@ -48,12 +48,12 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-#@login_required
+# @login_required
 def modelpage_all(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
 
-    message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
+    message = requests.get('http://' + request.get_host() + '/models/all', headers=header)
     modjson = message.json()
 
     modlist = []
@@ -66,7 +66,7 @@ def modelpage_all(request):
     return render(request, 'model_allpage.html', {'modlist': modlist})
 
 
-#@login_required
+# @login_required
 def instrumentpage(request):
     context = request.COOKIES['token']
     page_num = request.GET.get('page', startpage)
@@ -80,14 +80,14 @@ def instrumentpage(request):
     search_type = request.GET.get('search_field', None)
 
     if search_type in ['vendor', 'model_number', 'description']:
-        search_type = 'model__'+search_type
+        search_type = 'model__' + search_type
 
     header = {'Authorization': context}
 
     data = {'page': page_num, 'vendor': vend, 'model_number': mod_num,
             'description': descr, 'serial_number': serial_num, 'ordering': ord,
             'search': search_term, 'search_field': search_type}
-    message = requests.get('http://'+request.get_host()+'/instruments/', params=data, headers=header)
+    message = requests.get('http://' + request.get_host() + '/instruments/', params=data, headers=header)
     instrjson = message.json()
 
     results = []
@@ -108,12 +108,12 @@ def instrumentpage(request):
                   {'instrlist': instrlist, 'page_num': page_num})
 
 
-#@login_required
+# @login_required
 def instrumentpage_all(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
 
-    message = requests.get('http://'+request.get_host()+'/instruments/all', headers=header)
+    message = requests.get('http://' + request.get_host() + '/instruments/all', headers=header)
     instrjson = message.json()
 
     instrlist = []
@@ -130,13 +130,24 @@ def instrumentpage_all(request):
                   {'instrlist': instrlist})
 
 
-#@user_passes_test(lambda u: u.is_superuser)
+# @user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     context = request.COOKIES['token']
     header = {'Authorization': context}
-    exp = request.GET.get('export', None)
-    imp = request.GET.get('import', None)
-    file = request.GET.get('file', startpage)
+    if request.method == "GET":
+        exp = request.GET.get('export', None)
+        if exp != None:
+            requests.get('http://' + request.get_host() + exp, headers=header)
+
+    if request.method == "PUT":
+        csv_file = request.FILE['file']
+        type = request.POST.get('import_type')
+
+        if type == 'models':
+            data = requests.post('http://' + request.get_host() + '/import-models', headers=header, file=csv_file)
+        else:
+            if type == 'instruments':
+                data = requests.post('http://' + request.get_host() + '/import-instruments', headers=header, file=csv_file)
 
     return render(request, 'import_exportpage.html')
 
