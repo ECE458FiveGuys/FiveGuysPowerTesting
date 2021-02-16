@@ -31,9 +31,12 @@ def model_detail_page(request, pk=None):
         if str(instrument['model']['pk']) == pk:
             instrumentstopost.append(instrument)
 
+    edit_form = ModelEditForm()
+
     context = {
         "model": model,
         "instruments": instrumentstopost,
+        "edit_form": edit_form,
     }
 
     return render(request, 'model_details.html', context)
@@ -41,11 +44,18 @@ def model_detail_page(request, pk=None):
 
 def instrument_detail_page(request, serial=None):
 
+
+
     instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=token,
                                    params={'serial_number': serial})
 
-    instrument = instrumentsdata.json()['results'][0]
+    pseudoinstrument1 = instrumentsdata.json()['results'][0]
+    pseudoinstrument2 = requests.get('http://'+request.get_host()+'/instruments/'+str(pseudoinstrument1['pk'])+'/',headers=token)
 
+    instrument = pseudoinstrument2.json()
+    print(instrument)
+
+    #TODO
     calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=token,
                                    params={'instrument': instrument['pk']})
 
@@ -71,7 +81,7 @@ def instrument_detail_page(request, serial=None):
             formdict = form.data.dict()
             response = requests.post('http://' + request.get_host() + '/calibration-events/', headers=token,
                                      data=formdict)
-            print(formdict)
+            # print(formdict)
 
 
     # If this is a GET (or any other method) create the default form.
@@ -91,7 +101,8 @@ def instrument_detail_page(request, serial=None):
 
 def edit_instrument(request, pk=None, serial=None):
     if request.method == 'POST':
-
+        print("pk"+pk)
+        print("serial"+serial)
         # Create a form instance and populate it with data from the request (binding):
         form = InstrumentsEditForm(request.POST)
         if not form.is_valid():
@@ -102,7 +113,11 @@ def edit_instrument(request, pk=None, serial=None):
         else:
             print("form is valid")
             formdict = form.data.dict()
-            response = requests.put('http://' + request.get_host() + '/instruments/'+pk+'/', headers=token, data=formdict)
+            data = {}
+            for key in formdict.keys():
+                if formdict[key] != '':
+                    data[key] = formdict[key]
+            response = requests.patch('http://' + request.get_host() + '/instruments/'+pk+'/', headers=token, data=data)
             print(response)
             print(formdict)
 
@@ -123,8 +138,46 @@ def delete_instrument(request, pk=None):
     ret = redirect('/instrument/')#TODO
     return ret
 
+def edit_model(request, pk=None):
+    if request.method == 'POST':
 
-def pdf_gen(request, serial=None):
+        # Create a form instance and populate it with data from the request (binding):
+        form = ModelEditForm(request.POST)
+        if not form.is_valid():
+            print("form isn't valid")
+
+        # redirect to a new URL:
+        #TODO form submission response
+        else:
+            print("form is valid")
+            formdict = form.data.dict()
+            data = {}
+            for key in formdict.keys():
+                if formdict[key] != '':
+                    data[key] = formdict[key]
+            print(formdict)
+            response = requests.patch('http://' + request.get_host() + '/models/'+pk+'/', headers=token, data=data)
+            print(response)
+
+    ret = redirect('/model-details/'+pk) #TODO
+    return ret
+
+def delete_model(request, pk=None):
+
+
+    # Create a form instance and populate it with data from the request (binding):
+
+    # redirect to a new URL:
+    #TODO form submission response
+    print("form is valid")
+    response = requests.delete('http://' + request.get_host() + '/models/'+pk+'/', headers=token)
+    print(response)
+
+    ret = redirect('/model/') #TODO
+    return ret
+
+
+def pdf_gen(request, pk=None):
 
     # Create a file-like buffer to receive PDF data.
     buffer = io.BytesIO()
@@ -138,16 +191,25 @@ def pdf_gen(request, serial=None):
     time = datetime.today()
     date = time.strftime("%h-%d-%Y %H:%M:%S")
 
-    instrumentdata = requests.get('http://' + request.get_host() + '/instruments/', headers=token,
-                                  params={'serial_number': serial})
+    instrumentdata = requests.get('http://' + request.get_host() + '/instruments/'+pk+'/', headers=token)
+                                  # params={'serial_number': serial})
 
-    instrument = instrumentdata.json()['results'][0]
+    instrument = instrumentdata.json()
+    # print(instrument)
     model = instrument['model']
 
-    calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=token,
-                                   params={'pk': instrument['calibration_history']['pk']})
+    # print(instrument)
 
-    calibration = calibrationdata.json()['results'][0]
+    if instrument['calibration_history'] != None:
+        # calibrationdata = requests.get('http://' + request.get_host() + '/calibration-events/', headers=token,
+        #                            params={'pk': instrument['most_recent_calibration_date']['pk']})
+        calibrationdata = instrument['calibration_history']
+        # print(calibrationdata)
+    else:
+        ret = redirect('/no-calibrations/'+instrument['serial_number']+'/')  # TODO
+        return ret
+    # exit()
+    calibration = calibrationdata[0]
 
     p.setLineWidth(.3)
     p.setFont('Helvetica-Bold', 32)
@@ -157,9 +219,9 @@ def pdf_gen(request, serial=None):
     p.setFont('Helvetica', 15)
     p.drawString(65, 300, 'Model Number: ' + model['model_number'])
     p.drawString(65, 275, 'Model Description: ' + model['description'])
-    p.drawString(65, 250, 'Date of Last Calibration: ' + instrument['calibration_history']['date'])
-    p.drawString(65, 225, 'Exp. Date: ' + instrument['calibration_expiration'])
-    p.drawString(65, 200, 'Done by user: ' + str(calibration['user']))
+    p.drawString(65, 250, 'Date of Last Calibration: ' + calibration['date'])
+    p.drawString(65, 225, 'Exp. Date: ' + instrument['calibration_expiration_date'])
+    p.drawString(65, 200, 'Done by user: ' + str(calibration['user']['name']))
     p.drawString(65, 175, 'Comment: ' + calibration['comment'])
 
     p.drawString(65, 150, 'Date of Report: ' + date)
@@ -172,3 +234,7 @@ def pdf_gen(request, serial=None):
     # present the option to save the file.
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename='calibration_certificate.pdf')
+
+def calibration_message(request,serial=None):
+
+    return render(request, 'calibration_msg.html', context={'serial': serial})
