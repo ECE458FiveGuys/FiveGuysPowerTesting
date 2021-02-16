@@ -43,7 +43,7 @@ def model_detail_page(request, pk=None):
 def instrument_detail_page(request, serial=None):
     header2 = {'Authorization': request.COOKIES['token']}
 
-    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2ß,
+    instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2,
                                    params={'serial_number': serial})
 
     instrument = instrumentsdata.json()['results'][0]
