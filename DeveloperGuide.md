@@ -30,6 +30,28 @@ nginx is a webserver. Easier to configure than apache in the humble opinion of t
 
 ## Configuration
 
+### Development Environment
+
+```shell
+git clone git@github.com:ECE458FiveGuys/FiveGuysPowerTesting.git
+cd FiveGuysPowerTesting
+python3 -m venv env
+source env/bin/activate # may differ based on OS: Windows uses env/Scripts
+pip install -r requirements.txt
+python manage.py makemigrations database
+python manage.py makemigrations user_portal
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py collectstatic
+python manage.py runserver
+```
+
+Running all of the above commands, in order, one-by-one, will result in a functioning dev environment. Using your favorite browser, you should be able to navigate to <http://127.0.0.1:8000/login> and login using the superuser that you created. 
+
+### Production Environment
+
+See the Deployment Guide.
+
 ## Database Schema
 
 ### Users
