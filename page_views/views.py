@@ -149,8 +149,8 @@ def datecheck(event):
         return "Noncalibratable"
     else:
         event = datetime.datetime.strptime(event, "%Y-%m-%d").date()
-        diff = event - date.today()
-        if event < date.today():
+        diff = event - datetime.date.today()
+        if event < datetime.date.today():
             return "Expired"
         else:
             if diff.days < 30:
