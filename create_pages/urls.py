@@ -9,6 +9,5 @@ urlpatterns = [
     path('createinstrument/', v_lp.createinstrument),
     path('createuser/', v_lp.createuser),
     path('login/', v_lp.login),
-    path('pickvendor/', v_lp.pickvendor),
-    path('pickmodelnumber/', v_lp.pickmodelnumber)
+    path('intermediatepage/', v_lp.intermediatepage)
 ]
