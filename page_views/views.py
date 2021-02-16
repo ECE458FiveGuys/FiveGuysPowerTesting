@@ -16,7 +16,7 @@ context = {'Authorization': 'Token f5fbf500f318d33eabd627af173e63e9f538fedb'}
 startpage = 1
 
 
-@login_required
+#@login_required
 def modelpage(request):
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
@@ -47,7 +47,7 @@ def modelpage(request):
     return render(request, 'modelpage.html', {'modlist': modlist, 'page_num': page_num})
 
 
-@login_required
+#@login_required
 def modelpage_all(request):
     header = context
     message = requests.get('http://'+request.get_host()+'/models/all', headers=header)
@@ -63,7 +63,7 @@ def modelpage_all(request):
     return render(request, 'model_allpage.html', {'modlist': modlist})
 
 
-@login_required
+#@login_required
 def instrumentpage(request):
     page_num = request.GET.get('page', startpage)
     page_num = pagecheck(page_num)
@@ -99,7 +99,7 @@ def instrumentpage(request):
                   {'instrlist': instrlist, 'page_num': page_num})
 
 
-@login_required
+#@login_required
 def instrumentpage_all(request):
     message = requests.get('http://'+request.get_host()+'/instruments/all', headers=context)
     instrjson = message.json()
@@ -118,7 +118,7 @@ def instrumentpage_all(request):
                   {'instrlist': instrlist})
 
 
-@user_passes_test(lambda u: u.is_superuser)
+#@user_passes_test(lambda u: u.is_superuser)
 def import_export(request):
     header = context
     exp = request.GET.get('export', None)
