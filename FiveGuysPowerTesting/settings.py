@@ -29,19 +29,23 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'database.apps.DatabaseConfig',
-    'page_views',
-    'detail_views',
+
+    # 3rd Party
     'rest_framework',
+    'corsheaders',
     'django_filters',
     'rest_framework.authtoken',
     'djoser',
+
+    # Local
+    'page_views',
+    'detail_views',
     'user_portal',
     'create_pages'
 ]
@@ -49,12 +53,18 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+    'http://localhost:8000',
+)
 
 ROOT_URLCONF = 'FiveGuysPowerTesting.urls'
 
