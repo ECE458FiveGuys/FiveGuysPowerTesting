@@ -18,6 +18,10 @@ class UserEnum(Enum):
     ACTIVE = "active"
 
 
+class CategoryEnum(Enum):
+    NAME = "name"
+
+
 class EquipmentModelEnum(Enum):
     PK = "pk"
     VENDOR = "vendor"

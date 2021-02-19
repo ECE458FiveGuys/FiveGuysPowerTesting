@@ -1,8 +1,7 @@
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django.db.models import DateField, ExpressionWrapper, F, Max, Q
+from django.db.models import DateField, ExpressionWrapper, F, Max
 from rest_framework import generics, permissions, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from database.permissions import IsAdminOrAuthenticatedAndSafeMethod
@@ -12,6 +11,19 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
 from database.services.bulk_data_services.import_services.import_models import ImportModelsService
+
+
+class ModelCategoryViewSet(viewsets.ModelViewSet):
+    queryset = ModelCategory.objects.all()
+    serializer_class = ModelCategorySerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = [CategoryEnum.NAME.value]
+    search_fields = [CategoryEnum.NAME.value]
+    ordering_fields = [CategoryEnum.NAME.value]
+
+    @action(detail=False, methods=['get'])
+    def all(self, request):
+        return Response(ModelCategorySerializer(self.queryset, many=True).data)
 
 
 class EquipmentModelViewSet(viewsets.ModelViewSet):

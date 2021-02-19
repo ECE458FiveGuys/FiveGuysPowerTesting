@@ -1,9 +1,14 @@
 from rest_framework import serializers
 
-from database.model_enums import CalibrationEventEnum, EquipmentModelEnum, InstrumentEnum
-from database.models import CalibrationEvent, EquipmentModel, Instrument
+from database.model_enums import CalibrationEventEnum, EquipmentModelEnum, InstrumentEnum, CategoryEnum
+from database.models import CalibrationEvent, EquipmentModel, Instrument, ModelCategory
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
+
+class ModelCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelCategory
+        fields = [e.value for e in CategoryEnum]
 
 class EquipmentModelSerializer(serializers.ModelSerializer):
     class Meta:

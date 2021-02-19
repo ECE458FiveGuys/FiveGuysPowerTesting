@@ -1,21 +1,12 @@
 from datetime import date
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, RegexValidator
 from django.db import models
 
-from database.exceptions import NULL_FIELD_ERROR_MESSAGE, ModelRequiredFieldsEmptyException, \
-    CHARACTER_LENGTH_ERROR_MESSAGE, ModelFieldLengthException, UserError, InstrumentRequiredFieldsEmptyException, \
-    InstrumentFieldLengthException, CalibrationEventRequiredFieldsEmptyException, CalibrationEventFieldLengthException, \
-    INVALID_DATE_FIELD_ERROR_MESSAGE, InvalidDateException
+from database.constants import *
+from database.exceptions import *
 from user_portal.models import PowerUser as User
-
-VENDOR_LENGTH = 30
-MODEL_NUMBER_LENGTH = 40
-SERIAL_NUMBER_LENGTH = 40
-DESCRIPTION_LENGTH = 100
-COMMENT_LENGTH = 2000
-CALIBRATION_FREQUENCY_LENGTH = 10  # needs to be validated in manager, length not valid for integer field
 
 
 class EquipmentModelManager(models.Manager):
@@ -111,6 +102,16 @@ class CalibrationEventManager(models.Manager):
                     raise InvalidDateException()
                 else:
                     raise UserError(error_message)
+
+
+class ModelCategory(models.Model):
+    name = models.CharField(primary_key=True,
+                            max_length=CATEGORY_LENGTH,
+                            validators=[RegexValidator(regex="^[a-zA-Z0-9]*$",
+                                                       message="Category name can only contain alphanumeric characters")])
+
+    def __str__(self):
+        return self.name
 
 
 class EquipmentModel(models.Model):
