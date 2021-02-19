@@ -14,16 +14,21 @@ from reportlab.pdfgen import canvas
 # Create your views here.
 from detail_views.forms import *
 
-#token = {'Authorization': 'Token eadb51c79b15f8eb55d49e0a9228beea6b468c64'}
 
 
 def model_detail_page(request, pk=None):
     header2 = {'Authorization': request.COOKIES['token']}
 
-    modeldata = requests.get('http://' + request.get_host() + '/models/', headers=header2, params={'pk': pk})
+    print('pk: '+pk)
+
+    # pk = int(pk)
+    # print(pk)
+
+    modeldata = requests.get('http://' + request.get_host() + '/models/'+pk+'/', headers=header2)
     instrumentsdata = requests.get('http://' + request.get_host() + '/instruments/', headers=header2, params={})
 
-    model = modeldata.json()['results'][0]
+    model = modeldata.json()
+    print(model)
     instruments = instrumentsdata.json()['results']
 
     instrumentstopost = []
@@ -50,7 +55,7 @@ def instrument_detail_page(request, serial=None):
                                    params={'serial_number': serial})
 
     pseudoinstrument1 = instrumentsdata.json()['results'][0]
-    pseudoinstrument2 = requests.get('http://'+request.get_host()+'/instruments/'+str(pseudoinstrument1['pk'])+'/',headers=token)
+    pseudoinstrument2 = requests.get('http://'+request.get_host()+'/instruments/'+str(pseudoinstrument1['pk'])+'/',headers=header2)
 
     instrument = pseudoinstrument2.json()
     print(instrument)
@@ -117,7 +122,9 @@ def edit_instrument(request, pk=None, serial=None):
             for key in formdict.keys():
                 if formdict[key] != '':
                     data[key] = formdict[key]
-            response = requests.put('http://' + request.get_host() + '/instruments/'+pk+'/', headers=header2, data=data)
+
+            print(data)
+            response = requests.patch('http://' + request.get_host() + '/instruments/'+pk+'/', headers=header2, data=data)
 
 
     ret = redirect('/instrument-details/'+serial)#TODO
