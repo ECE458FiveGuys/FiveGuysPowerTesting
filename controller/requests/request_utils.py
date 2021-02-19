@@ -77,6 +77,9 @@ class RequestUtils:
     def parse_error_message(data):
         message = ""
         for error_type in data:
-            for mess in data[error_type]:
-                message += "{}: {}\n\n".format(error_type, mess)
+            if isinstance(data[error_type], list):
+                for mess in data[error_type]:
+                    message += "{}: {}\n\n".format(error_type, mess)
+            else:
+                message += "{}: {}\n\n".format(error_type, data)
         return message

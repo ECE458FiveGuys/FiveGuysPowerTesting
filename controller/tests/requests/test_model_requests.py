@@ -95,10 +95,56 @@ class ModelRequestsTestCase(RequestTestCase):
         self.mock_response(response, rel_url="models/", data=fields, method='post')
         try:
             ModelRequests.create_model(host=HOST, token=TOKEN,
-                                               vendor="vendor",
-                                               model_number="model_number",
-                                               description="desc")
+                                       vendor="vendor",
+                                       model_number="model_number",
+                                       description="desc")
         except UserError as e:
-            self.assertEquals(e.message, "non_field_errors: The fields vendor, model_number must make a unique set.\n\n")
+            self.assertEquals(e.message,
+                              "non_field_errors: The fields vendor, model_number must make a unique set.\n\n")
+            unstub()
+            pass
+
+    def test_edit_existing_model_no_exception(self):
+        model, instrument = create_model_and_instrument()
+        fields = {ModelFieldNames.VENDOR.value: "vend",
+                  ModelFieldNames.MODEL_NUMBER.value: "mod",
+                  ModelFieldNames.DESCRIPTION.value: "desc"}
+        request = self.factory.put(self.Endpoints.MODELS.value + "1/", data=fields)
+        request.headers = RequestUtils.build_token_header(TOKEN)
+        force_authenticate(request, self.admin)
+        view = EquipmentModelViewSet.as_view({'put': 'update'})
+        response = view(request, pk=1)
+        response.render()
+        self.mock_response(response, rel_url="models/1/", data=fields, method='put')
+        ret_model = ModelRequests.edit_model(host=HOST, token=TOKEN,
+                                     model_pk=1,
+                                     vendor="vend",
+                                     model_number="mod",
+                                     description="desc")
+        self.assertEquals(ret_model.model_number, "mod")
+        self.assertEquals(ret_model.vendor, "vend")
+        self.assertEquals(ret_model.description, "desc")
+        unstub()
+
+    def test_edit_nonexisting_model_throws_exception(self):
+        fields = {ModelFieldNames.VENDOR.value: "vend",
+                  ModelFieldNames.MODEL_NUMBER.value: "mod",
+                  ModelFieldNames.DESCRIPTION.value: "desc"}
+        request = self.factory.put(self.Endpoints.MODELS.value + "1/", data=fields)
+        request.headers = RequestUtils.build_token_header(TOKEN)
+        force_authenticate(request, self.admin)
+        view = EquipmentModelViewSet.as_view({'put': 'update'})
+        response = view(request, pk=1)
+        response.render()
+        self.mock_response(response, rel_url="models/1/", data=fields, method='put')
+        try:
+            ModelRequests.edit_model(host=HOST, token=TOKEN,
+                                     model_pk=1,
+                                     vendor="vend",
+                                     model_number="mod",
+                                     description="desc")
+        except UserError as e:
+            self.assertEquals(e.message,
+                              "detail: {'detail': 'Not found.'}\n\n")
             unstub()
             pass

@@ -33,9 +33,34 @@ class InstrumentRequests:
 
     @staticmethod
     def create_instrument(host, token, model_pk, serial_number, comment=None):
+        return InstrumentRequests.__update_instrument(token=token, method="post", url='http://{}/instruments/'.format(host),
+                                                      model_pk=model_pk, serial_number=serial_number, comment=comment)
+
+
+    @staticmethod
+    def edit_instrument(host, token, instrument_pk, model_pk=None, serial_number=None, comment=None):
+        return InstrumentRequests.__update_instrument(token=token, method="put", url='http://{}/instruments/{}/'.format(host, instrument_pk),
+                                                      model_pk=model_pk, serial_number=serial_number, comment=comment)
+
+
+    @staticmethod
+    def delete_instrument(host, token, instrument_pk):
+        header = RequestUtils.build_token_header(token)
+        inst_data = requests.request(method="delete", url='http://{}/instruments/{}/'.format(host, instrument_pk), headers=header)
+        try:
+            return InstrumentDTO.from_dict(inst_data)
+        except KeyError:
+            raise UserError(RequestUtils.parse_error_message(inst_data))
+
+
+
+    # private helpers
+
+    @staticmethod
+    def __update_instrument(token, method, url, model_pk=None, serial_number=None, comment=None):
         header = RequestUtils.build_token_header(token)
         fields = RequestUtils.build_create_instrument_data(model_pk, serial_number, comment)
-        instrument_data = requests.request(method="post", url='http://{}/instruments/'.format(host), headers=header,
+        instrument_data = requests.request(method=method, url=url, headers=header,
                                            data=fields).json()
         try:
             return InstrumentDTO.from_dict(instrument_data)

@@ -110,9 +110,50 @@ class InstrumentRequestsTestCase(RequestTestCase):
         self.mock_response(response, rel_url="instruments/", data=fields, method='post')
         try:
             InstrumentRequests.create_instrument(host=HOST, token=TOKEN,
-                                                 model_pk=model.pk, serial_number=instrument.serial_number, comment=instrument.comment)
+                                                 model_pk=model.pk, serial_number=instrument.serial_number,
+                                                 comment=instrument.comment)
 
         except UserError as e:
-            self.assertEquals(e.message, "non_field_errors: The fields model, serial_number must make a unique set.\n\n")
+            self.assertEquals(e.message,
+                              "non_field_errors: The fields model, serial_number must make a unique set.\n\n")
+            unstub()
+            pass
+
+    def test_edit_instrument(self):
+        model, instrument = create_model_and_instrument()
+        fields = RequestUtils.build_create_instrument_data(model_pk=model.pk, serial_number="ser", comment="com")
+        request = self.factory.put(self.Endpoints.INSTRUMENTS.value + "{}/".format(instrument.pk), data=fields)
+        request.headers = RequestUtils.build_token_header(TOKEN)
+        force_authenticate(request, self.admin)
+        view = InstrumentViewSet.as_view({'put': 'update'})
+        response = view(request, pk=instrument.pk)
+        response.render()
+        self.mock_response(response, rel_url="instruments/{}/".format(instrument.pk), data=fields, method='put')
+        ret_inst = InstrumentRequests.edit_instrument(host=HOST, token=TOKEN,
+                                                      instrument_pk=instrument.pk,
+                                                      model_pk=model.pk, serial_number="ser", comment="com")
+        self.assertEquals(ret_inst.model_id, model.pk)
+        self.assertEquals(ret_inst.serial_number, "ser")
+        # self.assertEquals(ret_inst.comment, "com")
+        unstub()
+
+    def test_edit_nonexistant_instrument_throws_exception(self):
+        model = create_model()
+        fields = RequestUtils.build_create_instrument_data(model_pk=model.pk, serial_number="ser", comment="com")
+        request = self.factory.put(self.Endpoints.INSTRUMENTS.value + "1/", data=fields)
+        request.headers = RequestUtils.build_token_header(TOKEN)
+        force_authenticate(request, self.admin)
+        view = InstrumentViewSet.as_view({'put': 'update'})
+        response = view(request, pk=1)
+        response.render()
+        self.mock_response(response, rel_url="instruments/1/", data=fields, method='put')
+        try:
+            InstrumentRequests.edit_instrument(host=HOST, token=TOKEN,
+                                                          instrument_pk=1,
+                                                          model_pk=model.pk, serial_number="ser", comment="com")
+
+        except UserError as e:
+            self.assertEquals(e.message,
+                              "detail: {'detail': 'Not found.'}\n\n")
             unstub()
             pass
