@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
-from front_lp.models import City
+from create_pages.models import City
 
 
 def showlist(request):
@@ -27,7 +27,7 @@ def login(request):
         read1 = requests.post('http://'+request.get_host()+'/auth/token/login/', data=data1)
         tokenString = 'Token ' + str(read1.json().get('auth_token'))
         if (len(tokenString)>=20):
-            response = render(request, 'createmodel.html')
+            response = render(request, 'intermediatepage.html')
             response.set_cookie('token', tokenString)
             return response
         else:
@@ -36,14 +36,19 @@ def login(request):
             return render(request, 'login.html', context)
     return render(request, 'login.html')
 
+def intermediatepage(request):
+    return render(request, 'intermediatepage.html')
+
 def createmodel(request):
     data2 = {'vendor': ''}
-    header2 = {'Authorization': request.COOKIES['token']}
-    print(header2)
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     read2 = requests.get('http://' + request.get_host() + '/vendors/', headers=header2, data=data2)
     results = read2.json
-    print(results)
-    context = {"showcity": results}
+    context = {"models": results}
     if request.method =="POST":
         vendor = request.POST.get("vendor")
         model_number = request.POST.get("model_number")
@@ -69,6 +74,11 @@ def createmodel(request):
         return render(request, 'createmodel.html', context)
 
 def createinstrument(request):
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     if request.method =="POST":
         model = request.POST.get("model")
         serial_number = request.POST.get("serial_number")
@@ -76,7 +86,6 @@ def createinstrument(request):
         data2 = {'model': model,
                  'serial_number': serial_number,
                  'comment': comment}
-        header2 = {'Authorization': token}
         read2 = requests.post('http://' + request.get_host() + '/instruments/', headers=header2, data=data2)
         context = {}
         if (str(read2.json().get('model'))==model):
@@ -91,6 +100,11 @@ def createinstrument(request):
         return render(request, 'createinstrument.html')
 
 def createuser(request):
+    try:
+        header2 = {'Authorization': request.COOKIES['token']}
+    except KeyError:
+        context = {'response': 'Please login before continuing'}
+        return render(request, 'login.html', context)
     if request.method =="POST":
         username = request.POST.get("username")
         name = request.POST.get("name")
@@ -101,7 +115,6 @@ def createuser(request):
                  'email': email,
                  'password': password,
                  'is_active': 'True'}
-        header2 = {'Authorization': token}
         read2 = requests.post('http://'+request.get_host()+'/auth/users/', headers=header2, data=data2)
         context = {}
         if (str(read2.json().get('username')) == username):

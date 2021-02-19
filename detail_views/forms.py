@@ -8,13 +8,13 @@ class CalibrationForm(forms.Form):
 
 
 class InstrumentsEditForm(forms.Form):
-    comment = forms.CharField(label = "Comment", max_length=100)
-    model = forms.CharField(label="Model")
+    comment = forms.CharField(label = "Comment", max_length=100,required=False)
+    # model = forms.CharField(label="Model",required=False)
 
 
 class ModelEditForm(forms.Form):
-    vendor = forms.CharField(label="Vendor")
-    model_number = forms.CharField(label="Model #")
-    description = forms.CharField(label="Description")
-    comment = forms.CharField(label="Comment", max_length=100)
-    calibration_frequency = forms.CharField(label="Calibration Frequency (Days/Calibration)")
+    vendor = forms.CharField(label="Vendor",required=False)
+    model_number = forms.CharField(label="Model #",required=False)
+    description = forms.CharField(label="Description",required=False)
+    comment = forms.CharField(label="Comment", max_length=100,required=False)
+    calibration_frequency = forms.CharField(label="Calibration Frequency (Days/Calibration)",required=False)

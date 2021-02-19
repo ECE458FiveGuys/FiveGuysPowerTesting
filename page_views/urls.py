@@ -17,7 +17,7 @@ Including another URLconf
 from page_views import views as v
 from django.urls import path, include, re_path
 from rest_framework import routers, serializers, viewsets
-from front_lp import views as v_lp
+from create_pages import views as v_lp
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -27,4 +27,7 @@ urlpatterns = [
     re_path(r'^instrument/$', v.instrumentpage, name='instrumentpage'),
     re_path(r'^instrument/all/$', v.instrumentpage_all, name='instrumentpage'),
     re_path(r'^import_export/$', v.import_export, name='import_exportpage'),
+    # re_path(r'^import_export/export/$', v.export, name='import_exportpage'),
+    # re_path(r'^import_export/instrument/$', v.import_instrument, name='import_exportpage'),
+    # re_path(r'^import_export/instrument/$', v.import_instrument, name='import_exportpage'),
 ]
