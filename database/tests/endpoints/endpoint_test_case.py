@@ -13,8 +13,10 @@ TEST_ROOT = "http://127.0.0.1:8000/"
 class EndpointTestCase(TestCase):
     class Endpoints(Enum):
         MODELS = TEST_ROOT + "models/"
+        MODEL = TEST_ROOT + "models/{}"
         VENDORS = TEST_ROOT + "vendors?vendor={}"
-        INSTRUMENT = TEST_ROOT + "models/"
+        INSTRUMENTS = TEST_ROOT + "instruments/"
+        INSTRUMENT = TEST_ROOT + "instruments/{}"
         EXPORT_MODELS = TEST_ROOT + "export-models/"
         EXPORT_INSTRUMENTS = TEST_ROOT + "export-instruments/"
         EXPORT_ALL = TEST_ROOT + "export/"
@@ -26,7 +28,7 @@ class EndpointTestCase(TestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
+        self.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'password', is_active=True)
 
     def make_import(self, endpoint, function, fields, row):
         tmpfile = tempfile.TemporaryFile("a+")
