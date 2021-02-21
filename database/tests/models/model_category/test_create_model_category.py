@@ -1,5 +1,5 @@
 from django.test import TestCase
-from database.models import ModelCategory
+from database.models.model_category import ModelCategory
 from django.core.exceptions import ValidationError
 
 

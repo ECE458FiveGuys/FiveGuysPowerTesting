@@ -1,8 +1,8 @@
 from datetime import timedelta
 
 from database.exceptions import InvalidCalibrationFrequencyException
-from database.models import EquipmentModel
-from database.serializers import EquipmentModelSerializer
+from database.models.model import Model
+from database.serializers.model import ModelSerializer
 from database.services.bulk_data_services.import_service import ImportService
 from database.services.bulk_data_services.table_enums import ModelTableColumnNames
 
@@ -13,7 +13,7 @@ class ImportModelsService(ImportService):
         super().__init__(import_file=file, fields=[e.value for e in ModelTableColumnNames])
 
     def serialize(self, created_objects):
-        return EquipmentModelSerializer(created_objects, many=True)
+        return ModelSerializer(created_objects, many=True)
 
     def create_objects_from_row(self, row):
         vendor = self.parse_field(row, ModelTableColumnNames.VENDOR.value)
@@ -24,15 +24,15 @@ class ImportModelsService(ImportService):
             else row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]
         if calibration_frequency is not None:
             try:
-                calibration_frequency = timedelta(seconds=int(calibration_frequency))
-                if calibration_frequency <= timedelta(seconds=0):
+                calibration_frequency = timedelta(days=int(calibration_frequency))
+                if calibration_frequency <= timedelta(days=0):
                     raise InvalidCalibrationFrequencyException(vendor, model_number)
             except (SyntaxError, ValueError):
                 raise InvalidCalibrationFrequencyException(vendor, model_number)
-        model = EquipmentModel.objects.create(vendor=vendor,
-                                              model_number=model_number,
-                                              description=description,
-                                              comment=comment,
-                                              calibration_frequency=calibration_frequency)
+        model = Model.objects.create(vendor=vendor,
+                                     model_number=model_number,
+                                     description=description,
+                                     comment=comment,
+                                     calibration_frequency=calibration_frequency)
 
         return [model]

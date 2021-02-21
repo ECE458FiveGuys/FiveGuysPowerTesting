@@ -13,6 +13,7 @@ TEST_ROOT = "http://127.0.0.1:8000/"
 class EndpointTestCase(TestCase):
     class Endpoints(Enum):
         MODELS = TEST_ROOT + "models/"
+        MODEL_CATEGORIES = TEST_ROOT + "model-categories/"
         VENDORS = TEST_ROOT + "vendors?vendor={}"
         INSTRUMENT = TEST_ROOT + "models/"
         EXPORT_MODELS = TEST_ROOT + "export-models/"
