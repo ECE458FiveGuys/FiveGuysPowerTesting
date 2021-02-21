@@ -8,10 +8,20 @@ from database.models.model_category import ModelCategory
 from database.serializers.instrument import InstrumentSerialNumberSerializer
 
 
+class ModelUniqueFieldsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Model
+        fields = [ModelEnum.PK.value,
+                  ModelEnum.VENDOR.value,
+                  ModelEnum.MODEL_NUMBER.value]
+
+
 class ModelCategoryRetrieveSerializer(serializers.ModelSerializer):
+    model_list = ModelUniqueFieldsSerializer(many=True, read_only=True)
+
     class Meta:
         model = ModelCategory
-        fields = [e.value for e in CategoryEnum]
+        fields = [e.value for e in CategoryEnum] + ['model_list']
 
 
 class ModelCategorySerializer(serializers.ModelSerializer):

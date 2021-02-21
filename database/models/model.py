@@ -52,7 +52,7 @@ class Model(models.Model):
     description = models.CharField(blank=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, default='', max_length=COMMENT_LENGTH)
     calibration_frequency = models.DurationField(blank=True, default=timedelta(days=0))
-    model_categories = models.ManyToManyField(ModelCategory, blank=True)
+    model_categories = models.ManyToManyField(ModelCategory, related_name="model_list", blank=True)
 
     objects = ModelManager()
 
