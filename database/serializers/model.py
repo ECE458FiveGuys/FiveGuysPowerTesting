@@ -2,10 +2,17 @@ from datetime import timedelta
 
 from rest_framework import serializers
 
-from database.model_enums import CategoryEnum, ModelEnum
+from database.model_enums import CategoryEnum, InstrumentEnum, ModelEnum
+from database.models.instrument import Instrument
 from database.models.model import Model
 from database.models.model_category import ModelCategory
-from database.serializers.instrument import InstrumentSerialNumberSerializer
+
+
+class InstrumentForModelRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instrument
+        fields = [InstrumentEnum.PK.value,
+                  InstrumentEnum.SERIAL_NUMBER.value]
 
 
 class ModelUniqueFieldsSerializer(serializers.ModelSerializer):
@@ -32,7 +39,7 @@ class ModelCategorySerializer(serializers.ModelSerializer):
 
 class ModelRetrieveSerializer(serializers.ModelSerializer):
     model_categories = ModelCategorySerializer(many=True, read_only=True)
-    instruments = InstrumentSerialNumberSerializer(many=True, read_only=True)
+    instruments = InstrumentForModelRetrieveSerializer(many=True, read_only=True)
 
     class Meta:
         model = Model

@@ -15,12 +15,6 @@ class ModelForInstrumentSerializer(serializers.ModelSerializer):
                   ModelEnum.DESCRIPTION.value]
 
 
-class InstrumentSerialNumberSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Instrument
-        fields = [InstrumentEnum.PK.value, InstrumentEnum.SERIAL_NUMBER.value]
-
-
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
     calibration_expiration_date = serializers.DateField()
     calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
