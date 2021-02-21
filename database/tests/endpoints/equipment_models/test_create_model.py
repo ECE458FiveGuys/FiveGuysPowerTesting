@@ -30,7 +30,7 @@ class CreateModelTestCase(EndpointTestCase):
             "model_number": "87V",
             "description": "Multimeter with temperature probes",
             "calibration_frequency": "60",
-            "model_categories": [1]
+            "model_categories": ['multimeter']
         }
         r1 = self.factory.post(self.Endpoints.MODEL_CATEGORIES, model_category, format='json')  # add category to db
         force_authenticate(r1, self.admin)
@@ -43,13 +43,38 @@ class CreateModelTestCase(EndpointTestCase):
         if response.status_code != 201:
             self.fail("model not created")
 
+    def test_create_model_with_multiple_categories(self):
+        mc1 = {"name": "multimeter"}
+        mc2 = {"name": "ammeter"}
+        model = {
+            "vendor": "Fluke",
+            "model_number": "87V",
+            "description": "Multimeter with temperature probes",
+            "calibration_frequency": "60",
+            "model_categories": ['multimeter', 'ammeter']
+        }
+        r1 = self.factory.post(self.Endpoints.MODEL_CATEGORIES, mc1, format='json')  # add category to db
+        force_authenticate(r1, self.admin)
+        v1 = ModelCategoryViewSet.as_view({'post': 'create'})
+        _ = v1(r1)
+        r2 = self.factory.post(self.Endpoints.MODEL_CATEGORIES, mc2, format='json')  # add category to db
+        force_authenticate(r2, self.admin)
+        v2 = ModelCategoryViewSet.as_view({'post': 'create'})
+        _ = v2(r2)
+        r3 = self.factory.post(self.Endpoints.MODELS, model, format='json')
+        force_authenticate(r3, self.admin)
+        v3 = ModelViewSet.as_view({'post': 'create'})
+        response = v3(r3)
+        if response.status_code != 201:
+            self.fail("model not created")
+
     def test_fail_create_model_with_categories(self):
         model = {
             "vendor": "Fluke",
             "model_number": "87V",
             "description": "Multimeter with temperature probes",
             "calibration_frequency": "60",
-            "model_categories": [1]
+            "model_categories": ['multimeter']
         }
         r = self.factory.post(self.Endpoints.MODELS, model)
         force_authenticate(r, self.admin)

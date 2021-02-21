@@ -6,7 +6,7 @@ from database.constants import CATEGORY_LENGTH
 
 
 class ModelCategory(models.Model):
-    name = models.CharField(blank=False, max_length=CATEGORY_LENGTH,
+    name = models.CharField(blank=False, unique=True, max_length=CATEGORY_LENGTH,
                             validators=[RegexValidator("^[0-9a-zA-Z_]*$",
                                                        message="Name of a category can only contain alphanumeric "
                                                                "characters and underscores.")])
