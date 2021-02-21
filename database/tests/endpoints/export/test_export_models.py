@@ -18,12 +18,11 @@ class ExportModelsTestCase(EndpointTestCase):
         force_authenticate(request, self.admin)
         response = export_models(request)
         if response.status_code != 200:
-            print(response)
             self.fail("models could not be exported")
         self.assertEquals(
-                    response.get('Content-Disposition'),
-                    'attachment; filename=models.csv'
-                )
+            response.get('Content-Disposition'),
+            'attachment; filename=models.csv'
+        )
         new_file = tempfile.TemporaryFile()
         new_file.write(response.content)
         new_file.seek(0)
@@ -35,8 +34,7 @@ class ExportModelsTestCase(EndpointTestCase):
         list_of_dict = list(reader)
         row = list_of_dict[0]
         if row[ModelTableColumnNames.VENDOR.value] != model.vendor \
-            or row[ModelTableColumnNames.MODEL_NUMBER.value] != model.model_number \
-            or row[ModelTableColumnNames.MODEL_DESCRIPTION.value] != model.description \
-            or row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value] != "N/A":
+                or row[ModelTableColumnNames.MODEL_NUMBER.value] != model.model_number \
+                or row[ModelTableColumnNames.MODEL_DESCRIPTION.value] != model.description \
+                or str(row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]) != str(model.calibration_frequency):
             self.fail("created model not found")
-

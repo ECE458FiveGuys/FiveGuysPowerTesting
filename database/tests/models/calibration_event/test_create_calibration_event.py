@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils.timezone import localtime, now
 
 from database.exceptions import FieldLengthException, InvalidDateException, RequiredFieldsEmptyException
-from database.models import CalibrationEvent, Instrument
+from database.models.calibration_event import CalibrationEvent, Instrument
 from database.tests.test_utils import OVERLONG_STRING, create_model_and_instrument, create_non_admin_user
 
 
