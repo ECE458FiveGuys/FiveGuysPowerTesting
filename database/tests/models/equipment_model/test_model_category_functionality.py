@@ -32,11 +32,11 @@ class CreateModelCategoryTestCase(TestCase):
         m3.save()
 
     def test_single_model_for_category(self):
-        queryset = ModelCategory.objects.get(name="Multimeter").model_set.all()
+        queryset = ModelCategory.objects.get(name="Multimeter").model_list.all()
         expected_queryset = Model.objects.filter(vendor="Fluke", model_number="87M")
         self.assertEqual(f'{queryset}', f'{expected_queryset}')
 
     def test_multiple_models_for_category(self):
-        queryset = ModelCategory.objects.get(name="Voltmeter").model_set.all()
+        queryset = ModelCategory.objects.get(name="Voltmeter").model_list.all()
         expected_queryset = Model.objects.filter(model_categories=1)  # want this to be string
         self.assertEqual(f'{queryset}', f'{expected_queryset}')
