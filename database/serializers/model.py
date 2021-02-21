@@ -17,7 +17,7 @@ class ModelCategoryRetrieveSerializer(serializers.ModelSerializer):
 class ModelCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ModelCategory
-        fields = [CategoryEnum.NAME.value]
+        fields = [e.value for e in CategoryEnum]
 
 
 class ModelRetrieveSerializer(serializers.ModelSerializer):
@@ -34,7 +34,8 @@ class ModelListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = [ModelEnum.VENDOR.value,
+        fields = [ModelEnum.PK.value,
+                  ModelEnum.VENDOR.value,
                   ModelEnum.MODEL_NUMBER.value,
                   ModelEnum.DESCRIPTION.value,
                   ModelEnum.CALIBRATION_FREQUENCY.value,
