@@ -15,21 +15,21 @@ class ModelManager(models.Manager):
                vendor=None,
                model_number=None,
                description=None,
-               comment="",
+               comment='',
                calibration_frequency=timedelta(days=0),
-               model_categories=None):
+               calibration_mode='FILE'):
         try:
             if calibration_frequency is None:
                 calibration_frequency = timedelta(days=0)
-            model = Model(vendor=vendor, model_number=model_number,
-                          description=description,
-                          comment=comment,
-                          calibration_frequency=calibration_frequency)
-            # model.model_categories.set([])
-            # print('Model Categories' + model_categories)
-            model.full_clean()
-            model.save()
-            return model
+            m = Model(vendor=vendor,
+                      model_number=model_number,
+                      description=description,
+                      comment=comment,
+                      calibration_frequency=calibration_frequency,
+                      calibration_mode=calibration_mode)
+            m.full_clean()
+            m.save()
+            return m
         except ValidationError as e:
             for error_message in e.messages:
                 if NULL_FIELD_ERROR_MESSAGE in error_message:
@@ -47,17 +47,24 @@ class ModelManager(models.Manager):
 
 
 class Model(models.Model):
+    CALIBRATION_CHOICES = [
+        ('SIMPLE', 'Simple Event with Comment'),
+        ('FILE', 'Simple Event or File Input'),
+        ('ALL', 'All Modes of Calibration')
+    ]
+
     vendor = models.CharField(blank=False, max_length=VENDOR_LENGTH)
     model_number = models.CharField(blank=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, default='', max_length=COMMENT_LENGTH)
     calibration_frequency = models.DurationField(blank=True, default=timedelta(days=0))
-    model_categories = models.ManyToManyField(ModelCategory, blank=True)
+    model_categories = models.ManyToManyField(ModelCategory, related_name='model_list', blank=True)
+    calibration_mode = models.CharField(blank=True, max_length=6, choices=CALIBRATION_CHOICES, default='FILE')
 
     objects = ModelManager()
 
     class Meta:
-        unique_together = ('vendor', 'model_number')  # 2.1.1.2
+        unique_together = ('vendor', 'model_number')
         ordering = ['vendor', 'model_number']
 
     def is_calibratable(self):
@@ -65,5 +72,5 @@ class Model(models.Model):
 
     def __str__(self):
         template = '(Vendor:{0.vendor}, Model Number:{0.model_number}, Description:{0.description}, Comment:{' \
-                   '0.comment}, Calibration Frequency:{0.calibration_frequency})'
+                   '0.comment}, Calibration Frequency:{0.calibration_frequency}, Calibration Mode:{0.calibration_mode})'
         return template.format(self)
