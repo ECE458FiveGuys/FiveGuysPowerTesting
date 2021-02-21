@@ -4,9 +4,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from database.model_enums import *
 from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
 from database.serializers.calibration_event import CalibrationEventSerializer
 from database.serializers.instrument import InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
@@ -28,10 +26,6 @@ class ModelCategoryViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return ModelCategoryRetrieveSerializer  # 2.1.4
         return ModelCategorySerializer  # 2.1.3
-
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(ModelCategorySerializer(self.queryset, many=True).data)
 
 
 class ModelViewSet(viewsets.ModelViewSet):
@@ -62,10 +56,6 @@ class ModelViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return ModelRetrieveSerializer  # 2.1.4
         return ModelSerializer  # 2.1.3
-
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(ModelSerializer(self.queryset, many=True).data)
 
 
 class VendorAutoCompleteViewSet(generics.ListAPIView):
@@ -143,10 +133,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return InstrumentRetrieveSerializer  # 2.2.4
         return InstrumentSerializer  # 2.2.3
-
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(InstrumentSerializer(self.get_queryset(), many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
