@@ -18,13 +18,19 @@ class UserEnum(Enum):
     ACTIVE = "active"
 
 
-class EquipmentModelEnum(Enum):
+class CategoryEnum(Enum):
+    PK = "pk"
+    NAME = "name"
+
+
+class ModelEnum(Enum):
     PK = "pk"
     VENDOR = "vendor"
     MODEL_NUMBER = "model_number"
     DESCRIPTION = "description"
     COMMENT = "comment"
     CALIBRATION_FREQUENCY = "calibration_frequency"
+    MODEL_CATEGORIES = "model_categories"
 
 
 class InstrumentEnum(Enum):

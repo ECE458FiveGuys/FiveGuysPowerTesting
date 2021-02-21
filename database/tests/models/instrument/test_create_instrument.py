@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from database.exceptions import FieldLengthException, RequiredFieldsEmptyException, UserError
-from database.models import Instrument
+from database.models.instrument import Instrument
 from database.tests.test_utils import OVERLONG_STRING, create_model, create_model_and_instrument
 
 

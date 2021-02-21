@@ -2,13 +2,13 @@ from django.urls import include, path, re_path
 from rest_framework import routers
 
 from database import views
-from database.views import CalibrationEventViewSet, EquipmentModelViewSet, InstrumentViewSet, ModelAutocompleteViewSet, \
-    VendorAutoCompleteViewSet
+from database.views import *
 
 router = routers.DefaultRouter()
-router.register(r'models', EquipmentModelViewSet)
+router.register(r'models', ModelViewSet)
 router.register(r'instruments', InstrumentViewSet, basename='Instrument')
 router.register(r'calibration-events', CalibrationEventViewSet)
+router.register(r'model-categories', ModelCategoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

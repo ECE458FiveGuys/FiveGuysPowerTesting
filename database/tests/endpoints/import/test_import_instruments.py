@@ -1,4 +1,5 @@
-from database.models import CalibrationEvent, Instrument
+from database.models.calibration_event import CalibrationEvent
+from database.models.instrument import Instrument
 from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.tests.test_utils import create_model
@@ -47,7 +48,7 @@ class ImportModelsTestCase(EndpointTestCase):
             self.fail("database not cleared of inputs after failed import")
 
     def test_import_instrument_with_calibration_date_but_no_frequency(self):
-        model = create_model(calibration_freq=None)
+        model = create_model(calibration_freq=0)
         response = self.make_import(endpoint=self.Endpoints.IMPORT_INSTRUMENTS.value,
                                     fields=[e.value for e in InstrumentTableColumnNames],
                                     row=[model.vendor,
