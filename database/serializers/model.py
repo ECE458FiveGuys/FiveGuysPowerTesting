@@ -43,8 +43,8 @@ class ModelListSerializer(serializers.ModelSerializer):
 
 
 class ModelBaseSerializer(serializers.ModelSerializer):
-    model_categories = serializers.PrimaryKeyRelatedField(queryset=ModelCategory.objects.all(), many=True,
-                                                          required=False)
+    model_categories = serializers.SlugRelatedField(queryset=ModelCategory.objects.all(), many=True, slug_field='name',
+                                                    required=False)
     calibration_frequency = serializers.IntegerField(required=False)
 
     class Meta:

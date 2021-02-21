@@ -48,7 +48,7 @@ class CalibrationEventManager(models.Manager):
 class CalibrationEvent(models.Model):
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
     date = models.DateField(blank=False, validators=[MaxValueValidator(limit_value=date.today)])
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
 
     objects = CalibrationEventManager()
