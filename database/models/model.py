@@ -19,8 +19,6 @@ class ModelManager(models.Manager):
                calibration_frequency=timedelta(days=0),
                calibration_mode='FILE'):
         try:
-            if calibration_frequency is None:
-                calibration_frequency = timedelta(days=0)
             m = Model(vendor=vendor,
                       model_number=model_number,
                       description=description,
