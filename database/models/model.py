@@ -45,6 +45,12 @@ class ModelManager(models.Manager):
                 else:
                     raise UserError(error_message)
 
+    def vendors(self):
+        return self.order_by().values_list('vendor', flat=True).distinct()
+
+    def models(self, vendor):
+        return self.order_by().filter(vendor=vendor).values_list('model_number', flat=True).distinct()
+
 
 class Model(models.Model):
     CALIBRATION_CHOICES = [

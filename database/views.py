@@ -1,5 +1,5 @@
 from django.db.models import DateField, ExpressionWrapper, F, Max
-from rest_framework import generics, permissions, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -72,43 +72,14 @@ class ModelViewSet(viewsets.ModelViewSet):
             return ModelRetrieveSerializer  # 2.1.4
         return ModelSerializer  # 2.1.3
 
+    @action(detail=False, methods=['get'])
+    def vendors(self, request):
+        return Response(Model.objects.vendors())
 
-class VendorAutoCompleteViewSet(generics.ListAPIView):
-    """
-    API endpoint to get a list of vendors matching query
-    """
-    serializer_class = VendorAutocompleteSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        if self.request.query_params.get('vendor') is not None:
-            return Model.objects.filter(vendor__contains=self.request.query_params.get('vendor'))
-        return Model.objects.all()
-
-    def list(self, request, **kwargs):
-        vendor_list = list({model.vendor for model in self.get_queryset()})
-        vendor_list.sort()
-        return Response(vendor_list)
-
-
-class ModelAutocompleteViewSet(generics.ListAPIView):
-    """
-    API endpoint to get a list of models matching query
-    """
-    serializer_class = ModelAutocompleteSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        qs = Model.objects.all()
-        if self.request.query_params.get('vendor') is not None:
-            qs = qs.filter(vendor__contains=self.request.query_params.get('vendor'))
-            if self.request.query_params.get('model_number') is not None:
-                return qs.filter(model_number__contains=self.request.query_params.get('model_number'))
-        return qs
-
-    def list(self, request, **kwargs):
-        model_list = list({model.model_number for model in self.get_queryset()})
-        return Response(model_list)
+    @action(detail=False, methods=['get'])
+    def model_numbers(self, request):
+        vendor = request.query_params.get('vendor')
+        return Response(Model.objects.models(vendor=vendor))
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):

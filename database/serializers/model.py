@@ -88,15 +88,3 @@ class ModelSerializer(ModelBaseSerializer):
             return ModelListSerializer(instance).data
         except AttributeError:
             return ModelBaseSerializer(instance).data
-
-
-class VendorAutocompleteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Model
-        fields = [ModelEnum.VENDOR.value]
-
-
-class ModelAutocompleteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Model
-        fields = [ModelEnum.MODEL_NUMBER.value]

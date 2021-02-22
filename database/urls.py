@@ -1,4 +1,4 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework import routers
 
 from database import views
@@ -18,6 +18,4 @@ urlpatterns = [
     path('export/', views.export),
     path('import-models/', views.import_models),
     path('import-instruments/', views.import_instruments),
-    re_path(r'^vendors/', VendorAutoCompleteViewSet.as_view()),
-    re_path(r'^model_numbers/', ModelAutocompleteViewSet.as_view())
 ]
