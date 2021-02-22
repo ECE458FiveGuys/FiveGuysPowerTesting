@@ -1,14 +1,14 @@
 from django.db.models import DateField, ExpressionWrapper, F, Max
-from rest_framework import generics, permissions, viewsets
+from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from database.model_enums import *
 from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
+from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
-from database.serializers.instrument import InstrumentRetrieveSerializer, InstrumentSerializer
+from database.serializers.instrument import InstrumentCategoryRetrieveSerializer, InstrumentCategorySerializer, \
+    InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
 from database.services.bulk_data_services.export_services.export_all import ExportAll
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
@@ -26,12 +26,21 @@ class ModelCategoryViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return ModelCategoryRetrieveSerializer  # 2.1.4
-        return ModelCategorySerializer  # 2.1.3
+            return ModelCategoryRetrieveSerializer
+        return ModelCategorySerializer
 
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(ModelCategorySerializer(self.queryset, many=True).data)
+
+class InstrumentCategoryViewSet(viewsets.ModelViewSet):
+    queryset = InstrumentCategory.objects.all()
+    serializer_class = InstrumentCategorySerializer
+    filterset_fields = [CategoryEnum.NAME.value]
+    search_fields = [CategoryEnum.NAME.value]
+    ordering_fields = [CategoryEnum.NAME.value]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return InstrumentCategoryRetrieveSerializer
+        return InstrumentCategorySerializer
 
 
 class ModelViewSet(viewsets.ModelViewSet):
@@ -64,46 +73,13 @@ class ModelViewSet(viewsets.ModelViewSet):
         return ModelSerializer  # 2.1.3
 
     @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(ModelSerializer(self.queryset, many=True).data)
+    def vendors(self, request):
+        return Response(Model.objects.vendors())
 
-
-class VendorAutoCompleteViewSet(generics.ListAPIView):
-    """
-    API endpoint to get a list of vendors matching query
-    """
-    serializer_class = VendorAutocompleteSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        if self.request.query_params.get('vendor') is not None:
-            return Model.objects.filter(vendor__contains=self.request.query_params.get('vendor'))
-        return Model.objects.all()
-
-    def list(self, request, **kwargs):
-        vendor_list = list({model.vendor for model in self.get_queryset()})
-        vendor_list.sort()
-        return Response(vendor_list)
-
-
-class ModelAutocompleteViewSet(generics.ListAPIView):
-    """
-    API endpoint to get a list of models matching query
-    """
-    serializer_class = ModelAutocompleteSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        qs = Model.objects.all()
-        if self.request.query_params.get('vendor') is not None:
-            qs = qs.filter(vendor__contains=self.request.query_params.get('vendor'))
-            if self.request.query_params.get('model_number') is not None:
-                return qs.filter(model_number__contains=self.request.query_params.get('model_number'))
-        return qs
-
-    def list(self, request, **kwargs):
-        model_list = list({model.model_number for model in self.get_queryset()})
-        return Response(model_list)
+    @action(detail=False, methods=['get'])
+    def model_numbers(self, request):
+        vendor = request.query_params.get('vendor')
+        return Response(Model.objects.models(vendor=vendor))
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
@@ -114,13 +90,17 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        InstrumentEnum.SERIAL_NUMBER.value
+        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        InstrumentEnum.SERIAL_NUMBER.value,
+        InstrumentEnum.INSTRUMENT_CATEGORIES.value
     ]
     search_fields = [
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        InstrumentEnum.SERIAL_NUMBER.value
+        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        InstrumentEnum.SERIAL_NUMBER.value,
+        InstrumentEnum.INSTRUMENT_CATEGORIES.value
     ]
     ordering_fields = [
         'model__' + ModelEnum.VENDOR.value,
@@ -143,10 +123,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return InstrumentRetrieveSerializer  # 2.2.4
         return InstrumentSerializer  # 2.2.3
-
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(InstrumentSerializer(self.get_queryset(), many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):

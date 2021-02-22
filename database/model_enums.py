@@ -44,6 +44,7 @@ class InstrumentEnum(AutoName):
     MODEL = auto()
     SERIAL_NUMBER = auto()
     COMMENT = auto()
+    INSTRUMENT_CATEGORIES = auto()
 
 
 class CalibrationEventEnum(AutoName):
