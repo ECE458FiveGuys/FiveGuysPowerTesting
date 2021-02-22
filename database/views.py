@@ -52,19 +52,19 @@ class ModelViewSet(viewsets.ModelViewSet):
         ModelEnum.VENDOR.value,
         ModelEnum.MODEL_NUMBER.value,
         ModelEnum.DESCRIPTION.value,
-        ModelEnum.MODEL_CATEGORIES.value,
+        'model_categories__name',
     ]
     search_fields = [
         ModelEnum.VENDOR.value,
         ModelEnum.MODEL_NUMBER.value,
         ModelEnum.DESCRIPTION.value,
-        ModelEnum.MODEL_CATEGORIES.value,
+        'model_categories__name',
     ]
     ordering_fields = [
         ModelEnum.VENDOR.value,
         ModelEnum.MODEL_NUMBER.value,
         ModelEnum.DESCRIPTION.value,
-        ModelEnum.CALIBRATION_FREQUENCY.value
+        ModelEnum.CALIBRATION_FREQUENCY.value,
     ]
 
     def get_serializer_class(self):
@@ -91,17 +91,17 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        'model__model_categories__name',
         InstrumentEnum.SERIAL_NUMBER.value,
-        InstrumentEnum.INSTRUMENT_CATEGORIES.value
+        'instrument_categories__name',
     ]
     search_fields = [
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        'model__model_categories__name',
         InstrumentEnum.SERIAL_NUMBER.value,
-        InstrumentEnum.INSTRUMENT_CATEGORIES.value
+        'instrument_categories__name',
     ]
     ordering_fields = [
         'model__' + ModelEnum.VENDOR.value,
@@ -109,7 +109,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + ModelEnum.DESCRIPTION.value,
         InstrumentEnum.SERIAL_NUMBER.value,
         'most_recent_calibration_date',
-        'calibration_expiration_date'
+        'calibration_expiration_date',
     ]
     ordering = ['model__vendor', 'model__model_number', 'serial_number']
 
