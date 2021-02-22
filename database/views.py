@@ -86,6 +86,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
+    queryset = Instrument.objects.all()
     filterset_fields = [
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
@@ -111,13 +112,6 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'calibration_expiration_date'
     ]
     ordering = ['model__vendor', 'model__model_number', 'serial_number']
-
-    def get_queryset(self):
-        mrc = Max('calibration_history__date')
-        cf = F('model__calibration_frequency')
-        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
-        return Instrument.objects.annotate(most_recent_calibration_date=mrc).annotate(
-            calibration_expiration_date=expiration)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
