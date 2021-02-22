@@ -67,7 +67,6 @@ class ModelBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
         fields = [e.value for e in ModelEnum]
-        depth = 2
 
     def create(self, validated_data):
         try:
