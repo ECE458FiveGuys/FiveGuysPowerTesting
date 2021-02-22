@@ -9,6 +9,7 @@ router.register(r'models', ModelViewSet)
 router.register(r'instruments', InstrumentViewSet, basename='Instrument')
 router.register(r'calibration-events', CalibrationEventViewSet)
 router.register(r'model-categories', ModelCategoryViewSet)
+router.register(r'instrument-categories', InstrumentCategoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

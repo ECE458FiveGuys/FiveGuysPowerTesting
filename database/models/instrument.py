@@ -4,6 +4,7 @@ from django.db import models
 from database.constants import COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
 from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, InstrumentFieldLengthException, \
     InstrumentRequiredFieldsEmptyException, NULL_FIELD_ERROR_MESSAGE, UserError
+from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 
 
@@ -12,7 +13,7 @@ class InstrumentManager(models.Manager):
     def create(self,
                model=None,
                serial_number=None,
-               comment=None):
+               comment=''):
         try:
             instrument = Instrument(model=model, serial_number=serial_number, comment=comment)
             instrument.full_clean()
@@ -38,8 +39,8 @@ class InstrumentManager(models.Manager):
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
     serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH, blank=False)
-    comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
-
+    comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, default='')
+    instrument_categories = models.ManyToManyField(InstrumentCategory, related_name='instrument_list', blank=True)
     objects = InstrumentManager()
 
     class Meta:

@@ -5,8 +5,10 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from database.models.calibration_event import CalibrationEvent
+from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
-from database.serializers.instrument import InstrumentRetrieveSerializer, InstrumentSerializer
+from database.serializers.instrument import InstrumentCategoryRetrieveSerializer, InstrumentCategorySerializer, \
+    InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
 from database.services.bulk_data_services.export_services.export_all import ExportAll
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
@@ -24,8 +26,21 @@ class ModelCategoryViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return ModelCategoryRetrieveSerializer  # 2.1.4
-        return ModelCategorySerializer  # 2.1.3
+            return ModelCategoryRetrieveSerializer
+        return ModelCategorySerializer
+
+
+class InstrumentCategoryViewSet(viewsets.ModelViewSet):
+    queryset = InstrumentCategory.objects.all()
+    serializer_class = InstrumentCategorySerializer
+    filterset_fields = [CategoryEnum.NAME.value]
+    search_fields = [CategoryEnum.NAME.value]
+    ordering_fields = [CategoryEnum.NAME.value]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return InstrumentCategoryRetrieveSerializer
+        return InstrumentCategorySerializer
 
 
 class ModelViewSet(viewsets.ModelViewSet):
@@ -104,13 +119,17 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        InstrumentEnum.SERIAL_NUMBER.value
+        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        InstrumentEnum.SERIAL_NUMBER.value,
+        InstrumentEnum.INSTRUMENT_CATEGORIES.value
     ]
     search_fields = [
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
         'model__' + ModelEnum.DESCRIPTION.value,
-        InstrumentEnum.SERIAL_NUMBER.value
+        'model__' + ModelEnum.MODEL_CATEGORIES.value,
+        InstrumentEnum.SERIAL_NUMBER.value,
+        InstrumentEnum.INSTRUMENT_CATEGORIES.value
     ]
     ordering_fields = [
         'model__' + ModelEnum.VENDOR.value,
