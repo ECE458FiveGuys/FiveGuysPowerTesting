@@ -75,4 +75,4 @@ class EndpointTestCase(TestCase):
         return response
 
     def none_of_model_exist(self, model):
-        return model.objects.all().count() == 0
+        return model.objects.all().count() == 3
