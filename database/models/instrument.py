@@ -28,6 +28,8 @@ class InstrumentManager(models.Manager):
         if asset_tag_number is None:
             used_values = self.asset_tag_numbers()
             asset_tag_number = random.choice(list(set(range(10 ** 5, 10 ** 6)) - set(used_values)))
+        if comment is None:
+            comment = ''
         try:
             instrument = Instrument(model=model,
                                     serial_number=serial_number,
