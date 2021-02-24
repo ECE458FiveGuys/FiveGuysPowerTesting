@@ -59,6 +59,7 @@ class InstrumentListSerializer(serializers.ModelSerializer):
         fields = [InstrumentEnum.PK.value,
                   InstrumentEnum.MODEL.value,
                   InstrumentEnum.SERIAL_NUMBER.value,
+                  InstrumentEnum.ASSET_TAG_NUMBER.value,
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value,
                   'most_recent_calibration_date',
                   'calibration_expiration_date']
@@ -74,6 +75,7 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                   InstrumentEnum.MODEL.value,
                   InstrumentEnum.SERIAL_NUMBER.value,
                   InstrumentEnum.COMMENT.value,
+                  InstrumentEnum.ASSET_TAG_NUMBER.value,
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value]
 
     def create(self, validated_data):
