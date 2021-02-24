@@ -74,7 +74,10 @@ class ModelBaseSerializer(serializers.ModelSerializer):
             calibration_frequency = timedelta(days=calibration_frequency_data)
         except KeyError:
             calibration_frequency = timedelta(days=0)
-        model_categories_data = validated_data.pop('model_categories')
+        try:
+            model_categories_data = validated_data.pop('model_categories')
+        except KeyError:
+            model_categories_data = []
         validated_data['calibration_frequency'] = calibration_frequency
         model = Model.objects.create(**validated_data)
         for model_category_data in model_categories_data:
