@@ -1,9 +1,22 @@
 from rest_framework import serializers
+from djoser import serializers as s
 
-from user_portal.models import PowerUser
+from user_portal.models import PowerUser as User
+from djoser.conf import settings
 
 
 class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PowerUser
+        model = User
         fields = ['pk', 'username', 'name']
+
+
+class CurrentUserSerializer(s.UserSerializer):
+    class Meta:
+        model = User
+        fields = tuple(User.REQUIRED_FIELDS) + (
+            settings.USER_ID_FIELD,
+            settings.LOGIN_FIELD,
+            'is_staff'
+        )
+        read_only_fields = (settings.LOGIN_FIELD, 'is_staff')

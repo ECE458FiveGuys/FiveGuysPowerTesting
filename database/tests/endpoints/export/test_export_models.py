@@ -32,7 +32,7 @@ class ExportModelsTestCase(EndpointTestCase):
                 set([e.value for e in ModelTableColumnNames]):
             self.fail("field names not correct")
         list_of_dict = list(reader)
-        row = list_of_dict[0]
+        row = list_of_dict[3]
         if row[ModelTableColumnNames.VENDOR.value] != model.vendor \
                 or row[ModelTableColumnNames.MODEL_NUMBER.value] != model.model_number \
                 or row[ModelTableColumnNames.MODEL_DESCRIPTION.value] != model.description \

@@ -44,6 +44,7 @@ class InstrumentEnum(AutoName):
     MODEL = auto()
     SERIAL_NUMBER = auto()
     COMMENT = auto()
+    ASSET_TAG_NUMBER = auto()
     INSTRUMENT_CATEGORIES = auto()
 
 

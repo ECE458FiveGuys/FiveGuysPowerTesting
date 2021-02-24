@@ -1,7 +1,10 @@
-from django.core.exceptions import ValidationError
-from django.db import models
+import random
 
+from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.db.models import DateField, ExpressionWrapper, F, Max
+
 from database.constants import COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
 from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, InstrumentFieldLengthException, \
     InstrumentRequiredFieldsEmptyException, NULL_FIELD_ERROR_MESSAGE, UserError
@@ -20,9 +23,16 @@ class InstrumentManager(models.Manager):
     def create(self,
                model=None,
                serial_number=None,
-               comment=''):
+               comment='',
+               asset_tag_number=None):
+        if asset_tag_number is None:
+            used_values = self.asset_tag_numbers()
+            asset_tag_number = random.choice(list(set(range(10 ** 5, 10 ** 6)) - set(used_values)))
         try:
-            instrument = Instrument(model=model, serial_number=serial_number, comment=comment)
+            instrument = Instrument(model=model,
+                                    serial_number=serial_number,
+                                    comment=comment,
+                                    asset_tag_number=asset_tag_number)
             instrument.full_clean()
             instrument.save()
             return instrument
@@ -42,12 +52,19 @@ class InstrumentManager(models.Manager):
                 else:
                     raise UserError(error_message)
 
+    def asset_tag_numbers(self):
+        return self.order_by().values_list('asset_tag_number', flat=True)
+
 
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
-    serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH, blank=False)
+    serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, default='')
+    asset_tag_number = models.IntegerField(blank=True, unique=True,
+                                           validators=[MinValueValidator(limit_value=100000),
+                                                       MaxValueValidator(limit_value=999999)])
     instrument_categories = models.ManyToManyField(InstrumentCategory, related_name='instrument_list', blank=True)
+
     objects = InstrumentManager()
 
     class Meta:
