@@ -11,7 +11,7 @@ class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
         fields = ['pk', 'username', 'name']
 
 
-class CurrentUserSerializer(s.UserSerializer):
+class CustomUserSerializer(s.UserSerializer):
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (

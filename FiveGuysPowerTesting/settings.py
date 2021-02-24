@@ -120,7 +120,8 @@ DJOSER = {
     'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
     'SERIALIZERS': {
-        'current_user': 'user_portal.serializers.CurrentUserSerializer',
+        'user': 'user_portal.serializers.CustomUserSerializer',
+        'current_user': 'user_portal.serializers.CustomUserSerializer',
     },
     'PERMISSIONS': {
         'activation': ['rest_framework.permissions.AllowAny'],
