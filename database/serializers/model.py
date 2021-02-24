@@ -62,7 +62,7 @@ class ModelListSerializer(serializers.ModelSerializer):
 class ModelBaseSerializer(serializers.ModelSerializer):
     model_categories = serializers.SlugRelatedField(queryset=ModelCategory.objects.all(), many=True, slug_field='name',
                                                     required=False)
-    calibration_frequency = serializers.IntegerField(required=False)
+    calibration_frequency = serializers.IntegerField(required=False, min_value=0, max_value=3653)
 
     class Meta:
         model = Model
@@ -75,7 +75,8 @@ class ModelBaseSerializer(serializers.ModelSerializer):
         except KeyError:
             calibration_frequency = timedelta(days=0)
         model_categories_data = validated_data.pop('model_categories')
-        model = Model.objects.create(**validated_data, calibration_frequency=calibration_frequency)
+        validated_data['calibration_frequency'] = calibration_frequency
+        model = Model.objects.create(**validated_data)
         for model_category_data in model_categories_data:
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
         return model
