@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from database.constants import COMMENT_LENGTH, DESCRIPTION_LENGTH, MODEL_NUMBER_LENGTH, VENDOR_LENGTH
@@ -19,6 +20,10 @@ class ModelManager(models.Manager):
                calibration_frequency=timedelta(days=0),
                calibration_mode='FILE'):
         try:
+            if calibration_frequency is None:
+                calibration_frequency = timedelta(days=0)
+            if comment is None:
+                comment = ''
             m = Model(vendor=vendor,
                       model_number=model_number,
                       description=description,
@@ -61,7 +66,10 @@ class Model(models.Model):
     model_number = models.CharField(blank=False, max_length=MODEL_NUMBER_LENGTH)
     description = models.CharField(blank=False, max_length=DESCRIPTION_LENGTH)
     comment = models.CharField(blank=True, default='', max_length=COMMENT_LENGTH)
-    calibration_frequency = models.DurationField(blank=True, default=timedelta(days=0))
+    calibration_frequency = models.DurationField(blank=True,
+                                                 default=timedelta(days=0),
+                                                 validators=[MinValueValidator(timedelta(days=0)),
+                                                             MaxValueValidator(timedelta(days=3653))])
     model_categories = models.ManyToManyField(ModelCategory, related_name='model_list', blank=True)
     calibration_mode = models.CharField(blank=True, max_length=6, choices=CALIBRATION_CHOICES, default='FILE')
 
