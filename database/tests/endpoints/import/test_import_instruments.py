@@ -77,5 +77,5 @@ class ImportModelsTestCase(EndpointTestCase):
                                     function=import_instruments)
         if response.content.decode('utf-8') != "\"Error: Date INVALID_DATE must be of the form YYYY-MM-DD\"":
             self.fail("Instrument created with invalid model")
-        if not self.none_of_model_exist(Instrument) or not self.none_of_model_exist(CalibrationEvent):
+        if not Instrument.objects.all().count() == 0 or not CalibrationEvent.objects.all().count() == 0:
             self.fail("database not cleared of inputs after failed import")

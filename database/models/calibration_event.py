@@ -40,7 +40,7 @@ class CalibrationEventManager(models.Manager):
                                                                serial_number=None if instrument is None else instrument.serial_number,
                                                                date=date)
                 elif INVALID_DATE_FIELD_ERROR_MESSAGE in error_message:
-                    raise InvalidDateException()
+                    raise InvalidDateException(date)
                 else:
                     raise UserError(error_message)
 
