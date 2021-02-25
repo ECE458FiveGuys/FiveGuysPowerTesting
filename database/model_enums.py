@@ -1,42 +1,56 @@
-from enum import Enum
+from enum import Enum, auto
+
+
+class AutoName(Enum):
+    def _generate_next_value_(name, start, count, last_values):
+        return name.lower()
 
 
 class ModelsEnum(Enum):
     USER = "user"
     MODEL = "model"
     INSTRUMENT = "instrument"
-    CALIBRATION_EVENT = "calibration event"
+    CALIBRATION_EVENT = "calibration_event"
 
 
-class UserEnum(Enum):
-    PK = "pk"
-    USERNAME = "username"
-    NAME = "name"
-    EMAIL = "email"
-    PASSWORD = "password"
-    ADMIN = "admin"
-    ACTIVE = "active"
+class UserEnum(AutoName):
+    PK = auto()
+    USERNAME = auto()
+    NAME = auto()
+    EMAIL = auto()
+    PASSWORD = auto()
+    ADMIN = auto()
+    IS_ACTIVE = auto()
 
 
-class EquipmentModelEnum(Enum):
-    PK = "pk"
-    VENDOR = "vendor"
-    MODEL_NUMBER = "model_number"
-    DESCRIPTION = "description"
-    COMMENT = "comment"
-    CALIBRATION_FREQUENCY = "calibration_frequency"
+class CategoryEnum(AutoName):
+    PK = auto()
+    NAME = auto()
 
 
-class InstrumentEnum(Enum):
-    PK = "pk"
-    MODEL = "model"
-    SERIAL_NUMBER = "serial_number"
-    COMMENT = "comment"
+class ModelEnum(AutoName):
+    PK = auto()
+    VENDOR = auto()
+    MODEL_NUMBER = auto()
+    DESCRIPTION = auto()
+    COMMENT = auto()
+    CALIBRATION_FREQUENCY = auto()
+    MODEL_CATEGORIES = auto()
+    CALIBRATION_MODE = auto()
 
 
-class CalibrationEventEnum(Enum):
-    PK = 'pk'
-    INSTRUMENT = "instrument"
-    DATE = "date"
-    USER = "user"
-    COMMENT = "comment"
+class InstrumentEnum(AutoName):
+    PK = auto()
+    MODEL = auto()
+    SERIAL_NUMBER = auto()
+    COMMENT = auto()
+    ASSET_TAG_NUMBER = auto()
+    INSTRUMENT_CATEGORIES = auto()
+
+
+class CalibrationEventEnum(AutoName):
+    PK = auto()
+    INSTRUMENT = auto()
+    DATE = auto()
+    USER = auto()
+    COMMENT = auto()

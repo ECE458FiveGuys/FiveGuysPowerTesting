@@ -1,11 +1,12 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
-
-from database.exceptions import DoesNotExistException, ImpossibleCalibrationError, UserDoesNotExistException, \
-    InvalidDateException
-from database.models import CalibrationEvent, EquipmentModel, Instrument
-from database.serializers import InstrumentSerializer
+from database.exceptions import InvalidDateException
+from database.exceptions import DoesNotExistException, ImpossibleCalibrationError, UserDoesNotExistException
+from database.models.calibration_event import CalibrationEvent
+from database.models.instrument import Instrument
+from database.models.model import Model
+from database.serializers.instrument import InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
 from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
 from user_portal.models import PowerUser
@@ -29,11 +30,13 @@ class ImportInstrumentsService(ImportService):
         try:
             user = PowerUser.objects.get(username='admin')
             try:
-                model = EquipmentModel.objects.get(vendor=vendor, model_number=model_number)
+                model = Model.objects.get(vendor=vendor, model_number=model_number)
 
                 if calibration_date is not None:
-                    if model.calibration_frequency is None:
-                        raise ImpossibleCalibrationError(vendor=vendor, model_number=model_number, serial_number=serial_number)
+                    if model.calibration_frequency == timedelta(days=0):
+                        raise ImpossibleCalibrationError(vendor=vendor,
+                                                         model_number=model_number,
+                                                         serial_number=serial_number)
                     try:
                         calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
                         instrument = Instrument.objects.create(model=model, serial_number=serial_number,

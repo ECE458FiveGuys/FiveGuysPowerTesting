@@ -1,14 +1,15 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework import routers
 
 from database import views
-from database.views import CalibrationEventViewSet, EquipmentModelViewSet, InstrumentViewSet, ModelAutocompleteViewSet, \
-    VendorAutoCompleteViewSet
+from database.views import *
 
 router = routers.DefaultRouter()
-router.register(r'models', EquipmentModelViewSet)
+router.register(r'models', ModelViewSet)
 router.register(r'instruments', InstrumentViewSet, basename='Instrument')
 router.register(r'calibration-events', CalibrationEventViewSet)
+router.register(r'model-categories', ModelCategoryViewSet)
+router.register(r'instrument-categories', InstrumentCategoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -17,6 +18,4 @@ urlpatterns = [
     path('export/', views.export),
     path('import-models/', views.import_models),
     path('import-instruments/', views.import_instruments),
-    re_path(r'^vendors/', VendorAutoCompleteViewSet.as_view()),
-    re_path(r'^model_numbers/', ModelAutocompleteViewSet.as_view())
 ]

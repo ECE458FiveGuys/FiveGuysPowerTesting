@@ -1,4 +1,5 @@
-from database.models import CalibrationEvent, Instrument
+from database.models.calibration_event import CalibrationEvent
+from database.models.instrument import Instrument
 from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.tests.test_utils import create_model
@@ -43,11 +44,11 @@ class ImportModelsTestCase(EndpointTestCase):
         if response.content.decode(
                 'utf-8') != "\"Error: The model with vendor 'vendor' and model number 'model_number' does not exist\"":
             self.fail("Instrument created with invalid model")
-        if not self.none_of_model_exist(Instrument) or not self.none_of_model_exist(CalibrationEvent):
+        if not Instrument.objects.all().count() == 0 or not CalibrationEvent.objects.all().count() == 0:
             self.fail("database not cleared of inputs after failed import")
 
     def test_import_instrument_with_calibration_date_but_no_frequency(self):
-        model = create_model(calibration_freq=None)
+        model = create_model(calibration_freq=0)
         response = self.make_import(endpoint=self.Endpoints.IMPORT_INSTRUMENTS.value,
                                     fields=[e.value for e in InstrumentTableColumnNames],
                                     row=[model.vendor,
@@ -60,7 +61,7 @@ class ImportModelsTestCase(EndpointTestCase):
         if response.content.decode(
                 'utf-8') != "\"Error: The instrument with vendor 'vendor', model number 'model_number', and serial number 'serial_number' has no calibration frequency but has a calibration date\"":
             self.fail("Instrument created with invalid model")
-        if not self.none_of_model_exist(Instrument) or not self.none_of_model_exist(CalibrationEvent):
+        if not Instrument.objects.all().count() == 0 or not CalibrationEvent.objects.all().count() == 0:
             self.fail("database not cleared of inputs after failed import")
 
     def test_import_instrument_with_invalid_date(self):

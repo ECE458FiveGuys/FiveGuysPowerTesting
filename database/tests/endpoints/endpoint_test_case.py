@@ -1,10 +1,14 @@
 import csv
 import tempfile
+from datetime import timedelta
 from enum import Enum
 
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
+from database.models.model import Model
+from database.models.model_category import ModelCategory
+from database.views import ModelViewSet
 from user_portal.models import PowerUser
 
 TEST_ROOT = "http://127.0.0.1:8000/"
@@ -13,10 +17,17 @@ TEST_ROOT = "http://127.0.0.1:8000/"
 class EndpointTestCase(TestCase):
     class Endpoints(Enum):
         MODELS = TEST_ROOT + "models/"
+<<<<<<< HEAD
         MODEL = TEST_ROOT + "models/{}"
         VENDORS = TEST_ROOT + "vendors?vendor={}"
         INSTRUMENTS = TEST_ROOT + "instruments/"
         INSTRUMENT = TEST_ROOT + "instruments/{}"
+=======
+        MODEL_CATEGORIES = TEST_ROOT + "model-categories/"
+        VENDORS = MODELS + "vendors/"
+        MODEL_NUMBERS = MODELS + "model_numbers/?vendor={}"
+        INSTRUMENTS = TEST_ROOT + "instruments/"
+>>>>>>> 15ae759cd05043c464b3fb11e4d0d7be8b080192
         EXPORT_MODELS = TEST_ROOT + "export-models/"
         EXPORT_INSTRUMENTS = TEST_ROOT + "export-instruments/"
         EXPORT_ALL = TEST_ROOT + "export/"
@@ -26,9 +37,43 @@ class EndpointTestCase(TestCase):
         def fill(self, params):
             return self.value.format(*params)
 
+<<<<<<< HEAD
     def setUp(self):
         self.factory = APIRequestFactory()
         self.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'password', is_active=True)
+=======
+    @classmethod
+    def setUpTestData(cls):
+        cls.factory = APIRequestFactory()
+        cls.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
+        c1 = ModelCategory.objects.create(name="voltmeter")
+        c2 = ModelCategory.objects.create(name="multimeter")
+        c3 = ModelCategory.objects.create(name='oscilloscope')
+        m1 = Model.objects.create(vendor="Fluke",
+                                  model_number="86V",
+                                  description="High Impedance Voltmeter",
+                                  calibration_frequency=timedelta(days=90))
+        m2 = Model.objects.create(vendor="Fluke",
+                                  model_number="87M",
+                                  description="Multimeter with temperature probes",
+                                  calibration_frequency=timedelta(days=60))
+        m3 = Model.objects.create(vendor="Volt",
+                                  model_number="901C",
+                                  description="Portable oscilloscope",
+                                  calibration_frequency=timedelta(days=30))
+        m1.model_categories.set([c1])
+        m2.model_categories.set([c1, c2])
+        m3.model_categories.set([c3])
+        m1.save()
+        m2.save()
+        m3.save()
+
+    def make_request(self, endpoint, data, action):
+        request = self.factory.post(endpoint, data)
+        force_authenticate(request, self.admin)
+        view = ModelViewSet.as_view(action)
+        return view(request)
+>>>>>>> 15ae759cd05043c464b3fb11e4d0d7be8b080192
 
     def make_import(self, endpoint, function, fields, row):
         tmpfile = tempfile.TemporaryFile("a+")
@@ -43,4 +88,4 @@ class EndpointTestCase(TestCase):
         return response
 
     def none_of_model_exist(self, model):
-        return model.objects.all().count() == 0
+        return model.objects.all().count() == 3
