@@ -3,6 +3,8 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
+from django.db.models import DateField, ExpressionWrapper, F, Max
+from database.filters import ModelFilter, InstrumentFilter
 from database.models.calibration_event import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
@@ -47,12 +49,7 @@ class ModelViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Model.objects.all()
-    filterset_fields = [
-        ModelEnum.VENDOR.value,
-        ModelEnum.MODEL_NUMBER.value,
-        ModelEnum.DESCRIPTION.value,
-        'model_categories__name',
-    ]
+    filterset_class = ModelFilter
     search_fields = [
         ModelEnum.VENDOR.value,
         ModelEnum.MODEL_NUMBER.value,
@@ -86,14 +83,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     API endpoint that allows groups to be viewed or edited.
     """
     queryset = Instrument.objects.all()
-    filterset_fields = [
-        'model__' + ModelEnum.VENDOR.value,
-        'model__' + ModelEnum.MODEL_NUMBER.value,
-        'model__' + ModelEnum.DESCRIPTION.value,
-        'model__model_categories__name',
-        InstrumentEnum.SERIAL_NUMBER.value,
-        'instrument_categories__name',
-    ]
+    filterset_class = InstrumentFilter
     search_fields = [
         'model__' + ModelEnum.VENDOR.value,
         'model__' + ModelEnum.MODEL_NUMBER.value,
@@ -116,6 +106,13 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return InstrumentRetrieveSerializer  # 2.2.4
         return InstrumentSerializer  # 2.2.3
+
+    def get_queryset(self):
+        mrc = Max('calibration_history__date')
+        cf = F('model__calibration_frequency')
+        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
+        qs = super().get_queryset().annotate(most_recent_calibration_date=mrc)
+        return qs.annotate(calibration_expiration_date=expiration)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
