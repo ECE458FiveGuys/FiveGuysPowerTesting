@@ -34,7 +34,7 @@ class ImportService(Service):
             return Response(self.serialize(objects_to_return).data)
         except UserError as e:
             self.undo_object_creations(created_objects)
-            return Response(e.message, status=status.HTTP_400_BAD_REQUEST)
+            return Response(e.message, status=status.HTTP_400_BAD_REQUEST, content_type="utf-8")
 
     def undo_object_creations(self, created_objects):
         for obj in created_objects:

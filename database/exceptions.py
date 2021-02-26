@@ -17,8 +17,8 @@ class IllegalAccessException(UserError):
 
 
 class InvalidDateException(UserError):
-    def __init__(self):
-        super().__init__("Error: Date must be of form YYYY-MM-DD")
+    def __init__(self, date):
+        super().__init__("Error: Date {} must be of the form YYYY-MM-DD".format(date))
 
 
 class EntryDoesNotExistException(UserError):

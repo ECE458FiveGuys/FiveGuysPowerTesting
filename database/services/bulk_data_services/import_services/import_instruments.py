@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
-
+from database.exceptions import InvalidDateException
 from database.exceptions import DoesNotExistException, ImpossibleCalibrationError, UserDoesNotExistException
 from database.models.calibration_event import CalibrationEvent
 from database.models.instrument import Instrument
@@ -34,16 +34,20 @@ class ImportInstrumentsService(ImportService):
 
                 if calibration_date is not None:
                     if model.calibration_frequency == timedelta(days=0):
-                        raise ImpossibleCalibrationError(vendor=vendor, model_number=model_number,
+                        raise ImpossibleCalibrationError(vendor=vendor,
+                                                         model_number=model_number,
                                                          serial_number=serial_number)
-                    calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
-                    instrument = Instrument.objects.create(model=model, serial_number=serial_number,
-                                                           comment=instrument_comment)
-                    calibration_event = CalibrationEvent.objects.create(instrument=instrument,
-                                                                        user=user,
-                                                                        date=calibration_date,
-                                                                        comment=calibration_comment)
-                    return [instrument, calibration_event]  # first object is type which will be serialized and returned
+                    try:
+                        calibration_date = datetime.strptime(calibration_date, '%m/%d/%Y').date()
+                        instrument = Instrument.objects.create(model=model, serial_number=serial_number,
+                                                               comment=instrument_comment)
+                        calibration_event = CalibrationEvent.objects.create(instrument=instrument,
+                                                                            user=user,
+                                                                            date=calibration_date,
+                                                                            comment=calibration_comment)
+                        return [instrument, calibration_event]  # type of first object returned is the type which will be serialized and returned
+                    except ValueError:
+                        raise InvalidDateException(calibration_date)
                 instrument = Instrument.objects.create(model=model, serial_number=serial_number,
                                                        comment=instrument_comment)
                 return [instrument]

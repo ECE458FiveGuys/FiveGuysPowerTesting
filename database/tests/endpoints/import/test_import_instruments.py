@@ -63,3 +63,19 @@ class ImportModelsTestCase(EndpointTestCase):
             self.fail("Instrument created with invalid model")
         if not Instrument.objects.all().count() == 0 or not CalibrationEvent.objects.all().count() == 0:
             self.fail("database not cleared of inputs after failed import")
+
+    def test_import_instrument_with_invalid_date(self):
+        model = create_model(calibration_freq=1)
+        response = self.make_import(endpoint=self.Endpoints.IMPORT_INSTRUMENTS.value,
+                                    fields=[e.value for e in InstrumentTableColumnNames],
+                                    row=[model.vendor,
+                                         model.model_number,
+                                         "serial_number",
+                                         "comment",
+                                         "INVALID_DATE",
+                                         "comment"],
+                                    function=import_instruments)
+        if response.content.decode('utf-8') != "\"Error: Date INVALID_DATE must be of the form YYYY-MM-DD\"":
+            self.fail("Instrument created with invalid model")
+        if not Instrument.objects.all().count() == 0 or not CalibrationEvent.objects.all().count() == 0:
+            self.fail("database not cleared of inputs after failed import")
