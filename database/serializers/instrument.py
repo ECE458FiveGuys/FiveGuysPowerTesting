@@ -5,9 +5,12 @@ from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 from database.models.instrument import Instrument
 from database.serializers.calibration_event import CalibrationHistoryRetrieveSerializer
+from database.serializers.model import ModelCategorySerializer
 
 
 class ModelForInstrumentSerializer(serializers.ModelSerializer):
+    model_categories = ModelCategorySerializer(many=True, read_only=True)
+
     class Meta:
         model = Model
         fields = [ModelEnum.PK.value,
