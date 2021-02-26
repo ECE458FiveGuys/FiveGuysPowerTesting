@@ -3,7 +3,6 @@ import random
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import DateField, ExpressionWrapper, F, Max
 
 from database.constants import COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
 from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, InstrumentFieldLengthException, \
@@ -13,12 +12,6 @@ from database.models.model import Model
 
 
 class InstrumentManager(models.Manager):
-    def get_queryset(self):
-        mrc = Max('calibration_history__date')
-        cf = F('model__calibration_frequency')
-        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
-        qs = super().get_queryset().annotate(most_recent_calibration_date=mrc)
-        return qs.annotate(calibration_expiration_date=expiration)
 
     def create(self,
                model=None,

@@ -2,7 +2,7 @@ from rest_framework.test import force_authenticate
 
 from database.models.model import Model
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
-from database.views import ModelCategoryViewSet, ModelViewSet
+from database.views import ModelViewSet
 
 
 class CreateModelTestCase(EndpointTestCase):
@@ -90,3 +90,19 @@ class CreateModelTestCase(EndpointTestCase):
                 or response.data['model_number'][0] != "This field is required." \
                 or response.data['description'][0] != "This field is required.":
             self.fail("model created without required fields")
+
+    def test_retrieve_single_category(self):
+        parameters = "?model_categories__name=voltmeter"
+        request = self.factory.get(self.Endpoints.MODELS.value + parameters)
+        force_authenticate(request, self.admin)
+        view = ModelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(len(response.data), 2)
+
+    def test_retrieve_multiple_category(self):
+        parameters = "?model_categories__name=multimeter,voltmeter"
+        request = self.factory.get(self.Endpoints.MODELS.value + parameters)
+        force_authenticate(request, self.admin)
+        view = ModelViewSet.as_view({'get': 'list'})
+        response = view(request)
+        self.assertEqual(len(response.data), 1)
