@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'database.apps.DatabaseConfig',
 
     # 3rd Party
     'rest_framework',
@@ -44,10 +43,8 @@ INSTALLED_APPS = [
     'djoser',
 
     # Local
-    'page_views',
-    'detail_views',
     'user_portal',
-    'create_pages'
+    'database.apps.DatabaseConfig',
 ]
 
 MIDDLEWARE = [
@@ -174,3 +171,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'static/'
+
+MEDIA_ROOT = BASE_DIR / 'media/'

@@ -16,14 +16,19 @@ class ModelManager(models.Manager):
                vendor=None,
                model_number=None,
                description=None,
-               comment='',
-               calibration_frequency=timedelta(days=0),
-               calibration_mode='FILE'):
+               comment=None,
+               calibration_frequency=None,
+               model_categories=None,
+               calibration_mode=None):
+        if comment is None:
+            comment = ''
+        if calibration_frequency is None:
+            calibration_frequency = timedelta(days=0)
+        if model_categories is None:
+            model_categories = []
+        if calibration_mode is None:
+            calibration_mode = 'FILE'
         try:
-            if calibration_frequency is None:
-                calibration_frequency = timedelta(days=0)
-            if comment is None:
-                comment = ''
             m = Model(vendor=vendor,
                       model_number=model_number,
                       description=description,
@@ -31,6 +36,19 @@ class ModelManager(models.Manager):
                       calibration_frequency=calibration_frequency,
                       calibration_mode=calibration_mode)
             m.full_clean()
+            m.save()
+            for model_category in model_categories:
+                try:
+                    mc = ModelCategory(name=model_category)
+                    mc.full_clean()
+                    mc.save()
+                    m.model_categories.add(mc)
+                except ValidationError as e:
+                    if e.messages == ['Model category with this Name already exists.']:
+                        m.model_categories.add(ModelCategory.objects.get(name=model_category))
+                        continue
+                    else:
+                        raise e
             m.save()
             return m
         except ValidationError as e:

@@ -40,3 +40,51 @@ class CreateModelCategoryTestCase(TestCase):
         queryset = ModelCategory.objects.get(name="Voltmeter").model_list.all()
         expected_queryset = Model.objects.filter(model_categories=1)  # want this to be string
         self.assertEqual(f'{queryset}', f'{expected_queryset}')
+
+    def test_create_model_with_existing_category(self):
+        Model.objects.create(vendor="Agilent",
+                             model_number="900C",
+                             description="4 Input Oscilloscope",
+                             calibration_frequency=timedelta(days=120),
+                             model_categories=['Oscilloscope'],
+                             calibration_mode='FILE')
+        created_model = Model.objects.get(vendor='Agilent')
+        queryset = created_model.model_categories.all()
+        expected_queryset = ModelCategory.objects.filter(name="Oscilloscope")
+        self.assertEqual(f'{queryset}', f'{expected_queryset}')
+
+    def test_create_model_with_multiple_existing_categories(self):
+        Model.objects.create(vendor="Agilent",
+                             model_number="99M",
+                             description="Heavy Duty Multimeter",
+                             calibration_frequency=timedelta(days=40),
+                             model_categories=['Multimeter', 'Voltmeter'],
+                             calibration_mode='FILE')
+        created_model = Model.objects.get(vendor='Agilent')
+        queryset = created_model.model_categories.all()
+        expected_queryset = ModelCategory.objects.filter(name__endswith="meter")
+        self.assertEqual(f'{queryset}', f'{expected_queryset}')
+
+    def test_create_model_with_new_category(self):
+        Model.objects.create(vendor="Agilent",
+                             model_number="57P",
+                             description="DC Power Supply",
+                             calibration_frequency=timedelta(days=365),
+                             model_categories=['power_supply'],
+                             calibration_mode='FILE')
+        created_model = Model.objects.get(vendor='Agilent')
+        queryset = created_model.model_categories.all()
+        expected_queryset = ModelCategory.objects.filter(name="power_supply")
+        self.assertEqual(f'{queryset}', f'{expected_queryset}')
+
+    def test_create_model_with_new_and_existing_categories(self):
+        Model.objects.create(vendor="Agilent",
+                             model_number="99M",
+                             description="Heavy Duty Multimeter",
+                             calibration_frequency=timedelta(days=40),
+                             model_categories=['Multimeter', 'Voltmeter', 'Ammeter'],
+                             calibration_mode='FILE')
+        created_model = Model.objects.get(vendor='Agilent')
+        queryset = created_model.model_categories.all()
+        expected_queryset = ModelCategory.objects.filter(name__endswith="meter")
+        self.assertEqual(f'{queryset}', f'{expected_queryset}')
