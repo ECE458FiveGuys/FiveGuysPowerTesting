@@ -82,11 +82,30 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value]
 
     def create(self, validated_data):
-        instrument_categories_data = validated_data.pop('instrument_categories')
+        try:
+            instrument_categories_data = validated_data.pop('instrument_categories')
+        except KeyError:
+            instrument_categories_data = []
         instrument = Instrument.objects.create(**validated_data)
         for instrument_category_data in instrument_categories_data:
             instrument.instrument_categories.add(InstrumentCategory.objects.get(name=instrument_category_data))
         return instrument
+
+    def update(self, instance, validated_data):
+        instrument_categories = []
+        try:
+            instrument_categories_data = validated_data.pop('instrument_categories')
+            for instrument_category_data in instrument_categories_data:
+                instrument_categories.append(InstrumentCategory.objects.get(name=instrument_category_data))
+        except KeyError:
+            instrument_categories = instance.instrument_categories.all()
+        instance.model = validated_data.get(InstrumentEnum.MODEL.value, instance.model)
+        instance.serial_number = validated_data.get(InstrumentEnum.SERIAL_NUMBER.value, instance.serial_number)
+        instance.comment = validated_data.get(InstrumentEnum.COMMENT.value, instance.comment)
+        instance.asset_tag_number = validated_data.get(InstrumentEnum.ASSET_TAG_NUMBER, instance.asset_tag_number)
+        instance.instrument_categories.set(instrument_categories)
+        instance.save()
+        return instance
 
 
 class InstrumentSerializer(InstrumentBaseSerializer):
