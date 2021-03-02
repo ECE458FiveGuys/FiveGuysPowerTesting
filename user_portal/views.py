@@ -56,26 +56,9 @@ class OAuthView(APIView):
     def login(self, request, *args, **kwargs):
         oauth_token = request.data.get('oauth_token')
         headers = {
+            'content-type': "application/x-www-form-urlencoded",
             'Authorization': "Bearer {}".format(oauth_token)
         }
+
         response = requests.post('https://oauth.oit.duke.edu/oidc/userinfo', headers=headers)
-
-        if "OAUTH_TOKEN_URL" in os.environ:
-            url = os.environ["OAUTH_TOKEN_URL"]
-        else:
-            url = "https://oauth.oit.duke.edu/oidc/token"
-
-        payload = urllib.parse.urlencode({
-            'grant_type': "authorization_code",
-            'redirect_uri': os.environ["OAUTH_REDIRECT_URI"],
-            'code': code
-        })
-        headers = {
-            'content-type': "application/x-www-form-urlencoded",
-            'authorization': "Basic {}".format(auth)
-        }
-
-        response = requests.request("POST", url, data=payload, headers=headers)
-        print("Here is your auth token: ")
-        print(json.loads(response.text))
-        return json.loads(response.text)
+        print(response.json())
