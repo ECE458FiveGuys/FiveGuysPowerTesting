@@ -24,7 +24,7 @@ class ImportInstrumentsService(ImportService):
         vendor = self.parse_field(row, InstrumentTableColumnNames.VENDOR.value)
         model_number = self.parse_field(row, InstrumentTableColumnNames.MODEL_NUMBER.value)
         serial_number = self.parse_field(row, InstrumentTableColumnNames.SERIAL_NUMBER.value)
-        instrument_comment = self.parse_field(row, InstrumentTableColumnNames.INSTRUMENT_COMMENT.value)
+        instrument_comment = self.parse_field(row, InstrumentTableColumnNames.COMMENT.value)
         calibration_date = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_DATE.value)
         calibration_comment = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_COMMENT.value)
         try:

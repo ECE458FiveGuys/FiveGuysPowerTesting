@@ -2,7 +2,9 @@ from datetime import timedelta
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import connections, models, transaction
+from django.db.models.fields import AutoField
+from django.utils.functional import partition
 
 from database.constants import COMMENT_LENGTH, DESCRIPTION_LENGTH, MODEL_NUMBER_LENGTH, VENDOR_LENGTH
 from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, ModelFieldLengthException, \
@@ -36,19 +38,10 @@ class ModelManager(models.Manager):
                       calibration_frequency=calibration_frequency,
                       calibration_mode=calibration_mode)
             m.full_clean()
-            m.save()
+            m.save(using=self.db)
             for model_category in model_categories:
-                try:
-                    mc = ModelCategory(name=model_category)
-                    mc.full_clean()
-                    mc.save()
-                    m.model_categories.add(mc)
-                except ValidationError as e:
-                    if e.messages == ['Model category with this Name already exists.']:
-                        m.model_categories.add(ModelCategory.objects.get(name=model_category))
-                        continue
-                    else:
-                        raise e
+                mc, created = ModelCategory.objects.get_or_create(name=model_category)
+                m.model_categories.add(mc)
             m.save()
             return m
         except ValidationError as e:
@@ -65,6 +58,46 @@ class ModelManager(models.Manager):
                     raise ModelFieldLengthException("comment", COMMENT_LENGTH, vendor, model_number)
                 else:
                     raise UserError(error_message)
+
+    def bulk_create(self, objs, batch_size=None):
+        """
+        Insert each of the instances into the database. Do *not* call
+        save() on each of the instances, do not send any pre/post_save
+        signals, and do not set the primary key attribute if it is an
+        autoincrement field.
+        """
+        assert batch_size is None or batch_size > 0
+        self._for_write = True
+        fields = self.model._meta.concrete_fields
+        objs = list(objs)
+        self._populate_pk_values(objs)
+        with transaction.atomic(using=self.db, savepoint=False):
+            objs_with_pk, objs_without_pk = partition(lambda o: o.pk is None, objs)
+            if objs_without_pk:
+                fields = [f for f in fields if not isinstance(f, AutoField)]
+                ids = self._batched_insert(objs_without_pk, fields, batch_size)
+                for obj_without_pk, pk in zip(objs_without_pk, ids):
+                    obj_without_pk.pk = pk
+                    obj_without_pk._state.adding = False
+                    obj_without_pk._state.db = self.db
+
+        return objs
+
+    def _batched_insert(self, objs, fields, batch_size):
+        """
+        Helper method for bulk_create() to insert objs one batch at a time.
+        """
+        ops = connections[self.db].ops
+        batch_size = (batch_size or max(ops.bulk_batch_size(fields, objs), 1))
+        inserted_ids = []
+        for item in [objs[i:i + batch_size] for i in range(0, len(objs), batch_size)]:
+            self._insert(item, fields=fields, using=self.db)
+        return inserted_ids
+
+    def _populate_pk_values(self, objs):
+        for obj in objs:
+            if obj.pk is None:
+                obj.pk = obj._meta.pk.get_pk_value_on_save(obj)
 
     def vendors(self):
         return self.order_by().values_list('vendor', flat=True).distinct()

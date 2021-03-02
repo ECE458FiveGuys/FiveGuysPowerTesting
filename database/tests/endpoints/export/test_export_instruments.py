@@ -34,7 +34,7 @@ class CreateInstrumentsTestCase(EndpointTestCase):
         row = list_of_dict[0]
         if row[InstrumentTableColumnNames.VENDOR.value] != model.vendor \
                 or row[InstrumentTableColumnNames.MODEL_NUMBER.value] != model.model_number \
-                or row[InstrumentTableColumnNames.INSTRUMENT_COMMENT.value] != "" \
+                or row[InstrumentTableColumnNames.COMMENT.value] != "" \
                 or row[InstrumentTableColumnNames.SERIAL_NUMBER.value] != instrument.serial_number \
                 or row[InstrumentTableColumnNames.CALIBRATION_DATE.value] != "{}/{}/{}".format(
             calibration_event3.date.month,
