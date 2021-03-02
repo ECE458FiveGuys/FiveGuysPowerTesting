@@ -96,6 +96,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         'model__model_categories__name',
         InstrumentEnum.SERIAL_NUMBER.value,
         'instrument_categories__name',
+        InstrumentEnum.ASSET_TAG_NUMBER.value,
     ]
     ordering_fields = [
         'model__' + ModelEnum.VENDOR.value,
@@ -104,6 +105,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         InstrumentEnum.SERIAL_NUMBER.value,
         'most_recent_calibration_date',
         'calibration_expiration_date',
+        InstrumentEnum.ASSET_TAG_NUMBER.value,
     ]
     ordering = ['model__vendor', 'model__model_number', 'serial_number']
 
