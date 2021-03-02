@@ -84,5 +84,6 @@ class InstrumentFilter(rf.FilterSet):
             'model__' + ModelEnum.DESCRIPTION.value,
             'model__model_categories__name',
             InstrumentEnum.SERIAL_NUMBER.value,
-            'instrument_categories__name'
+            'instrument_categories__name',
+            InstrumentEnum.ASSET_TAG_NUMBER.value,
         ]
