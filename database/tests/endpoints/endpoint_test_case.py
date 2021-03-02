@@ -11,7 +11,7 @@ from database.models.model_category import ModelCategory
 from database.views import ModelViewSet
 from user_portal.models import PowerUser
 
-TEST_ROOT = "http://127.0.0.1:8000/"
+TEST_ROOT = "http://127.0.0.1:8000/api/"
 
 
 class EndpointTestCase(TestCase):

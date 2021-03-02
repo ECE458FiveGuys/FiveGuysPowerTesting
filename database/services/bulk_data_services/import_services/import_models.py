@@ -18,8 +18,8 @@ class ImportModelsService(ImportService):
     def create_objects_from_row(self, row):
         vendor = self.parse_field(row, ModelTableColumnNames.VENDOR.value)
         model_number = self.parse_field(row, ModelTableColumnNames.MODEL_NUMBER.value)
-        description = self.parse_field(row, ModelTableColumnNames.MODEL_DESCRIPTION.value)
-        comment = self.parse_field(row, ModelTableColumnNames.MODEL_COMMENT.value)
+        description = self.parse_field(row, ModelTableColumnNames.DESCRIPTION.value)
+        comment = self.parse_field(row, ModelTableColumnNames.COMMENT.value)
         calibration_frequency = None if row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value] == 'N/A' \
             else row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]
         if calibration_frequency is not None:

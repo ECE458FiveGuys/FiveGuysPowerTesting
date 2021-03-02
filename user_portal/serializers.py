@@ -20,3 +20,7 @@ class CustomUserSerializer(s.UserSerializer):
             'is_staff'
         )
         read_only_fields = (settings.LOGIN_FIELD, 'is_staff')
+
+
+class IsStaffSerializer(serializers.Serializer):
+    is_staff = serializers.BooleanField(required=True)

@@ -26,9 +26,9 @@ class ImportService(Service):
                 raise UserError("Column headers incorrect")
             list_of_dict = list(reader)
             for row in list_of_dict:
-                if all(row[field] == '' for field in self.fields): # if all elements in row are empty, skip
+                if all(row[field] == '' for field in self.fields):  # if all elements in row are empty, skip
                     continue
-                objects = self.create_objects_from_row(row) # returns all objects created
+                objects = self.create_objects_from_row(row)  # returns all objects created
                 created_objects += objects
                 objects_to_return.append(objects[0])  # first object returned is the type to be serialized and returned
             return Response(self.serialize(objects_to_return).data)
@@ -41,16 +41,11 @@ class ImportService(Service):
             obj.delete()
 
     def parse_field(self, row, key):
-        if key != ModelTableColumnNames.MODEL_COMMENT.value \
-            and key != InstrumentTableColumnNames.INSTRUMENT_COMMENT.value \
+        if key != ModelTableColumnNames.COMMENT.value \
+                and key != InstrumentTableColumnNames.COMMENT.value \
                 and row[key].find("\n") != -1:
             raise IllegalCharacterException(key)
         return None if row[key] == '' else row[key]
-
-
-    def check_illegal_characters(self, field, field_name):
-        if field.find("\n") != -1:
-            raise IllegalCharacterException(field_name)
 
     @abc.abstractmethod
     def create_objects_from_row(self, row):
@@ -59,4 +54,3 @@ class ImportService(Service):
     @abc.abstractmethod
     def serialize(self, created_objects):
         pass
-

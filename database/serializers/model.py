@@ -84,6 +84,29 @@ class ModelBaseSerializer(serializers.ModelSerializer):
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
         return model
 
+    def update(self, instance, validated_data):
+        try:
+            calibration_frequency_data = validated_data.pop('calibration_frequency')
+            calibration_frequency = timedelta(days=calibration_frequency_data)
+        except KeyError:
+            calibration_frequency = instance.calibration_frequency
+        model_categories = []
+        try:
+            model_categories_data = validated_data.pop('model_categories')
+            for model_category_data in model_categories_data:
+                model_categories.append(ModelCategory.objects.get(name=model_category_data))
+        except KeyError:
+            model_categories = instance.model_categories.all()
+        instance.vendor = validated_data.get(ModelEnum.VENDOR.value, instance.vendor)
+        instance.model_number = validated_data.get(ModelEnum.MODEL_NUMBER.value, instance.model_number)
+        instance.description = validated_data.get(ModelEnum.DESCRIPTION.value, instance.description)
+        instance.comment = validated_data.get(ModelEnum.COMMENT.value, instance.comment)
+        instance.calibration_frequency = calibration_frequency
+        instance.calibration_mode = validated_data.get(ModelEnum.CALIBRATION_MODE.value, instance.calibration_mode)
+        instance.model_categories.set(model_categories)
+        instance.save()
+        return instance
+
 
 class ModelSerializer(ModelBaseSerializer):
     def to_representation(self, instance):

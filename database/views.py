@@ -1,10 +1,14 @@
-from rest_framework import viewsets
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.response import Response
+from io import StringIO
 
 from django.db.models import DateField, ExpressionWrapper, F, Max
-from database.filters import ModelFilter, InstrumentFilter
+from rest_framework import viewsets
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.parsers import FileUploadParser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from database.filters import InstrumentFilter, ModelFilter
 from database.models.calibration_event import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
@@ -16,6 +20,7 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.bulk_data_services.import_services.import_instruments import ImportInstrumentsService
 from database.services.bulk_data_services.import_services.import_models import ImportModelsService
+from database.services.import_models import ImportModels
 
 
 class ModelCategoryViewSet(viewsets.ModelViewSet):
@@ -126,6 +131,20 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def all(self, request):
         return Response(InstrumentSerializer(self.queryset, many=True).data)
+
+
+class FileUploadView(APIView):
+    parser_classes = [FileUploadParser]
+
+    def put(self, request):
+        file = request.data['file']
+        decoded_file = file.read().decode('utf8')
+        csv_file = StringIO(decoded_file)
+        next(csv_file)
+        next(csv_file)
+        next(csv_file)
+        next(csv_file)
+        return ImportModels(csv_file).bulk_import()
 
 
 @api_view(['GET'])

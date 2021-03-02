@@ -35,6 +35,6 @@ class ExportModelsTestCase(EndpointTestCase):
         row = list_of_dict[3]
         if row[ModelTableColumnNames.VENDOR.value] != model.vendor \
                 or row[ModelTableColumnNames.MODEL_NUMBER.value] != model.model_number \
-                or row[ModelTableColumnNames.MODEL_DESCRIPTION.value] != model.description \
+                or row[ModelTableColumnNames.DESCRIPTION.value] != model.description \
                 or str(row[ModelTableColumnNames.CALIBRATION_FREQUENCY.value]) != str(model.calibration_frequency):
             self.fail("created model not found")
