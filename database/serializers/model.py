@@ -12,7 +12,8 @@ class InstrumentForModelRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instrument
         fields = [InstrumentEnum.PK.value,
-                  InstrumentEnum.SERIAL_NUMBER.value]
+                  InstrumentEnum.SERIAL_NUMBER.value,
+                  InstrumentEnum.ASSET_TAG_NUMBER.value]
 
 
 class ModelUniqueFieldsSerializer(serializers.ModelSerializer):

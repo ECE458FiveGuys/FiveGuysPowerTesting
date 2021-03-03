@@ -1,17 +1,19 @@
 import base64
 
 import requests
-from djoser import serializers
 from djoser.serializers import TokenSerializer
-from rest_framework import permissions, viewsets
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
-from database.model_enums import UserEnum
-from user_portal.models import PowerUser
+from rest_framework.views import APIView
+
 from user_portal.secrets import OAuthEnum
 from user_portal.serializers import IsStaffSerializer
+from djoser import serializers
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from user_portal.models import PowerUser
+from database.model_enums import UserEnum
 
 
 class ExtendedUserViewSet(viewsets.ModelViewSet):
@@ -26,11 +28,6 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         if self.action == 'update_admin_status':
             return IsStaffSerializer
         return serializers.UserSerializer
-
-    def format_auth_string(self):
-        string = "{}:{}".format(OAuthEnum.CLIENT_ID.value, OAuthEnum.CLIENT_SECRET.value)
-        data = base64.b64encode(string.encode())
-        return data.decode("utf-8")
 
     @action(['post'], detail=True)
     def deactivate(self, request, pk, *args, **kwargs):
@@ -52,9 +49,20 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
 
-    @action(['post'], detail=False)
-    def login_with_oauth_code(self, request, *args, **kwargs):
-        oauth_code = request.data.get('auth_code')
+
+class OAuthView(APIView):
+    """
+    View to login using OAuth
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def format_auth_string(self):
+        string = "{}:{}".format(OAuthEnum.CLIENT_ID.value, OAuthEnum.CLIENT_SECRET.value)
+        data = base64.b64encode(string.encode())
+        return data.decode("utf-8")
+
+    def post(self, request, *args, **kwargs):
+        oauth_code = request.data.get('oauth_code')
 
         auth = self.format_auth_string()
 
@@ -62,7 +70,7 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
         payload_for_token = {
             'grant_type': "authorization_code",
-            'redirect_uri': 'http://group-six-react.colab.duke.edu/oauth/consume',
+            'redirect_uri': OAuthEnum.REDIRECT_URI.value,
             'code': oauth_code
         }
         headers_for_token = {
