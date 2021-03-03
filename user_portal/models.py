@@ -24,6 +24,20 @@ class PowerUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+    def create_oauth_user(self, username, name, email):
+        if not username:
+            raise ValueError("The given username must be set")
+        if not name:
+            raise ValueError("The given name must be set")
+        if not email:
+            raise ValueError("The given email must be set")
+        email = self.normalize_email(email)
+        username = self.model.normalize_username(username)
+        user = self.model(username=username, name=name, email=email, is_active=True)
+        user.set_password(self.make_random_password())
+        user.save(using=self._db)
+        return user
+
     def create_superuser(self, username, name, email, password, is_active=True, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
