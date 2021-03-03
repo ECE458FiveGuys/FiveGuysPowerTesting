@@ -70,7 +70,7 @@ class OAuthView(APIView):
 
         payload_for_token = {
             'grant_type': "authorization_code",
-            'redirect_uri': OAuthEnum.REDIRECT_URI.value,
+            'redirect_uri': 'http://localhost:3000/oauth/consume',
             'code': oauth_code
         }
         headers_for_token = {
