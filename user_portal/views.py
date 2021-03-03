@@ -68,9 +68,17 @@ class OAuthView(APIView):
 
         url = "https://oauth.oit.duke.edu/oidc/token"
 
+        env = request.data.get('env')
+        if env == 'local':
+            redirect_uri = 'http://localhost:3000/oauth/consume'
+        elif env == 'dev':
+            redirect_uri = OAuthEnum.REDIRECT_URI
+        else:
+            redirect_uri = 'http://localhost:3000/oauth/consume'
+
         payload_for_token = {
             'grant_type': "authorization_code",
-            'redirect_uri': 'http://localhost:3000/oauth/consume',
+            'redirect_uri': redirect_uri,
             'code': oauth_code
         }
         headers_for_token = {
