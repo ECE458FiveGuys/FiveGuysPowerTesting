@@ -1,14 +1,17 @@
+import base64
+
 import requests
-
-from rest_framework.views import APIView
-
-from user_portal.serializers import IsStaffSerializer
 from djoser import serializers
+from djoser.serializers import TokenSerializer
 from rest_framework import permissions, viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from user_portal.models import PowerUser
+
 from database.model_enums import UserEnum
+from user_portal.models import PowerUser
+from user_portal.secrets import OAuthEnum
+from user_portal.serializers import IsStaffSerializer
 
 
 class ExtendedUserViewSet(viewsets.ModelViewSet):
@@ -23,6 +26,11 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         if self.action == 'update_admin_status':
             return IsStaffSerializer
         return serializers.UserSerializer
+
+    def format_auth_string(self):
+        string = "{}:{}".format(OAuthEnum.CLIENT_ID.value, OAuthEnum.CLIENT_SECRET.value)
+        data = base64.b64encode(string.encode())
+        return data.decode("utf-8")
 
     @action(['post'], detail=True)
     def deactivate(self, request, pk, *args, **kwargs):
@@ -44,21 +52,45 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
 
-
-class OAuthView(APIView):
-    """
-    View to login using OAuth
-    """
-    permission_classes = [permissions.AllowAny]
-    authentication_classes = []
-
     @action(['post'], detail=False)
-    def login(self, request, *args, **kwargs):
-        oauth_token = request.data.get('oauth_token')
-        headers = {
+    def login_with_oauth_code(self, request, *args, **kwargs):
+        oauth_code = request.data.get('auth_code')
+
+        auth = self.format_auth_string()
+
+        url = "https://oauth.oit.duke.edu/oidc/token"
+
+        payload_for_token = {
+            'grant_type': "authorization_code",
+            'redirect_uri': 'http://group-six-react.colab.duke.edu/oauth/consume',
+            'code': oauth_code
+        }
+        headers_for_token = {
+            'content-type': "application/x-www-form-urlencoded",
+            'authorization': "Basic {}".format(auth)
+        }
+
+        response = requests.post(url, data=payload_for_token, headers=headers_for_token)
+        oauth_token = response.json()['access_token']
+
+        headers_for_user = {
             'content-type': "application/x-www-form-urlencoded",
             'Authorization': "Bearer {}".format(oauth_token)
         }
 
-        response = requests.post('https://oauth.oit.duke.edu/oidc/userinfo', headers=headers)
-        print(response.json())
+        response = requests.get('https://oauth.oit.duke.edu/oidc/userinfo', headers=headers_for_user)
+
+        user_info = response.json()
+
+        name = user_info['name']
+        username = email = user_info['sub']
+
+        user = PowerUser.objects.filter(username=username)
+
+        if not user.exists():
+            PowerUser.objects.create_oauth_user(username=username, name=name, email=email)
+
+        token, created = Token.objects.get_or_create(user=PowerUser.objects.get(username=username))
+        token_serializer = TokenSerializer(token)
+
+        return Response(token_serializer.data)

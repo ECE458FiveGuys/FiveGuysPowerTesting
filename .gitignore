@@ -58,6 +58,7 @@ venv/
 
 #Secrets
 FiveGuysPowerTesting/secret_settings.py
+user_portal/secrets.py
 
 .idea/
 .DS_Store
