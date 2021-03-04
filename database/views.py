@@ -80,7 +80,11 @@ class ModelViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def model_numbers(self, request):
         vendor = request.query_params.get('vendor')
-        return Response(Model.objects.models(vendor=vendor))
+        return Response(Model.objects.models_for_vendor(vendor=vendor))
+
+    @action(detail=False, methods=['get'])
+    def all_model_numbers(self, request):
+        return Response(Model.objects.models())
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
