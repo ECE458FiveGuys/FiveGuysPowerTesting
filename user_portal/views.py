@@ -87,7 +87,12 @@ class OAuthView(APIView):
         }
 
         response = requests.post(url, data=payload_for_token, headers=headers_for_token)
-        oauth_token = response.json()['access_token']
+
+        try:
+            oauth_token = response.json()['access_token']
+        except KeyError:
+            return Response({'redirect_uri_used': redirect_uri,
+                             'code_given': oauth_code}, status=401)
 
         headers_for_user = {
             'content-type': "application/x-www-form-urlencoded",
