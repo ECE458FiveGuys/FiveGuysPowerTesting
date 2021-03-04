@@ -72,7 +72,7 @@ class OAuthView(APIView):
         if env == 'local':
             redirect_uri = 'http://localhost:3000/oauth/consume'
         elif env == 'dev':
-            redirect_uri = OAuthEnum.REDIRECT_URI
+            redirect_uri = OAuthEnum.REDIRECT_URI.value
         else:
             redirect_uri = 'http://localhost:3000/oauth/consume'
 
