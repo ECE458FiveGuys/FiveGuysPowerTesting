@@ -14,7 +14,8 @@ class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
                   CalibrationEventEnum.DATE.value,
                   CalibrationEventEnum.USER.value,
                   CalibrationEventEnum.COMMENT.value,
-                  CalibrationEventEnum.ADDITIONAL_EVIDENCE.value]
+                  CalibrationEventEnum.ADDITIONAL_EVIDENCE.value,
+                  CalibrationEventEnum.LOAD_BANK_DATA.value]
 
 
 class CalibrationHistorySerializer(serializers.ModelSerializer):

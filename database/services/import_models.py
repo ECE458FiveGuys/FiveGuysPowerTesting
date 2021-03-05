@@ -7,7 +7,6 @@ from .bulk_data_services.table_enums import InstrumentTableColumnNames as ITCN, 
 from .manager import BulkCreateManager
 from ..exceptions import IllegalCharacterException
 from ..models.model import Model
-from ..serializers.model import ModelListSerializer
 
 
 class ImportModels(object):
@@ -20,7 +19,7 @@ class ImportModels(object):
         bulk_mgr = BulkCreateManager()
         reader = csv.DictReader(self.file, dialect='excel')
         for row in reader:
-            if row[MTCN.VENDOR.value] == '--BoUnDaRyStRiNg--':
+            if row[MTCN.VENDOR.value].find('--') != -1:
                 break
             print(row)
             m = Model(vendor=self.parse_field(row, MTCN.VENDOR.value),

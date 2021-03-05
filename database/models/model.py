@@ -111,9 +111,9 @@ class ModelManager(models.Manager):
 
 class Model(models.Model):
     CALIBRATION_CHOICES = [
-        ('SIMPLE', 'Simple Event with Comment'),
-        ('FILE', 'Simple Event or File Input'),
-        ('ALL', 'All Modes of Calibration')
+        ('NOT_CALIBRATABLE', 'Cannot calibrate this instrument'),
+        ('DEFAULT', 'Simple Event or File Input'),
+        ('LOAD_BANK', 'Simple Event, File Input, or Load Bank Input')
     ]
 
     vendor = models.CharField(blank=False, max_length=VENDOR_LENGTH)
@@ -125,7 +125,7 @@ class Model(models.Model):
                                                  validators=[MinValueValidator(timedelta(days=0)),
                                                              MaxValueValidator(timedelta(days=3653))])
     model_categories = models.ManyToManyField(ModelCategory, related_name='model_list', blank=True)
-    calibration_mode = models.CharField(blank=True, max_length=6, choices=CALIBRATION_CHOICES, default='FILE')
+    calibration_mode = models.CharField(blank=True, max_length=16, choices=CALIBRATION_CHOICES, default='FILE')
 
     objects = ModelManager()
 
