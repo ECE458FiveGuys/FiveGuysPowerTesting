@@ -69,10 +69,7 @@ class CalibrationEvent(models.Model):
                                            blank=True,
                                            null=True,
                                            validators=[FileExtensionValidator(['jpg', 'png', 'gif', 'pdf', 'xlsx'])])
-    load_bank_data = models.FileField(upload_to=instrument_evidence_directory_path,
-                                      blank=True,
-                                      null=True,
-                                      validators=[FileExtensionValidator(['json'])])
+    load_bank_data = models.CharField(max_length=3000, blank=True, default='')
 
     objects = CalibrationEventManager()
 
