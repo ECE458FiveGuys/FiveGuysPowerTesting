@@ -17,7 +17,8 @@ class ModelForInstrumentSerializer(serializers.ModelSerializer):
                   ModelEnum.VENDOR.value,
                   ModelEnum.MODEL_NUMBER.value,
                   ModelEnum.DESCRIPTION.value,
-                  ModelEnum.MODEL_CATEGORIES.value]
+                  ModelEnum.MODEL_CATEGORIES.value,
+                  ModelEnum.CALIBRATION_MODE.value]
 
 
 class InstrumentUniqueFieldsSerializer(serializers.ModelSerializer):

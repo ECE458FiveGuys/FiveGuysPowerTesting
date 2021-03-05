@@ -19,13 +19,15 @@ class CalibrationEventManager(models.Manager):
                instrument=None,
                date=None,
                comment=None,
-               additional_evidence=None):
+               additional_evidence=None,
+               load_bank_data=None):
         try:
             calibration_event = CalibrationEvent(instrument=instrument,
                                                  user=user,
                                                  date=date,
                                                  comment=comment,
-                                                 additional_evidence=additional_evidence)
+                                                 additional_evidence=additional_evidence,
+                                                 load_bank_data=load_bank_data)
             calibration_event.full_clean()
             calibration_event.save()
             return calibration_event
@@ -49,9 +51,9 @@ class CalibrationEventManager(models.Manager):
                     raise UserError(error_message)
 
 
-def instrument_directory_path(instance, filename):
+def instrument_evidence_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/instrument_<pk>/<filename>
-    return 'instrument_{0}/{1}'.format(instance.instrument.pk, filename)
+    return 'instrument_{0}/{1}/{2}'.format(instance.instrument.pk, instance.date, filename)
 
 
 class CalibrationEvent(models.Model):
@@ -63,10 +65,14 @@ class CalibrationEvent(models.Model):
     date = models.DateField(blank=False, validators=[MaxValueValidator(limit_value=date.today)])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
-    additional_evidence = models.FileField(upload_to=instrument_directory_path,
+    additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
                                            blank=True,
                                            null=True,
                                            validators=[FileExtensionValidator(['jpg', 'png', 'gif', 'pdf', 'xlsx'])])
+    load_bank_data = models.FileField(upload_to=instrument_evidence_directory_path,
+                                      blank=True,
+                                      null=True,
+                                      validators=[FileExtensionValidator(['json'])])
 
     objects = CalibrationEventManager()
 
