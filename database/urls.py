@@ -1,4 +1,4 @@
-from django.urls import include, path, re_path
+from django.urls import include, path
 from rest_framework import routers
 
 from database import views
@@ -20,3 +20,4 @@ urlpatterns = [
     path('import-instruments/', views.import_instruments),
     path('new_import_models/', FileUploadView.as_view())
 ]
+

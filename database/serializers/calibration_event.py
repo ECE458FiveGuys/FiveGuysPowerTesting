@@ -13,7 +13,8 @@ class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
         fields = [CalibrationEventEnum.PK.value,
                   CalibrationEventEnum.DATE.value,
                   CalibrationEventEnum.USER.value,
-                  CalibrationEventEnum.COMMENT.value]
+                  CalibrationEventEnum.COMMENT.value,
+                  CalibrationEventEnum.ADDITIONAL_EVIDENCE.value]
 
 
 class CalibrationHistorySerializer(serializers.ModelSerializer):
