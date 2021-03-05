@@ -54,3 +54,4 @@ class CalibrationEventEnum(AutoName):
     DATE = auto()
     USER = auto()
     COMMENT = auto()
+    ADDITIONAL_EVIDENCE = auto()

@@ -63,3 +63,4 @@ user_portal/secrets.py
 .idea/
 .DS_Store
 migrations/
+media/instrument_*

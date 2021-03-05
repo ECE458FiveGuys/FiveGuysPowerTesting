@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator
+from django.core.validators import FileExtensionValidator, MaxValueValidator
 from django.db import models
 
 from database.constants import COMMENT_LENGTH
@@ -18,10 +18,14 @@ class CalibrationEventManager(models.Manager):
                user=None,
                instrument=None,
                date=None,
-               comment=None):
+               comment=None,
+               additional_evidence=None):
         try:
-            calibration_event = CalibrationEvent(instrument=instrument, user=user, date=date,
-                                                 comment=comment)
+            calibration_event = CalibrationEvent(instrument=instrument,
+                                                 user=user,
+                                                 date=date,
+                                                 comment=comment,
+                                                 additional_evidence=additional_evidence)
             calibration_event.full_clean()
             calibration_event.save()
             return calibration_event
@@ -45,11 +49,24 @@ class CalibrationEventManager(models.Manager):
                     raise UserError(error_message)
 
 
+def instrument_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/instrument_<pk>/<filename>
+    return 'instrument_{0}/{1}'.format(instance.instrument.pk, filename)
+
+
 class CalibrationEvent(models.Model):
+    """
+    Upload a file: The user may attach a single file of type JPG, PNG, GIF, PDF, or XLSX. Files larger than 32 MB must
+    be rejected. Allowed for all models.
+    """
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
     date = models.DateField(blank=False, validators=[MaxValueValidator(limit_value=date.today)])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
+    additional_evidence = models.FileField(upload_to=instrument_directory_path,
+                                           blank=True,
+                                           null=True,
+                                           validators=[FileExtensionValidator(['jpg', 'png', 'gif', 'pdf', 'xlsx'])])
 
     objects = CalibrationEventManager()
 
