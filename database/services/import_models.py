@@ -28,7 +28,7 @@ class ImportModels(object):
                       comment=self.parse_field(row, MTCN.COMMENT.value),
                       calibration_frequency=timedelta(days=0) if row[MTCN.CALIBRATION_FREQUENCY.value] == 'N/A' else
                       timedelta(days=int(row[MTCN.CALIBRATION_FREQUENCY.value])),
-                      calibration_mode='FILE')
+                      calibration_mode='DEFAULT')
             bulk_mgr.add(m)
             successful_imports.append(m)
         bulk_mgr.done()

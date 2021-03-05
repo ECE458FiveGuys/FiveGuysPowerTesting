@@ -85,6 +85,12 @@ class ModelBaseSerializer(serializers.ModelSerializer):
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
         return model
 
+    def validate(self, attrs):
+        if ModelEnum.CALIBRATION_FREQUENCY.value not in attrs or attrs[ModelEnum.CALIBRATION_FREQUENCY.value] == 0:
+            if ModelEnum.CALIBRATION_MODE.value in attrs and attrs[ModelEnum.CALIBRATION_MODE.value] in {'DEFAULT', 'LOAD_BANK'}:
+                raise serializers.ValidationError('Non-calibratable model cannot have a calibration mode')
+        return attrs
+
     def update(self, instance, validated_data):
         try:
             calibration_frequency_data = validated_data.pop('calibration_frequency')

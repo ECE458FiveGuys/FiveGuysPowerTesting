@@ -24,8 +24,9 @@ class ModelManager(models.Manager):
                calibration_mode=None):
         if comment is None:
             comment = ''
-        if calibration_frequency is None:
+        if calibration_frequency is None or calibration_frequency == timedelta(days=0):
             calibration_frequency = timedelta(days=0)
+            calibration_mode = 'NOT_CALIBRATABLE'
         if model_categories is None:
             model_categories = []
         if calibration_mode is None:
