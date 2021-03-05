@@ -47,7 +47,7 @@ class CreateModelCategoryTestCase(TestCase):
                              description="4 Input Oscilloscope",
                              calibration_frequency=timedelta(days=120),
                              model_categories=['Oscilloscope'],
-                             calibration_mode='FILE')
+                             calibration_mode='DEFAULT')
         created_model = Model.objects.get(vendor='Agilent')
         queryset = created_model.model_categories.all()
         expected_queryset = ModelCategory.objects.filter(name="Oscilloscope")
@@ -59,7 +59,7 @@ class CreateModelCategoryTestCase(TestCase):
                              description="Heavy Duty Multimeter",
                              calibration_frequency=timedelta(days=40),
                              model_categories=['Multimeter', 'Voltmeter'],
-                             calibration_mode='FILE')
+                             calibration_mode='DEFAULT')
         created_model = Model.objects.get(vendor='Agilent')
         queryset = created_model.model_categories.all()
         expected_queryset = ModelCategory.objects.filter(name__endswith="meter")
@@ -71,7 +71,7 @@ class CreateModelCategoryTestCase(TestCase):
                              description="DC Power Supply",
                              calibration_frequency=timedelta(days=365),
                              model_categories=['power_supply'],
-                             calibration_mode='FILE')
+                             calibration_mode='DEFAULT')
         created_model = Model.objects.get(vendor='Agilent')
         queryset = created_model.model_categories.all()
         expected_queryset = ModelCategory.objects.filter(name="power_supply")
@@ -83,7 +83,7 @@ class CreateModelCategoryTestCase(TestCase):
                              description="Heavy Duty Multimeter",
                              calibration_frequency=timedelta(days=40),
                              model_categories=['Multimeter', 'Voltmeter', 'Ammeter'],
-                             calibration_mode='FILE')
+                             calibration_mode='DEFAULT')
         created_model = Model.objects.get(vendor='Agilent')
         queryset = created_model.model_categories.all()
         expected_queryset = ModelCategory.objects.filter(name__endswith="meter")
