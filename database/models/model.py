@@ -29,7 +29,7 @@ class ModelManager(models.Manager):
         if model_categories is None:
             model_categories = []
         if calibration_mode is None:
-            calibration_mode = 'FILE'
+            calibration_mode = 'DEFAULT'
         try:
             m = Model(vendor=vendor,
                       model_number=model_number,
@@ -125,7 +125,7 @@ class Model(models.Model):
                                                  validators=[MinValueValidator(timedelta(days=0)),
                                                              MaxValueValidator(timedelta(days=3653))])
     model_categories = models.ManyToManyField(ModelCategory, related_name='model_list', blank=True)
-    calibration_mode = models.CharField(blank=True, max_length=16, choices=CALIBRATION_CHOICES, default='FILE')
+    calibration_mode = models.CharField(blank=True, max_length=16, choices=CALIBRATION_CHOICES, default='DEFAULT')
 
     objects = ModelManager()
 
