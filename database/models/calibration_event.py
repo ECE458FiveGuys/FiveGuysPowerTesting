@@ -21,6 +21,8 @@ class CalibrationEventManager(models.Manager):
                comment=None,
                additional_evidence=None,
                load_bank_data=None):
+        if load_bank_data is None:
+            load_bank_data = ''
         try:
             calibration_event = CalibrationEvent(instrument=instrument,
                                                  user=user,
@@ -69,10 +71,7 @@ class CalibrationEvent(models.Model):
                                            blank=True,
                                            null=True,
                                            validators=[FileExtensionValidator(['jpg', 'png', 'gif', 'pdf', 'xlsx'])])
-    load_bank_data = models.FileField(upload_to=instrument_evidence_directory_path,
-                                      blank=True,
-                                      null=True,
-                                      validators=[FileExtensionValidator(['json'])])
+    load_bank_data = models.TextField(blank=True, default='')
 
     objects = CalibrationEventManager()
 
