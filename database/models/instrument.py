@@ -16,7 +16,7 @@ class InstrumentManager(models.Manager):
     def create(self,
                model=None,
                serial_number=None,
-               comment='',
+               comment=None,
                asset_tag_number=None):
         if asset_tag_number is None:
             used_values = self.asset_tag_numbers()
@@ -53,7 +53,7 @@ class InstrumentManager(models.Manager):
 
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
-    serial_number = models.CharField(max_length=SERIAL_NUMBER_LENGTH)
+    serial_number = models.CharField(blank=True, max_length=SERIAL_NUMBER_LENGTH)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, default='')
     asset_tag_number = models.IntegerField(blank=True, unique=True,
                                            validators=[MinValueValidator(limit_value=100000),
