@@ -86,9 +86,15 @@ class ModelBaseSerializer(serializers.ModelSerializer):
         return model
 
     def validate(self, attrs):
-        if ModelEnum.CALIBRATION_FREQUENCY.value not in attrs or attrs[ModelEnum.CALIBRATION_FREQUENCY.value] == 0:
-            if ModelEnum.CALIBRATION_MODE.value in attrs and attrs[ModelEnum.CALIBRATION_MODE.value] in {'DEFAULT', 'LOAD_BANK'}:
-                raise serializers.ValidationError('Non-calibratable model cannot have a calibration mode')
+        if self.partial:
+            if ModelEnum.CALIBRATION_FREQUENCY.value not in attrs:
+                if self.instance.calibration_frequency == timedelta(days=0):
+                    if ModelEnum.CALIBRATION_MODE.value in attrs and attrs[ModelEnum.CALIBRATION_MODE.value] in {'DEFAULT', 'LOAD_BANK'}:
+                        raise serializers.ValidationError('Non-calibratable model cannot have a calibration mode')
+        else:
+            if ModelEnum.CALIBRATION_FREQUENCY.value not in attrs or attrs[ModelEnum.CALIBRATION_FREQUENCY.value] == 0:
+                if ModelEnum.CALIBRATION_MODE.value in attrs and attrs[ModelEnum.CALIBRATION_MODE.value] in {'DEFAULT', 'LOAD_BANK'}:
+                    raise serializers.ValidationError('Non-calibratable model cannot have a calibration mode')
         return attrs
 
     def update(self, instance, validated_data):

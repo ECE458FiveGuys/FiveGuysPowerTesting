@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from database.model_enums import CalibrationEventEnum
 from database.models.calibration_event import CalibrationEvent
+from database.models.instrument import Instrument
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
 
@@ -29,3 +30,14 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalibrationEvent
         fields = [e.value for e in CalibrationEventEnum]
+
+    def validate(self, attrs):
+        calibration_mode = attrs['instrument'].model.calibration_mode
+        if calibration_mode == 'NOT_CALIBRATABLE':
+            raise serializers.ValidationError('Instrument whose model is not calibratable may not have a calibration'
+                                              ' event associated with it.')
+        if CalibrationEventEnum.LOAD_BANK_DATA.value in attrs:
+            if calibration_mode == 'DEFAULT':
+                raise serializers.ValidationError('Model needs calibration mode of LOAD_BANK in order to have input'
+                                                  ' from the load calibration wizard.')
+        return attrs
