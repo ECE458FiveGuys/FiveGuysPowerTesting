@@ -4,7 +4,7 @@ from database.exceptions import InvalidCalibrationFrequencyException
 from database.models.model import Model
 from database.serializers.model import ModelSerializer
 from database.services.bulk_data_services.import_service import ImportService
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames
+from database.services.table_enums import ModelTableColumnNames
 
 
 class ImportModelsService(ImportService):

@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from database.exceptions import IllegalCharacterException, UserError
-from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
+from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
 from database.services.service import Service
 
 

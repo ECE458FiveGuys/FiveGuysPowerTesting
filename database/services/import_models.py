@@ -3,10 +3,10 @@ from datetime import timedelta
 
 from rest_framework.response import Response
 
-from .bulk_data_services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
-from .manager import BulkCreateManager
+from database.services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
+from database.serializers.model import ModelListSerializer
 from ..exceptions import IllegalCharacterException
-from ..models.model import Model
+from database.models.model import Model
 
 
 class ImportModels(object):
@@ -16,23 +16,18 @@ class ImportModels(object):
 
     def bulk_import(self):
         successful_imports = []
-        bulk_mgr = BulkCreateManager()
-        reader = csv.DictReader(self.file, dialect='excel')
+        reader = csv.DictReader(self.file)
         for row in reader:
-            if row[MTCN.VENDOR.value].find('--') != -1:
-                break
-            print(row)
-            m = Model(vendor=self.parse_field(row, MTCN.VENDOR.value),
-                      model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
-                      description=self.parse_field(row, MTCN.DESCRIPTION.value),
-                      comment=self.parse_field(row, MTCN.COMMENT.value),
-                      calibration_frequency=timedelta(days=0) if row[MTCN.CALIBRATION_FREQUENCY.value] == 'N/A' else
-                      timedelta(days=int(row[MTCN.CALIBRATION_FREQUENCY.value])),
-                      calibration_mode='DEFAULT')
-            bulk_mgr.add(m)
+            m = Model.objects.create(
+                vendor=self.parse_field(row, MTCN.VENDOR.value),
+                model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
+                description=self.parse_field(row, MTCN.DESCRIPTION.value),
+                comment=self.parse_field(row, MTCN.COMMENT.value),
+                model_categories=self.parse_categories(row),
+                calibration_frequency=self.parse_calibration_frequency(row),
+                calibration_mode=self.parse_calibration_mode(row))
             successful_imports.append(m)
-        bulk_mgr.done()
-        return Response(status=200)
+        return Response(status=200, data=ModelListSerializer(successful_imports, many=True).data)
 
     @staticmethod
     def is_comment_field(key):
@@ -42,3 +37,19 @@ class ImportModels(object):
         if not self.is_comment_field(key) and row[key].find("\n") != -1:
             raise IllegalCharacterException(key)
         return row[key]
+
+    def parse_categories(self, row):
+        value = self.parse_field(row, MTCN.MODEL_CATEGORIES.value)
+        return value.split()
+
+    def parse_calibration_frequency(self, row):
+        value = self.parse_field(row, MTCN.CALIBRATION_FREQUENCY.value)
+        if value == 'N/A':
+            return timedelta(days=0)
+        return timedelta(days=int(value))
+
+    def parse_calibration_mode(self, row):
+        value = self.parse_field(row, MTCN.LOAD_BANK_SUPPORT.value)
+        if value == 'Y':
+            return 'LOAD_BANK'
+        return 'DEFAULT'

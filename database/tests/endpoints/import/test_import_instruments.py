@@ -1,6 +1,5 @@
-from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
-from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames
+from database.models.instrument import CalibrationEvent, Instrument
+from database.services.table_enums import InstrumentTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.tests.test_utils import create_model
 from database.views import import_instruments

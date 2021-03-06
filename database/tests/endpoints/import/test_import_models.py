@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from database.models.model import Model
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames
+from database.services.table_enums import ModelTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.views import import_models
 

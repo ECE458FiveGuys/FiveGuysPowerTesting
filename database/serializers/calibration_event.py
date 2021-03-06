@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
 from database.model_enums import CalibrationEventEnum
-from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
+from database.models.instrument import CalibrationEvent, Instrument
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
 

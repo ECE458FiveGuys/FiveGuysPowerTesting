@@ -18,6 +18,7 @@ urlpatterns = [
     path('export/', views.export),
     path('import-models/', views.import_models),
     path('import-instruments/', views.import_instruments),
-    path('new_import_models/', FileUploadView.as_view())
+    path('new_import_models/', ModelUploadView.as_view()),
+    path('new_import_instruments/', InstrumentUploadView.as_view())
 ]
 

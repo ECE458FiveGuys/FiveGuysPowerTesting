@@ -4,7 +4,7 @@ import tempfile
 
 from rest_framework.test import force_authenticate
 
-from database.services.bulk_data_services.table_enums import ModelTableColumnNames
+from database.services.table_enums import ModelTableColumnNames
 from database.tests.endpoints.endpoint_test_case import EndpointTestCase
 from database.tests.test_utils import create_model_and_instrument
 from database.views import export_models

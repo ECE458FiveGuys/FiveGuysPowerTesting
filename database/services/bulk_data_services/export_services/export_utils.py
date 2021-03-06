@@ -1,7 +1,6 @@
-from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
+from database.models.instrument import CalibrationEvent, Instrument
 from database.models.model import Model
-from database.services.bulk_data_services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
+from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
 
 
 def write_instrument_file(writer):
