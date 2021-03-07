@@ -25,3 +25,5 @@ class InstrumentTableColumnNames(Enum):
     CALIBRATION_DATE = "Calibration-Date"
     CALIBRATION_COMMENT = "Calibration-Comment"
     INSTRUMENT_CATEGORIES = "Instrument-Categories"
+    CALIBRATION_FILE_ATTACHMENT = "Calibration-File-Attachment"
+    CALIBRATION_LOAD_BANK_RESULTS_EXISTS = 'Calibration-Load-Bank-Results-Exists'
