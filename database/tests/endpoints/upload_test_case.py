@@ -53,7 +53,7 @@ class ImportTestCase(TestCase):
 
         request = self.factory.post(self.Endpoints.IMPORT_MODEL.value, {'file': data}, **headers)
         force_authenticate(request, self.admin)
-        response = view(request)
+        _ = view(request)
 
         data = open('media/instrument-pre.csv', 'rb')
 

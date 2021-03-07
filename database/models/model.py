@@ -41,14 +41,15 @@ class ModelManager(models.Manager):
         m.save()
         return m
 
-    def vendors(self):
-        return self.order_by().values_list('vendor', flat=True).distinct()
+    def vendors(self, model_number):
+        if model_number is None:
+            model_number = ''
+        return self.order_by().filter(model_number__contains=model_number).values_list('vendor', flat=True).distinct()
 
-    def models_for_vendor(self, vendor):
-        return self.order_by().filter(vendor=vendor).values_list('model_number', flat=True).distinct()
-
-    def models(self):
-        return self.order_by().values_list('model_number', flat=True).distinct()
+    def model_numbers(self, vendor):
+        if vendor is None:
+            vendor = ''
+        return self.order_by().filter(vendor__contains=vendor).values_list('model_number', flat=True).distinct()
 
 
 class Model(models.Model):
