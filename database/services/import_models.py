@@ -1,12 +1,13 @@
 import csv
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from rest_framework.response import Response
 
-from database.services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
-from database.serializers.model import ModelListSerializer
-from ..exceptions import IllegalCharacterException
 from database.models.model import Model
+from database.serializers.model import ModelListSerializer
+from database.services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
+from ..exceptions import IllegalCharacterException
 
 
 class ImportModels(object):
@@ -17,17 +18,22 @@ class ImportModels(object):
     def bulk_import(self):
         successful_imports = []
         reader = csv.DictReader(self.file)
-        for row in reader:
-            m = Model.objects.create(
-                vendor=self.parse_field(row, MTCN.VENDOR.value),
-                model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
-                description=self.parse_field(row, MTCN.DESCRIPTION.value),
-                comment=self.parse_field(row, MTCN.COMMENT.value),
-                model_categories=self.parse_categories(row),
-                calibration_frequency=self.parse_calibration_frequency(row),
-                calibration_mode=self.parse_calibration_mode(row))
-            successful_imports.append(m)
-        return Response(status=200, data=ModelListSerializer(successful_imports, many=True).data)
+        try:
+            for row in reader:
+                m = Model.objects.create(
+                    vendor=self.parse_field(row, MTCN.VENDOR.value),
+                    model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
+                    description=self.parse_field(row, MTCN.DESCRIPTION.value),
+                    comment=self.parse_field(row, MTCN.COMMENT.value),
+                    model_categories=self.parse_categories(row),
+                    calibration_frequency=self.parse_calibration_frequency(row),
+                    calibration_mode=self.parse_calibration_mode(row))
+                successful_imports.append(m)
+            return Response(status=200, data=ModelListSerializer(successful_imports, many=True).data)
+        except ValidationError as e:
+            for obj in successful_imports:
+                obj.delete()
+            return Response(status=400, data=e.messages)
 
     @staticmethod
     def is_comment_field(key):

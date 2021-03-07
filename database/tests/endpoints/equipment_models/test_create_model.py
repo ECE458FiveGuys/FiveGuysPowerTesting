@@ -97,7 +97,7 @@ class CreateModelTestCase(EndpointTestCase):
         force_authenticate(request, self.admin)
         view = ModelViewSet.as_view({'get': 'list'})
         response = view(request)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data['count'], 2)
 
     def test_retrieve_multiple_category(self):
         parameters = "?model_categories__name=multimeter,voltmeter"
@@ -105,4 +105,4 @@ class CreateModelTestCase(EndpointTestCase):
         force_authenticate(request, self.admin)
         view = ModelViewSet.as_view({'get': 'list'})
         response = view(request)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data['count'], 1)

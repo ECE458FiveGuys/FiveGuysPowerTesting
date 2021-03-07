@@ -83,7 +83,9 @@ class Instrument(models.Model):
     objects = InstrumentManager()
 
     class Meta:
-        UniqueConstraint(fields=['model', 'serial_number'], name='unique_instrument')
+        constraints = [
+            UniqueConstraint(fields=['model', 'serial_number'], name='unique_instrument')
+        ]
 
     def __str__(self):
         template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'
