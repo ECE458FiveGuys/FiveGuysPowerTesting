@@ -4,8 +4,7 @@ from datetime import timedelta
 
 from django.utils.timezone import localtime, now
 
-from database.models.calibration_event import CalibrationEvent
-from database.models.instrument import Instrument
+from database.models.instrument import CalibrationEvent, Instrument
 from database.models.model import Model
 from user_portal.models import PowerUser
 
