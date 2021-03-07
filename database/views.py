@@ -146,6 +146,7 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
 
 class ModelUploadView(APIView):
     parser_classes = [MultiPartParser, ]
+    permission_classes = [IsAdminUser]
 
     def post(self, request):
         file = request.data['file']
@@ -156,6 +157,7 @@ class ModelUploadView(APIView):
 
 class InstrumentUploadView(APIView):
     parser_classes = [MultiPartParser, ]
+    permission_classes = [IsAdminUser]
 
     def post(self, request):
         file = request.data['file']
