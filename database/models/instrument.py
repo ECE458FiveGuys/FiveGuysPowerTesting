@@ -4,6 +4,7 @@ import random
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
+from django.db.models import UniqueConstraint
 
 from database.constants import COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
 from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, CalibrationEventFieldLengthException, \
@@ -72,7 +73,7 @@ class InstrumentManager(models.Manager):
 
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
-    serial_number = models.CharField(blank=True, max_length=SERIAL_NUMBER_LENGTH)
+    serial_number = models.CharField(blank=True, null=True, max_length=SERIAL_NUMBER_LENGTH)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, default='')
     asset_tag_number = models.IntegerField(blank=True, unique=True,
                                            validators=[MinValueValidator(limit_value=100000),
@@ -82,7 +83,7 @@ class Instrument(models.Model):
     objects = InstrumentManager()
 
     class Meta:
-        unique_together = ('model', 'serial_number')  # 2.2.1.2
+        UniqueConstraint(fields=['model', 'serial_number'], name='unique_instrument')
 
     def __str__(self):
         template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'

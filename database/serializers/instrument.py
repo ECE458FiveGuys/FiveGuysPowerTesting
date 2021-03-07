@@ -52,6 +52,14 @@ class InstrumentRetrieveSerializer(serializers.ModelSerializer):
         fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration_date']
 
 
+class InstrumentBulkImportSerializer(serializers.ModelSerializer):
+    model = ModelForInstrumentSerializer(many=False, read_only=True)
+    instrument_categories = InstrumentCategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Instrument
+        fields = [e.value for e in InstrumentEnum]
+
 class InstrumentListSerializer(serializers.ModelSerializer):
     most_recent_calibration_date = serializers.DateField()
     calibration_expiration_date = serializers.DateField()

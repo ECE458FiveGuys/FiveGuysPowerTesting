@@ -141,7 +141,7 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
 
 
 class ModelUploadView(APIView):
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, ]
 
     def post(self, request):
         file = request.data['file']
@@ -151,13 +151,11 @@ class ModelUploadView(APIView):
 
 
 class InstrumentUploadView(APIView):
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, ]
 
     def post(self, request):
         file = request.data['file']
-        decoded_file = file.read().decode('utf-8-sig')
-        csv_file = StringIO(decoded_file)
-        return ImportInstruments(csv_file).bulk_import(self.request.user)
+        return ImportInstruments(file).bulk_import(self.request.user)
 
 
 @api_view(['GET'])

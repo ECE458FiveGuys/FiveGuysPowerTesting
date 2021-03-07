@@ -1,10 +1,11 @@
 import csv
+from io import StringIO
 from datetime import datetime
 
 from rest_framework.response import Response
 
 from database.models.instrument import Instrument
-from database.serializers.instrument import InstrumentListSerializer
+from database.serializers.instrument import InstrumentBulkImportSerializer
 from database.services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
 from ..exceptions import IllegalCharacterException
 
@@ -12,13 +13,28 @@ from ..exceptions import IllegalCharacterException
 class ImportInstruments(object):
 
     def __init__(self, file):
-        self.file = file
-        self.asset_tags = iter(set(range(10 ** 5, 10 ** 6)) - set(Instrument.objects.asset_tag_numbers()))
+        decoded_file = file.read().decode('utf-8-sig')
+        self.file = StringIO(decoded_file)
+        self.reader = csv.DictReader(self.file)
+        self.asset_tags = self.generate_asset_tag_numbers(file)
+
+    def generate_asset_tag_numbers(self, file):
+        file.seek(0)
+        decoded_file = file.read().decode('utf-8-sig')
+        reader = csv.DictReader(StringIO(decoded_file))
+
+        a = []
+        for row in reader:
+            value = self.parse_field(row, ITCN.ASSET_TAG_NUMBER.value)
+            if value != '':
+                a.append(int(value))
+        asset_tag_numbers = set(range(10 ** 5, 10 ** 6)) - set(Instrument.objects.asset_tag_numbers())
+        asset_tag_numbers = asset_tag_numbers - set(a)
+        return iter(asset_tag_numbers)
 
     def bulk_import(self, user=None):
         successful_imports = []
-        reader = csv.DictReader(self.file)
-        for row in reader:
+        for row in self.reader:
             m = Instrument.objects.create_for_import(
                 vendor=self.parse_field(row, MTCN.VENDOR.value),
                 model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
@@ -30,7 +46,7 @@ class ImportInstruments(object):
                 calibration_date=self.parse_date(row),
                 calibration_comment=self.parse_field(row, ITCN.CALIBRATION_COMMENT.value))
             successful_imports.append(m)
-        return Response(status=200, data=InstrumentListSerializer(successful_imports, many=True).data)
+        return Response(status=200, data=InstrumentBulkImportSerializer(successful_imports, many=True).data)
 
     @staticmethod
     def is_comment_field(key):
@@ -47,10 +63,12 @@ class ImportInstruments(object):
 
     def parse_asset_tag_numbers(self, row):
         value = self.parse_field(row, ITCN.ASSET_TAG_NUMBER.value)
-        if value is None:
-            return next(self.asset_tags)
+        if value == '':
+            value = next(self.asset_tags)
         return value
 
     def parse_date(self, row):
         value = self.parse_field(row, ITCN.CALIBRATION_DATE.value)
+        if value == '':
+            return None
         return datetime.strptime(value, '%m/%d/%Y').date()
