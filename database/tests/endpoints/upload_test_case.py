@@ -71,4 +71,7 @@ class ImportTestCase(TestCase):
         force_authenticate(request, self.admin)
         response = view(request)
 
+        print(response.status_code)
+        print(response.data)
+
         return response.status_code, response.data

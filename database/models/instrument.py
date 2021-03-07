@@ -41,8 +41,6 @@ class InstrumentManager(models.Manager):
             raise ValidationError('Cannot import instrument without vendor')
         if model_number is None:
             raise ValidationError('Cannot import instrument without model number')
-        if serial_number is None:
-            serial_number = ''
         if calibration_comment is None:
             calibration_comment = ''
         if instrument_categories is None:

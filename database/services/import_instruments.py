@@ -38,7 +38,7 @@ class ImportInstruments(object):
                 m = Instrument.objects.create_for_import(
                     vendor=self.parse_field(row, MTCN.VENDOR.value),
                     model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
-                    serial_number=self.parse_field(row, ITCN.SERIAL_NUMBER.value),
+                    serial_number=self.parse_serial_number(row),
                     asset_tag_number=self.parse_asset_tag_numbers(row),
                     comment=self.parse_field(row, MTCN.COMMENT.value),
                     instrument_categories=self.parse_categories(row),
@@ -60,6 +60,12 @@ class ImportInstruments(object):
         if not self.is_comment_field(key) and row[key].find("\n") != -1:
             raise IllegalCharacterException(key)
         return row[key]
+
+    def parse_serial_number(self, row):
+        value = self.parse_field(row, ITCN.SERIAL_NUMBER.value)
+        if value == '':
+            return None
+        return value
 
     def parse_categories(self, row):
         value = self.parse_field(row, ITCN.INSTRUMENT_CATEGORIES.value)
