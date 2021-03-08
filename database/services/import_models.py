@@ -1,4 +1,5 @@
 import csv
+import io
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
@@ -7,19 +8,21 @@ from rest_framework.response import Response
 from database.models.model import Model
 from database.serializers.model import ModelListSerializer
 from database.services.table_enums import InstrumentTableColumnNames as ITCN, ModelTableColumnNames as MTCN
-from ..exceptions import IllegalCharacterException
 
 
 class ImportModels(object):
 
     def __init__(self, file):
-        self.file = file
+        f = io.TextIOWrapper(file, encoding="utf-8-sig")
+        self.reader = csv.DictReader(f)
 
     def bulk_import(self):
         successful_imports = []
-        reader = csv.DictReader(self.file)
         try:
-            for row in reader:
+            if set(self.reader.fieldnames) != set([e.value for e in MTCN]):
+                print(self.reader.fieldnames)
+                raise ValidationError("Column headers are incorrect")
+            for row in self.reader:
                 m = Model.objects.create(
                     vendor=self.parse_field(row, MTCN.VENDOR.value),
                     model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
@@ -41,7 +44,7 @@ class ImportModels(object):
 
     def parse_field(self, row, key):
         if not self.is_comment_field(key) and row[key].find("\n") != -1:
-            raise IllegalCharacterException(key)
+            raise ValidationError(f"Illegal newline character found in row {self.reader.line_num - 1} of column {key}")
         return row[key]
 
     def parse_categories(self, row):

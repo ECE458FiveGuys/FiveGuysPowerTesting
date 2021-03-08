@@ -1,6 +1,6 @@
 import csv
+import io
 from datetime import datetime
-from io import StringIO
 
 from django.core.exceptions import ValidationError
 from rest_framework.response import Response
@@ -14,15 +14,13 @@ from ..exceptions import IllegalCharacterException
 class ImportInstruments(object):
 
     def __init__(self, file):
-        decoded_file = file.read().decode('utf-8-sig')
-        self.file = StringIO(decoded_file)
-        self.reader = csv.DictReader(self.file)
-        self.asset_tags = self.generate_asset_tag_numbers(file)
+        f = io.TextIOWrapper(file, encoding="utf-8-sig")
+        self.asset_tags = self.generate_asset_tag_numbers(f)
+        f.seek(0)
+        self.reader = csv.DictReader(f)
 
     def generate_asset_tag_numbers(self, file):
-        file.seek(0)
-        decoded_file = file.read().decode('utf-8-sig')
-        reader = csv.DictReader(StringIO(decoded_file))
+        reader = csv.DictReader(file)
         a = []
         for row in reader:
             value = self.parse_field(row, ITCN.ASSET_TAG_NUMBER.value)

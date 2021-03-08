@@ -1,0 +1,5 @@
+﻿Vendor,Model-Number,Short-Description,Comment,Model-Categories,Load-Bank-Support,Calibration-Frequency
+Fluke,1,First Model,TEST,,Y,60
+Fluke,2,"Second
+Model",TEST,,Y,90
+Fluke,3,Third Model,TEST,,Y,120

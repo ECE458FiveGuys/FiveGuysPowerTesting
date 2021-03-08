@@ -1,5 +1,3 @@
-from io import StringIO
-
 from django.db.models import DateField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
@@ -150,9 +148,7 @@ class ModelUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        decoded_file = file.read().decode('utf-8-sig')
-        csv_file = StringIO(decoded_file)
-        return ImportModels(csv_file).bulk_import()
+        return ImportModels(file).bulk_import()
 
 
 class InstrumentUploadView(APIView):

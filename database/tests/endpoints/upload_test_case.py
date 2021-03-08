@@ -1,8 +1,7 @@
 from enum import Enum
 
-from django.core.files.uploadedfile import SimpleUploadedFile
-from rest_framework.test import APIRequestFactory, force_authenticate
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory, force_authenticate
 
 from database.views import InstrumentUploadView, ModelUploadView
 from user_portal.models import PowerUser
@@ -19,59 +18,30 @@ class ImportTestCase(TestCase):
         cls.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
         cls.model_filename = 'model-pre.csv'
 
-    def test_model_upload_csv(self):
-        data = open('media/model-pre.csv', 'rb')
-
-        data = SimpleUploadedFile(content=data.read(), name=data.name, content_type='multipart/form-data')
-
-        view = ModelUploadView.as_view()
-
-        content_type = 'multipart/form-data'
-        headers = {
-            'HTTP_CONTENT_TYPE': content_type,
-            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=' + 'models_bulk_import_test.csv'
-        }
-
-        request = self.factory.post(self.Endpoints.IMPORT_MODEL.value, {'file': data}, **headers)
+    def import_helper(self, filename, endpoint, function):
+        with open(f'database/tests/files/{filename}', 'r', newline='', encoding='utf-8-sig') as file:
+            view = function.as_view()
+            headers = {
+                'HTTP_CONTENT_TYPE': 'multipart/form-data',
+                'HTTP_CONTENT_DISPOSITION': f'attachment; filename={filename}'
+            }
+            request = self.factory.post(endpoint, {'file': file}, **headers)
         force_authenticate(request, self.admin)
-        response = view(request)
+        return view(request)
 
-        return response.status_code, response.data
+    def test_model_upload_csv(self):
+        response = self.import_helper('model-pre.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
+        self.assertEqual(response.status_code, 200)
+
+    def test_illegal_newline_character(self):
+        response = self.import_helper('model-illegal-character.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
+        self.assertEqual(response.data, ['Illegal newline character found in row 3 of column Short-Description'])
 
     def test_instrument_upload_csv(self):
-        data = open('media/model-pre.csv', 'rb')
-
-        data = SimpleUploadedFile(content=data.read(), name=data.name, content_type='multipart/form-data')
-
-        view = ModelUploadView.as_view()
-
-        content_type = 'multipart/form-data'
-        headers = {
-            'HTTP_CONTENT_TYPE': content_type,
-            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=' + 'models_bulk_import_test.csv'
-        }
-
-        request = self.factory.post(self.Endpoints.IMPORT_MODEL.value, {'file': data}, **headers)
-        force_authenticate(request, self.admin)
-        _ = view(request)
-
-        data = open('media/instrument-pre.csv', 'rb')
-
-        data = SimpleUploadedFile(content=data.read(), name=data.name, content_type='multipart/form-data')
-
-        view = InstrumentUploadView.as_view()
-
-        content_type = 'multipart/form-data'
-        headers = {
-            'HTTP_CONTENT_TYPE': content_type,
-            'HTTP_CONTENT_DISPOSITION': 'attachment; filename=' + 'instrument-pre.csv'
-        }
-
-        request = self.factory.post(self.Endpoints.IMPORT_INSTRUMENT.value, {'file': data}, **headers)
-        force_authenticate(request, self.admin)
-        response = view(request)
+        _ = self.import_helper('model-pre.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
+        response = self.import_helper('instrument-pre.csv', self.Endpoints.IMPORT_INSTRUMENT.value,
+                                      InstrumentUploadView)
 
         print(response.status_code)
-        print(response.data)
 
         return response.status_code, response.data
