@@ -39,13 +39,13 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
     @action(['post'], detail=True)
     def update_admin_status(self, request, pk, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
         user = PowerUser.objects.get(pk=pk)
-        user.is_staff = serializer.data['is_staff']
-        user.save()
+        try:
+            user.is_staff = request.data['is_staff']
+        except KeyError:
+            return Response("No is_staff key")
 
+        user.save()
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
 
