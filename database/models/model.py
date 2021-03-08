@@ -37,6 +37,8 @@ class ModelManager(models.Manager):
         m.save(using=self.db)
         for model_category in model_categories:
             mc, created = ModelCategory.objects.get_or_create(name=model_category)
+            if created:
+                mc.full_clean()
             m.model_categories.add(mc)
         m.save()
         return m

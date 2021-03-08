@@ -54,6 +54,8 @@ class InstrumentManager(models.Manager):
         instrument.save(using=self.db)
         for instrument_category in instrument_categories:
             ic, created = InstrumentCategory.objects.get_or_create(name=instrument_category)
+            if created:
+                ic.full_clean()
             instrument.instrument_categories.add(ic)
         instrument.save()
         if calibration_date is not None:
