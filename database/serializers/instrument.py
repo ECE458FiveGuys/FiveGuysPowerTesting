@@ -1,4 +1,6 @@
+import django.core.exceptions
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from database.model_enums import CategoryEnum, InstrumentEnum, ModelEnum
 from database.models.instrument_category import InstrumentCategory
@@ -60,6 +62,7 @@ class InstrumentBulkImportSerializer(serializers.ModelSerializer):
         model = Instrument
         fields = [e.value for e in InstrumentEnum]
 
+
 class InstrumentListSerializer(serializers.ModelSerializer):
     most_recent_calibration_date = serializers.DateField()
     calibration_expiration_date = serializers.DateField()
@@ -95,7 +98,10 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
             instrument_categories_data = validated_data.pop('instrument_categories')
         except KeyError:
             instrument_categories_data = []
-        instrument = Instrument.objects.create(**validated_data)
+        try:
+            instrument = Instrument.objects.create(**validated_data)
+        except django.core.exceptions.ValidationError as e:
+            raise ValidationError(e.messages)
         for instrument_category_data in instrument_categories_data:
             instrument.instrument_categories.add(InstrumentCategory.objects.get(name=instrument_category_data))
         return instrument

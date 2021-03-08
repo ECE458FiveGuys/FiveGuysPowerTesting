@@ -1,6 +1,8 @@
 from datetime import timedelta
 
+import django.core.exceptions
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from database.model_enums import CategoryEnum, InstrumentEnum, ModelEnum
 from database.models.instrument import Instrument
@@ -80,7 +82,10 @@ class ModelBaseSerializer(serializers.ModelSerializer):
         except KeyError:
             model_categories_data = []
         validated_data['calibration_frequency'] = calibration_frequency
-        model = Model.objects.create(**validated_data)
+        try:
+            model = Model.objects.create(**validated_data)
+        except django.core.exceptions.ValidationError as e:
+            raise ValidationError(e.messages)
         for model_category_data in model_categories_data:
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
         return model

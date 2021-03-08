@@ -2,7 +2,7 @@ from io import StringIO
 
 from django.db.models import DateField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
-from rest_framework.decorators import action, api_view, parser_classes, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -90,13 +90,6 @@ class ModelViewSet(viewsets.ModelViewSet):
         vendor = request.query_params.get('vendor')
         return Response(Model.objects.model_numbers(vendor=vendor))
 
-    @action(['post'], detail=False)
-    def import_models(self, request):
-        file = request.data['file']
-        decoded_file = file.read().decode('utf-8-sig')
-        csv_file = StringIO(decoded_file)
-        return ImportModels(csv_file).bulk_import()
-
 
 class InstrumentViewSet(viewsets.ModelViewSet):
     """
@@ -169,16 +162,6 @@ class InstrumentUploadView(APIView):
     def post(self, request):
         file = request.data['file']
         return ImportInstruments(file).bulk_import(self.request.user)
-
-
-@api_view(['POST'])
-@parser_classes([MultiPartParser])
-@permission_classes([IsAdminUser])
-def import_models(request):
-    file = request.data['file']
-    decoded_file = file.read().decode('utf-8-sig')
-    csv_file = StringIO(decoded_file)
-    return ImportModels(csv_file).bulk_import()
 
 
 @api_view(['GET'])
