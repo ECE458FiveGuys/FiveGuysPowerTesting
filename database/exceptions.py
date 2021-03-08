@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+
 CHARACTER_LENGTH_ERROR_MESSAGE = "Ensure this value has at most {} characters"
 NULL_FIELD_ERROR_MESSAGE = "This field cannot be null."
 INVALID_DATE_FIELD_ERROR_MESSAGE = "value has an invalid date format."
@@ -9,6 +11,24 @@ INSTRUMENT_QUALIFIER = "instrument with vendor \'{}\', model number \'{}\', and 
 class UserError(Exception):
     def __init__(self, message):
         self.message = message
+
+
+class IllegalColumnHeadersError(ValidationError):
+    def __init__(self, headers):
+        message = f"Illegal column headers. Column headers should be {headers}."
+        super(IllegalColumnHeadersError, self).__init__(message=message)
+
+
+class IllegalNewlineCharacterError(ValidationError):
+    def __init__(self, row, col):
+        message = f"Illegal newline character found in row {row} of column {col}."
+        super(IllegalNewlineCharacterError, self).__init__(message=message)
+
+
+class IllegalValueError(ValidationError):
+    def __init__(self, row, col, expected, actual):
+        message = f"Illegal value in row {row} of column {col}. Expected {expected} but got {actual}."
+        super(IllegalValueError, self).__init__(message=message)
 
 
 class IllegalAccessException(UserError):

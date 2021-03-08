@@ -19,6 +19,7 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
 from database.services.import_models import ImportModels
+from database.services.table_enums import ModelTableColumnNames
 
 
 class SmallResultsSetPagination(PageNumberPagination):
@@ -148,7 +149,7 @@ class ModelUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        return ImportModels(file).bulk_import()
+        return ImportModels(file, ModelTableColumnNames, ModelListSerializer).bulk_import()
 
 
 class InstrumentUploadView(APIView):
