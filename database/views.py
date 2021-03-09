@@ -90,7 +90,7 @@ class ModelViewSet(viewsets.ModelViewSet):
         return Response(Model.objects.model_numbers(vendor=vendor))
 
     @action(['get'], detail=False)
-    def all(self, request, *args, **kwargs):
+    def export(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         return ExportModelsService().execute(queryset)
 
