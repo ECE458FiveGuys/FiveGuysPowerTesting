@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 
 from user_portal.secrets import OAuthEnum
-from user_portal.serializers import IsStaffSerializer
+from user_portal.serializers import IsStaffSerializer, CustomUserSerializer
 from djoser import serializers
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
@@ -39,15 +39,19 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
     @action(['post'], detail=True)
     def update_admin_status(self, request, pk, *args, **kwargs):
-        user = PowerUser.objects.get(pk=pk)
-        try:
-            user.is_staff = request.data['is_staff']
-        except KeyError:
-            return Response("No is_staff key")
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
+        user = PowerUser.objects.get(pk=pk)
+        user.is_staff = serializer.data['is_staff']
         user.save()
+
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
+
+    @action(['get'], detail=False, url_path='list/oauth')
+    def oauth(self, request, *args, **kwargs):
+        return Response(CustomUserSerializer(PowerUser.objects.oauth_users(), many=True).data)
 
 
 class OAuthView(APIView):
@@ -56,8 +60,9 @@ class OAuthView(APIView):
     """
     permission_classes = [permissions.AllowAny]
 
-    def format_auth_string(self):
-        string = "{}:{}".format(OAuthEnum.CLIENT_ID.value, OAuthEnum.CLIENT_SECRET.value)
+    @staticmethod
+    def format_auth_string():
+        string = f"{OAuthEnum.CLIENT_ID.value}:{OAuthEnum.CLIENT_SECRET.value}"
         data = base64.b64encode(string.encode())
         return data.decode("utf-8")
 
@@ -70,20 +75,20 @@ class OAuthView(APIView):
 
         env = request.data.get('env')
         if env == 'local':
-            redirect_uri = 'http://localhost:3000/oauth/consume'
+            redirect_uri = "http://localhost:3000/oauth/consume"
         elif env == 'dev':
             redirect_uri = OAuthEnum.REDIRECT_URI.value
         else:
-            redirect_uri = 'http://localhost:3000/oauth/consume'
+            redirect_uri = "http://localhost:3000/oauth/consume"
 
         payload_for_token = {
-            'grant_type': "authorization_code",
-            'redirect_uri': redirect_uri,
-            'code': oauth_code
+            "grant_type": "authorization_code",
+            "redirect_uri": redirect_uri,
+            "code": oauth_code
         }
         headers_for_token = {
-            'content-type': "application/x-www-form-urlencoded",
-            'authorization': "Basic {}".format(auth)
+            "content-type": "application/x-www-form-urlencoded",
+            "authorization": f"Basic {auth}"
         }
 
         response = requests.post(url, data=payload_for_token, headers=headers_for_token)
@@ -95,8 +100,8 @@ class OAuthView(APIView):
                              'code_given': oauth_code}, status=401)
 
         headers_for_user = {
-            'content-type': "application/x-www-form-urlencoded",
-            'Authorization': "Bearer {}".format(oauth_token)
+            "content-type": "application/x-www-form-urlencoded",
+            "Authorization": f"Bearer {oauth_token}"
         }
 
         response = requests.get('https://oauth.oit.duke.edu/oidc/userinfo', headers=headers_for_user)

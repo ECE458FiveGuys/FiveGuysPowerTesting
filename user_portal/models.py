@@ -7,7 +7,7 @@ class PowerUserManager(BaseUserManager):
     use_in_migrations = True
 
     def create_user(
-        self, username, name, email, password, is_active=True, **extra_fields
+            self, username, name, email, password, is_active=True, **extra_fields
     ):
         if not username:
             raise ValueError("The given username must be set")
@@ -48,6 +48,9 @@ class PowerUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(username, name, email, password, is_active, **extra_fields)
+
+    def oauth_users(self):
+        return self.filter(username__contains='@')
 
 
 class PowerUser(AbstractBaseUser):
