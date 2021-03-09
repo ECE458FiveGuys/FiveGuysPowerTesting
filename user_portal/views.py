@@ -38,6 +38,14 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         return Response(user_serializer.data)
 
     @action(['post'], detail=True)
+    def activate(self, request, pk, *args, **kwargs):
+        user = PowerUser.objects.get(pk=pk)
+        user.is_active = True
+        user.save()
+        user_serializer = serializers.UserSerializer(user)
+        return Response(user_serializer.data)
+
+    @action(['post'], detail=True)
     def update_admin_status(self, request, pk, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
