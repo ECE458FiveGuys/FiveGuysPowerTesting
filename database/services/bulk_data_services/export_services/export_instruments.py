@@ -8,5 +8,5 @@ class ExportInstrumentsService(ExportService):
     def __init__(self):
         super().__init__(ExportFileNames.INSTRUMENTS.value)
 
-    def write_file(self, writer):
-        write_instrument_file(writer)
+    def write_file(self, writer, queryset):
+        write_instrument_file(writer, queryset)

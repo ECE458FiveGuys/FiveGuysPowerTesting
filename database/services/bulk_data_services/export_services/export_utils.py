@@ -1,12 +1,11 @@
 from datetime import timedelta
 
-from database.models.instrument import CalibrationEvent, Instrument
-from database.models.model import Model
+from database.models.instrument import CalibrationEvent
 from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
 
 
-def write_instrument_file(writer):
-    instruments = Instrument.objects.all()
+def write_instrument_file(writer, queryset):
+    instruments = queryset
     writer.writerow([e.value for e in InstrumentTableColumnNames])
     for instrument in instruments:
         latest_calibration_event = CalibrationEvent.objects \
@@ -28,8 +27,8 @@ def write_instrument_file(writer):
                          None if latest_calibration_event is None else None if latest_calibration_event.load_bank_data == "" else "Y"])
 
 
-def write_model_file(writer):
-    models = Model.objects.all()
+def write_model_file(writer, queryset):
+    models = queryset
     writer.writerow([e.value for e in ModelTableColumnNames])
     for model in models:
         writer.writerow([model.vendor,

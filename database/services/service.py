@@ -4,5 +4,5 @@ import abc
 class Service:
 
     @abc.abstractmethod
-    def execute(self):
+    def execute(self, queryset):
         pass

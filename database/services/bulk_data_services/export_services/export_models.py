@@ -7,5 +7,5 @@ class ExportModelsService(ExportService):
     def __init__(self):
         super().__init__(ExportFileNames.MODELS.value)
 
-    def write_file(self, writer):
-        write_model_file(writer)
+    def write_file(self, writer, queryset):
+        write_model_file(writer, queryset)

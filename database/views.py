@@ -79,15 +79,20 @@ class ModelViewSet(viewsets.ModelViewSet):
             return ModelRetrieveSerializer  # 2.1.4
         return ModelSerializer  # 2.1.3
 
-    @action(detail=False, methods=['get'])
+    @action(['get'], detail=False)
     def vendors(self, request):
         model_number = request.query_params.get('model_number')
         return Response(Model.objects.vendors(model_number))
 
-    @action(detail=False, methods=['get'])
+    @action(['get'], detail=False)
     def model_numbers(self, request):
         vendor = request.query_params.get('vendor')
         return Response(Model.objects.model_numbers(vendor=vendor))
+
+    @action(['get'], detail=False)
+    def all(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        return ExportModelsService().execute(queryset)
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
@@ -129,6 +134,11 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         qs = super().get_queryset().annotate(most_recent_calibration_date=mrc)
         return qs.annotate(calibration_expiration_date=expiration)
 
+    @action(['get'], detail=False)
+    def export(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        return ExportInstrumentsService().execute(queryset)
+
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
@@ -164,13 +174,13 @@ class InstrumentUploadView(APIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_models(request):
-    return ExportModelsService().execute()
+    return ExportModelsService().execute(Model.objects.all())
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_instruments(request):
-    return ExportInstrumentsService().execute()
+    return ExportInstrumentsService().execute(Instrument.objects.all())
 
 
 @api_view(['GET'])
