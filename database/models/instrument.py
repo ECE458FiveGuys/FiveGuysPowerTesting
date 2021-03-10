@@ -153,7 +153,7 @@ class CalibrationEvent(models.Model):
     additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
                                            blank=True,
                                            null=True,
-                                           validators=[FileExtensionValidator(['jpg', 'png', 'gif', 'pdf', 'xlsx'])])
+                                           validators=[FileExtensionValidator(['jpg', 'png', 'PNG', 'gif', 'pdf', 'xlsx'])])
     load_bank_data = models.TextField(blank=True, default='')
 
     objects = CalibrationEventManager()

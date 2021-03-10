@@ -13,10 +13,7 @@ router.register(r'instrument-categories', InstrumentCategoryViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('export-instruments/', views.export_instruments),
-    path('export-models/', views.export_models),
     path('export/', views.export),
     path('import-models/', ModelUploadView.as_view()),
     path('import-instruments/', InstrumentUploadView.as_view())
 ]
-

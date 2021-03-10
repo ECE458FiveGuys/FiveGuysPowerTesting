@@ -11,15 +11,15 @@ from database.exceptions import IllegalColumnHeadersError, IllegalNewlineCharact
 class ImportService(ABC):
 
     def __init__(self, file, column_enum, serializer):
-        f = io.TextIOWrapper(file, encoding="utf-8-sig")
-        self.reader = csv.DictReader(f)
+        self.f = io.TextIOWrapper(file, encoding="utf-8-sig")
+        self.reader = csv.DictReader(self.f)
         self.column_enum = column_enum
         self.serializer = serializer
 
     def bulk_import(self):
         successful_imports = []
         try:
-            if set(self.reader.fieldnames) != set([e.value for e in self.column_enum]):
+            if not set(self.reader.fieldnames).issubset(set([e.value for e in self.column_enum])):
                 raise IllegalColumnHeadersError(', '.join([e.value for e in self.column_enum]))
             for row in self.reader:
                 m = self.create_object(row)

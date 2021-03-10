@@ -11,7 +11,8 @@ from database.filters import InstrumentFilter, ModelFilter
 from database.models.instrument import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
-from database.serializers.instrument import InstrumentCategoryRetrieveSerializer, InstrumentCategorySerializer, \
+from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentCategoryRetrieveSerializer, \
+    InstrumentCategorySerializer, \
     InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
 from database.services.bulk_data_services.export_services.export_all import ExportAll
@@ -19,7 +20,7 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
 from database.services.import_models import ImportModels
-from database.services.table_enums import ModelTableColumnNames
+from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
 
 
 class SmallResultsSetPagination(PageNumberPagination):
@@ -169,19 +170,8 @@ class InstrumentUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        return ImportInstruments(file).bulk_import(self.request.user)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def export_models(request):
-    return ExportModelsService().execute(Model.objects.all())
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def export_instruments(request):
-    return ExportInstrumentsService().execute(Instrument.objects.all())
+        return ImportInstruments(file, InstrumentTableColumnNames, InstrumentBulkImportSerializer,
+                                 self.request.user).bulk_import()
 
 
 @api_view(['GET'])
