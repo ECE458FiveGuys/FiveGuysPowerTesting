@@ -1,12 +1,12 @@
 from datetime import timedelta
 
 from database.models.instrument import CalibrationEvent
-from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
+from database.services.table_enums import MaxInstrumentTableColumnNames, ModelTableColumnNames
 
 
 def write_instrument_file(writer, queryset):
     instruments = queryset
-    writer.writerow([e.value for e in InstrumentTableColumnNames])
+    writer.writerow([e.value for e in MaxInstrumentTableColumnNames])
     for instrument in instruments:
         latest_calibration_event = CalibrationEvent.objects \
             .filter(instrument=instrument) \

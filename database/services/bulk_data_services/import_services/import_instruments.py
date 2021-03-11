@@ -7,25 +7,25 @@ from database.models.instrument import CalibrationEvent, Instrument
 from database.models.model import Model
 from database.serializers.instrument import InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
-from database.services.table_enums import InstrumentTableColumnNames
+from database.services.table_enums import MaxInstrumentTableColumnNames
 from user_portal.models import PowerUser
 
 
 class ImportInstrumentsService(ImportService):
 
     def __init__(self, file):
-        super().__init__(import_file=file, fields=[e.value for e in InstrumentTableColumnNames])
+        super().__init__(import_file=file, fields=[e.value for e in MaxInstrumentTableColumnNames])
 
     def serialize(self, created_objects):
         return InstrumentSerializer(created_objects, many=True)
 
     def create_objects_from_row(self, row):
-        vendor = self.parse_field(row, InstrumentTableColumnNames.VENDOR.value)
-        model_number = self.parse_field(row, InstrumentTableColumnNames.MODEL_NUMBER.value)
-        serial_number = self.parse_field(row, InstrumentTableColumnNames.SERIAL_NUMBER.value)
-        instrument_comment = self.parse_field(row, InstrumentTableColumnNames.COMMENT.value)
-        calibration_date = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_DATE.value)
-        calibration_comment = self.parse_field(row, InstrumentTableColumnNames.CALIBRATION_COMMENT.value)
+        vendor = self.parse_field(row, MaxInstrumentTableColumnNames.VENDOR.value)
+        model_number = self.parse_field(row, MaxInstrumentTableColumnNames.MODEL_NUMBER.value)
+        serial_number = self.parse_field(row, MaxInstrumentTableColumnNames.SERIAL_NUMBER.value)
+        instrument_comment = self.parse_field(row, MaxInstrumentTableColumnNames.COMMENT.value)
+        calibration_date = self.parse_field(row, MaxInstrumentTableColumnNames.CALIBRATION_DATE.value)
+        calibration_comment = self.parse_field(row, MaxInstrumentTableColumnNames.CALIBRATION_COMMENT.value)
         try:
             user = PowerUser.objects.get(username='admin')
             try:

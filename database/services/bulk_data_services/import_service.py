@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from database.exceptions import IllegalCharacterException, UserError
-from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
+from database.services.table_enums import MaxInstrumentTableColumnNames, ModelTableColumnNames
 from database.services.service import Service
 
 
@@ -42,7 +42,7 @@ class ImportService(Service):
 
     def parse_field(self, row, key):
         if key != ModelTableColumnNames.COMMENT.value \
-                and key != InstrumentTableColumnNames.COMMENT.value \
+                and key != MaxInstrumentTableColumnNames.COMMENT.value \
                 and row[key].find("\n") != -1:
             raise IllegalCharacterException(key)
         return None if row[key] == '' else row[key]

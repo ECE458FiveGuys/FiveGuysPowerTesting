@@ -13,9 +13,15 @@ class UserError(Exception):
         self.message = message
 
 
+class SpecificValidationError(ValidationError):
+    def __init__(self, row, col, error):
+        message = f"Illegal value in row {row} of column {col}. {error}"
+        super(SpecificValidationError, self).__init__(message=message)
+
+
 class IllegalColumnHeadersError(ValidationError):
     def __init__(self, headers):
-        message = f"Illegal column headers. Column headers should be {headers}."
+        message = f"Illegal column headers. Column headers are unique and should be {headers}."
         super(IllegalColumnHeadersError, self).__init__(message=message)
 
 
@@ -29,6 +35,13 @@ class IllegalValueError(ValidationError):
     def __init__(self, row, col, expected, actual):
         message = f"Illegal value in row {row} of column {col}. Expected {expected} but got {actual}."
         super(IllegalValueError, self).__init__(message=message)
+
+
+class ModelDoesNotExistError(ValidationError):
+    def __init__(self, row, vendor, model_number):
+        message = f"Illegal value in row {row}. Model with vendor '{vendor}' and model number '{model_number}' does " \
+                  f"not exist in the database."
+        super(ModelDoesNotExistError, self).__init__(message=message)
 
 
 class IllegalAccessException(UserError):

@@ -20,7 +20,8 @@ from database.services.bulk_data_services.export_services.export_instruments imp
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
 from database.services.import_models import ImportModels
-from database.services.table_enums import InstrumentTableColumnNames, ModelTableColumnNames
+from database.services.table_enums import MaxInstrumentTableColumnNames, MinInstrumentTableColumnNames, \
+    ModelTableColumnNames
 
 
 class SmallResultsSetPagination(PageNumberPagination):
@@ -161,7 +162,7 @@ class ModelUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        return ImportModels(file, ModelTableColumnNames, ModelListSerializer).bulk_import()
+        return ImportModels(file, ModelListSerializer, ModelTableColumnNames).bulk_import()
 
 
 class InstrumentUploadView(APIView):
@@ -170,8 +171,8 @@ class InstrumentUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        return ImportInstruments(file, InstrumentTableColumnNames, InstrumentBulkImportSerializer,
-                                 self.request.user).bulk_import()
+        return ImportInstruments(file, InstrumentBulkImportSerializer, MinInstrumentTableColumnNames,
+                                 MaxInstrumentTableColumnNames, self.request.user).bulk_import()
 
 
 @api_view(['GET'])

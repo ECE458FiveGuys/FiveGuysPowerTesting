@@ -1,7 +1,7 @@
 import datetime
 import random
 
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -153,7 +153,8 @@ class CalibrationEvent(models.Model):
     additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
                                            blank=True,
                                            null=True,
-                                           validators=[FileExtensionValidator(['jpg', 'png', 'PNG', 'gif', 'pdf', 'xlsx'])])
+                                           validators=[
+                                               FileExtensionValidator(['jpg', 'png', 'PNG', 'gif', 'pdf', 'xlsx'])])
     load_bank_data = models.TextField(blank=True, default='')
 
     objects = CalibrationEventManager()
