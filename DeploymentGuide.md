@@ -340,12 +340,14 @@ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 
 ### Add environment variables for OAuth
 
-Add variables to the `/etc/environment` file. Here, the `SECRET` values should be the same value as the corresponding variable in the enum in the backend server.
+Add variables to the `/etc/environment` file. Here, the `SECRET` values should be the same value as the corresponding variable in the enum in the backend server. The following two variables should be added to the end of the environment file.
 
 ```shell
-export REACT_APP_CLIENT_ID=SECRET
-export REACT_APP_REDIRECT_URI=SECRET
+REACT_APP_CLIENT_ID=SECRET
+REACT_APP_REDIRECT_URI=SECRET
 ```
+
+After adding the variables, exit this session and start another ssh session.
 
 ### Clone git repository & set up environment
 
