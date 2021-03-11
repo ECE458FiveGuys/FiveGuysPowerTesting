@@ -1,13 +1,5 @@
 # Five Guys Power Testing
-## Authors
-Januario Carreiro (jjc70)
+ ECE 458 Group 6 Backend Repository
 
-Joe Heflin (jnh24)
+Author: Januario Carreiro (jjc70)
 
-Daniel Kingsbury (dpk14)
-
-Luke Peterson (lp175)
-
-Karan Verma (kv57)
-
-## Evolution 1
