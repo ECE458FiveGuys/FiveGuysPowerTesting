@@ -1,8 +1,6 @@
 from datetime import timedelta
 
-from django.core.exceptions import ValidationError
-
-from database.exceptions import IllegalValueError, SpecificValidationError
+from database.exceptions import IllegalValueError
 from database.models.model import Model
 from database.services.import_service import ImportService
 
@@ -13,23 +11,14 @@ class ImportModels(ImportService):
         super(ImportModels, self).__init__(file, min_column_enum, serializer)
 
     def create_object(self, row):
-        try:
-            return Model.objects.create(
-                vendor=self.parse_field(row, self.min_column_enum.VENDOR.value),
-                model_number=self.parse_field(row, self.min_column_enum.MODEL_NUMBER.value),
-                description=self.parse_field(row, self.min_column_enum.DESCRIPTION.value),
-                comment=self.parse_field(row, self.min_column_enum.COMMENT.value),
-                model_categories=self.parse_categories(row),
-                calibration_frequency=self.parse_calibration_frequency(row),
-                calibration_mode=self.parse_calibration_mode(row))
-        except ValidationError as v:
-            try:
-                key = list(v.message_dict.keys())[0]
-                value = v.message_dict[key][0]
-                if key in [e.value.lower().replace('-', '_') for e in self.min_column_enum]:
-                    raise SpecificValidationError(self.reader.line_num, key.title().replace('_', '-'), value)
-            except AttributeError:
-                raise v
+        return Model.objects.create(
+            vendor=self.parse_field(row, self.min_column_enum.VENDOR.value),
+            model_number=self.parse_field(row, self.min_column_enum.MODEL_NUMBER.value),
+            description=self.parse_field(row, self.min_column_enum.DESCRIPTION.value),
+            comment=self.parse_field(row, self.min_column_enum.COMMENT.value),
+            model_categories=self.parse_categories(row),
+            calibration_frequency=self.parse_calibration_frequency(row),
+            calibration_mode=self.parse_calibration_mode(row))
 
     def parse_categories(self, row):
         value = self.parse_field(row, self.min_column_enum.MODEL_CATEGORIES.value)

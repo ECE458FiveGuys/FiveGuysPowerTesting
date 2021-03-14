@@ -1,9 +1,7 @@
 import csv
 from datetime import datetime
 
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-
-from database.exceptions import IllegalValueError, ModelDoesNotExistError, SpecificValidationError
+from database.exceptions import IllegalValueError
 from database.models.instrument import Instrument
 from database.services.import_service import ImportService
 from database.services.table_enums import ModelTableColumnNames as MTCN
@@ -31,27 +29,16 @@ class ImportInstruments(ImportService):
             return
 
     def create_object(self, row):
-        try:
-            return Instrument.objects.create_for_import(
-                vendor=self.parse_field(row, MTCN.VENDOR.value),
-                model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
-                serial_number=self.parse_serial_number(row),
-                asset_tag_number=self.parse_asset_tag_numbers(row),
-                comment=self.parse_field(row, MTCN.COMMENT.value),
-                instrument_categories=self.parse_categories(row),
-                user=self.user,
-                calibration_date=self.parse_date(row),
-                calibration_comment=self.parse_field(row, self.min_column_enum.CALIBRATION_COMMENT.value))
-        except ObjectDoesNotExist:
-            raise ModelDoesNotExistError(self.reader.line_num, row[MTCN.VENDOR.value], row[MTCN.MODEL_NUMBER.value])
-        except ValidationError as v:
-            try:
-                key = list(v.message_dict.keys())[0]
-                value = v.message_dict[key][0]
-                if key in [e.value.lower().replace('-', '_') for e in self.min_column_enum]:
-                    raise SpecificValidationError(self.reader.line_num, key.title().replace('_', '-'), value)
-            except AttributeError:
-                raise v
+        return Instrument.objects.create_for_import(
+            vendor=self.parse_field(row, MTCN.VENDOR.value),
+            model_number=self.parse_field(row, MTCN.MODEL_NUMBER.value),
+            serial_number=self.parse_serial_number(row),
+            asset_tag_number=self.parse_asset_tag_numbers(row),
+            comment=self.parse_field(row, MTCN.COMMENT.value),
+            instrument_categories=self.parse_categories(row),
+            user=self.user,
+            calibration_date=self.parse_date(row),
+            calibration_comment=self.parse_field(row, self.min_column_enum.CALIBRATION_COMMENT.value))
 
     def parse_serial_number(self, row):
         value = self.parse_field(row, self.min_column_enum.SERIAL_NUMBER.value)
