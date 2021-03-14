@@ -70,6 +70,9 @@ class InstrumentManager(models.Manager):
     def asset_tag_numbers(self):
         return self.order_by().values_list('asset_tag_number', flat=True)
 
+    def calibratable_asset_tag_numbers(self):
+        return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
+
 
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
@@ -88,7 +91,7 @@ class Instrument(models.Model):
         ]
 
     def __str__(self):
-        template = '(Model:{0.model}, Serial Number:{0.serial_number}, Comment:{0.comment})'
+        template = '(Model:{0.model}, Asset Tag Number:{0.asset_tag_number}, Serial Number:{0.serial_number}, Comment:{0.comment})'
         return template.format(self)
 
     def is_calibratable(self):

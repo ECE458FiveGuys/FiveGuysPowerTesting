@@ -136,6 +136,10 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return qs.annotate(calibration_expiration_date=expiration)
 
     @action(['get'], detail=False)
+    def calibratable_asset_tag_numbers(self, request, *args, **kwargs):
+        return Response(Instrument.objects.calibratable_asset_tag_numbers())
+
+    @action(['get'], detail=False)
     def export(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         return ExportInstrumentsService().execute(queryset)

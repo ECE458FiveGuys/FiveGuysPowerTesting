@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from database.exceptions import FieldLengthException, RequiredFieldsEmptyException, UserError
 from database.models.model import Model
 from database.tests.test_utils import OVERLONG_STRING
 
