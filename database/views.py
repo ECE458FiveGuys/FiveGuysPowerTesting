@@ -77,8 +77,8 @@ class ModelViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return ModelRetrieveSerializer  # 2.1.4
-        return ModelSerializer  # 2.1.3
+            return ModelRetrieveSerializer
+        return ModelSerializer
 
     @action(['get'], detail=False)
     def vendors(self, request):
@@ -94,6 +94,11 @@ class ModelViewSet(viewsets.ModelViewSet):
     def export(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         return ExportModelsService().execute(queryset)
+
+    @action(['get'], detail=False)
+    def all(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()
+        return Response(serializer(self.get_queryset(), many=True).data)
 
 
 class InstrumentViewSet(viewsets.ModelViewSet):
@@ -143,6 +148,11 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     def export(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         return ExportInstrumentsService().execute(queryset)
+
+    @action(['get'], detail=False)
+    def all(self, request, *args, **kwargs):
+        serializer = self.get_serializer_class()
+        return Response(serializer(self.get_queryset(), many=True).data)
 
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
