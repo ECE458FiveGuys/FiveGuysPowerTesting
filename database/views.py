@@ -1,6 +1,6 @@
 from django.db.models import DateField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -15,7 +15,6 @@ from database.serializers.instrument import InstrumentBulkImportSerializer, Inst
     InstrumentCategorySerializer, \
     InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
-from database.services.bulk_data_services.export_services.export_all import ExportAll
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
@@ -173,9 +172,3 @@ class InstrumentUploadView(APIView):
         file = request.data['file']
         return ImportInstruments(file, InstrumentBulkImportSerializer, MinInstrumentTableColumnNames,
                                  MaxInstrumentTableColumnNames, self.request.user).bulk_import()
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def export(request):
-    return ExportAll().execute()
