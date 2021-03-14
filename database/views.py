@@ -103,7 +103,7 @@ class ModelViewSet(viewsets.ModelViewSet):
 
 class InstrumentViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows instruments to be viewed or edited.
     """
     queryset = Instrument.objects.all()
     filterset_class = InstrumentFilter
