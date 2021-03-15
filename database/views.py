@@ -1,9 +1,11 @@
+import importlib
+
 from django.db.models import DateField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,9 +13,8 @@ from database.filters import InstrumentFilter, ModelFilter
 from database.models.instrument import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import CalibrationEventSerializer
-from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentCategoryRetrieveSerializer, \
-    InstrumentCategorySerializer, \
-    InstrumentRetrieveSerializer, InstrumentSerializer
+from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
+    InstrumentSerializer
 from database.serializers.model import *
 from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
 from database.services.bulk_data_services.export_services.export_models import ExportModelsService
@@ -26,33 +27,29 @@ from database.services.table_enums import MaxInstrumentTableColumnNames, MinInst
 class SmallResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
-    max_page_size = 100
+    max_page_size = 1000
 
 
-class ModelCategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
+    filterset_fields = [CategoryEnum.NAME.value]
+    search_fields = [CategoryEnum.NAME.value]
+    ordering_fields = [CategoryEnum.NAME.value]
+
+    def get_serializer_class(self):
+        name = self.__class__.__name__.replace('ViewSet', '')
+        model = name.replace('Category', '').lower()
+        m = importlib.import_module(f'database.serializers.{model}')
+        if self.action == 'retrieve':
+            return getattr(m, f'{name}RetrieveSerializer')
+        return getattr(m, f'{name}Serializer')
+
+
+class ModelCategoryViewSet(CategoryViewSet):
     queryset = ModelCategory.objects.all()
-    serializer_class = ModelCategorySerializer
-    filterset_fields = [CategoryEnum.NAME.value]
-    search_fields = [CategoryEnum.NAME.value]
-    ordering_fields = [CategoryEnum.NAME.value]
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return ModelCategoryRetrieveSerializer
-        return ModelCategorySerializer
 
 
-class InstrumentCategoryViewSet(viewsets.ModelViewSet):
+class InstrumentCategoryViewSet(CategoryViewSet):
     queryset = InstrumentCategory.objects.all()
-    serializer_class = InstrumentCategorySerializer
-    filterset_fields = [CategoryEnum.NAME.value]
-    search_fields = [CategoryEnum.NAME.value]
-    ordering_fields = [CategoryEnum.NAME.value]
-
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return InstrumentCategoryRetrieveSerializer
-        return InstrumentCategorySerializer
 
 
 class ModelViewSet(viewsets.ModelViewSet):
@@ -166,7 +163,6 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
-    permission_classes = [IsAuthenticated]
     filter_backends = []
 
     @action(detail=False, methods=['get'])
