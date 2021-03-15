@@ -18,37 +18,38 @@ from django.core.management.base import BaseCommand
 
 from database.models.instrument import CalibrationEvent, Instrument, InstrumentCategory
 from database.models.model import Model, ModelCategory
+from user_portal.enums import PermissionGroupEnum
 
 GROUP_PERMISSIONS = {
-    'Unprivileged': {
+    PermissionGroupEnum.UNPRIVILEGED.value: {
         Model: ['view'],
         Instrument: ['view'],
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['view'],
     },
-    'InstrumentManagement': {
+    PermissionGroupEnum.INSTRUMENT_MANAGEMENT.value: {
         Model: ['view'],
         Instrument: ['add', 'change', 'delete', 'view'],
         ModelCategory: ['view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
     },
-    'ModelManagement': {
+    PermissionGroupEnum.MODEL_MANAGEMENT.value: {
         Model: ['add', 'change', 'delete', 'view'],
         Instrument: ['add', 'change', 'delete', 'view'],
         ModelCategory: ['add', 'change', 'delete', 'view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
     },
-    'Calibration': {
+    PermissionGroupEnum.CALIBRATION.value: {
         Model: ['view'],
         Instrument: ['view'],
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
     },
-    'Administrator': {
+    PermissionGroupEnum.ADMINISTRATOR.value: {
         Model: ['add', 'change', 'delete', 'view'],
         Instrument: ['add', 'change', 'delete', 'view'],
         ModelCategory: ['add', 'change', 'delete', 'view'],
@@ -78,4 +79,3 @@ class Command(BaseCommand):
                     except Permission.DoesNotExist:
                         logging.warning(f'Permission not found with name {codename}')
         print("Created default group and permissions.")
-

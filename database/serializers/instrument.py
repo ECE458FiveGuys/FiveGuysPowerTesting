@@ -2,7 +2,7 @@ import django.core.exceptions
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from database.model_enums import CategoryEnum, InstrumentEnum, ModelEnum
+from database.enums import CategoryEnum, InstrumentEnum, ModelEnum
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 from database.models.instrument import Instrument

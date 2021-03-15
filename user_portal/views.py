@@ -13,7 +13,7 @@ from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from user_portal.models import PowerUser
-from database.model_enums import UserEnum
+from database.enums import UserEnum
 
 
 class ExtendedUserViewSet(viewsets.ModelViewSet):

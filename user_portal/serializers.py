@@ -1,28 +1,38 @@
-import django.core.exceptions
 from django.contrib.auth.password_validation import validate_password
-from djoser import serializers as s
 from django.core import exceptions as django_exceptions
+from djoser import serializers as s
 from djoser.conf import settings
-from django.db import IntegrityError, transaction
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import Group
 
 from user_portal.models import PowerUser as User
+from user_portal.enums import UserEnum
 
 
 class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['pk', 'username', 'name']
+        fields = [UserEnum.PK.value,
+                  UserEnum.USERNAME.value,
+                  UserEnum.NAME.value]
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['name']
 
 
 class CustomUserSerializer(s.UserSerializer):
+    groups = GroupSerializer(many=True)
+
     class Meta:
         model = User
         fields = tuple(User.REQUIRED_FIELDS) + (
             settings.USER_ID_FIELD,
             settings.LOGIN_FIELD,
-            'is_staff'
+            UserEnum.IS_STAFF.value,
+            UserEnum.GROUPS.value,
         )
         read_only_fields = (settings.LOGIN_FIELD, 'is_staff')
 
@@ -43,6 +53,7 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
             raise serializers.ValidationError("Usernames may not contain '@' character")
 
         return attrs
+
 
 class IsStaffSerializer(serializers.Serializer):
     is_staff = serializers.BooleanField(required=True)
