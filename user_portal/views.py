@@ -12,12 +12,12 @@ from djoser import serializers
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from user_portal.models import PowerUser
+from user_portal.models import User
 from database.enums import UserEnum
 
 
 class ExtendedUserViewSet(viewsets.ModelViewSet):
-    queryset = PowerUser.objects.all()
+    queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = [UserEnum.USERNAME.value]
@@ -31,7 +31,7 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
     @action(['post'], detail=True)
     def deactivate(self, request, pk, *args, **kwargs):
-        user = PowerUser.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         user.is_active = False
         user.save()
         user_serializer = serializers.UserSerializer(user)
@@ -39,7 +39,7 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
     @action(['post'], detail=True)
     def activate(self, request, pk, *args, **kwargs):
-        user = PowerUser.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         user.is_active = True
         user.save()
         user_serializer = serializers.UserSerializer(user)
@@ -50,7 +50,7 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = PowerUser.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         user.is_staff = serializer.data['is_staff']
         user.save()
 
@@ -59,7 +59,7 @@ class ExtendedUserViewSet(viewsets.ModelViewSet):
 
     @action(['get'], detail=False, url_path='list/oauth')
     def oauth(self, request, *args, **kwargs):
-        return Response(CustomUserSerializer(PowerUser.objects.oauth_users(), many=True).data)
+        return Response(CustomUserSerializer(User.objects.oauth_users(), many=True).data)
 
 
 class OAuthView(APIView):
@@ -119,12 +119,12 @@ class OAuthView(APIView):
         name = user_info['name']
         username = email = user_info['sub']
 
-        user = PowerUser.objects.filter(username=username)
+        user = User.objects.filter(username=username)
 
         if not user.exists():
-            PowerUser.objects.create_oauth_user(username=username, name=name, email=email)
+            User.objects.create_oauth_user(username=username, name=name, email=email)
 
-        token, created = Token.objects.get_or_create(user=PowerUser.objects.get(username=username))
+        token, created = Token.objects.get_or_create(user=User.objects.get(username=username))
         token_serializer = TokenSerializer(token)
 
         return Response(token_serializer.data)

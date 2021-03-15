@@ -1,9 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
 
-class PowerUserManager(BaseUserManager):
+class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def create_user(
@@ -53,15 +53,14 @@ class PowerUserManager(BaseUserManager):
         return self.filter(username__contains='@')
 
 
-class PowerUser(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150, unique=True, blank=False)
     name = models.CharField(max_length=150, blank=False)
     email = models.EmailField(blank=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
 
-    objects = PowerUserManager()
+    objects = UserManager()
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "username"

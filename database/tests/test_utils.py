@@ -6,7 +6,7 @@ from django.utils.timezone import localtime, now
 
 from database.models.instrument import CalibrationEvent, Instrument
 from database.models.model import Model
-from user_portal.models import PowerUser
+from user_portal.models import User
 
 OVERLONG_STRING = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(2001))
 
@@ -50,4 +50,4 @@ def create_3_instruments(model, instrument):
 
 
 def create_non_admin_user():
-    return PowerUser.objects.create(username="username2", name="name", email="user@gmail.com")
+    return User.objects.create(username="username2", name="name", email="user@gmail.com")

@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory, force_authenticate
 
 from database.views import InstrumentUploadView, ModelUploadView
-from user_portal.models import PowerUser
+from user_portal.models import User
 
 
 class ImportTestCase(TestCase):
@@ -15,7 +15,7 @@ class ImportTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.factory = APIRequestFactory()
-        cls.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
+        cls.admin = User.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
         cls.model_filename = 'model-pre.csv'
 
     def import_helper(self, filename, endpoint, function):

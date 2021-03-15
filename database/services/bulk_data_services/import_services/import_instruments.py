@@ -8,7 +8,7 @@ from database.models.model import Model
 from database.serializers.instrument import InstrumentSerializer
 from database.services.bulk_data_services.import_service import ImportService
 from database.services.table_enums import MaxInstrumentTableColumnNames
-from user_portal.models import PowerUser
+from user_portal.models import User
 
 
 class ImportInstrumentsService(ImportService):
@@ -27,7 +27,7 @@ class ImportInstrumentsService(ImportService):
         calibration_date = self.parse_field(row, MaxInstrumentTableColumnNames.CALIBRATION_DATE.value)
         calibration_comment = self.parse_field(row, MaxInstrumentTableColumnNames.CALIBRATION_COMMENT.value)
         try:
-            user = PowerUser.objects.get(username='admin')
+            user = User.objects.get(username='admin')
             try:
                 model = Model.objects.get(vendor=vendor, model_number=model_number)
 
