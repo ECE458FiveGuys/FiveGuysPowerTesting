@@ -67,8 +67,11 @@ class InstrumentManager(models.Manager):
             ce.save()
         return instrument
 
-    def asset_tag_numbers(self):
-        return self.order_by().values_list('asset_tag_number', flat=True)
+    def asset_tag_numbers(self, pks=None):
+        if pks is None:
+            return self.order_by().values_list('asset_tag_number', flat=True)
+        else:
+            return self.order_by().filter(pk__in=pks).values_list('asset_tag_number', flat=True)
 
     def calibratable_asset_tag_numbers(self):
         return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)

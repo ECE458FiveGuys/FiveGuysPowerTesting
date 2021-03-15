@@ -154,6 +154,11 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer_class()
         return Response(serializer(self.get_queryset(), many=True).data)
 
+    @action(['get'], detail=False)
+    def asset_tag_numbers(self, request, *args, **kwargs):
+        pks = request.data.get('pks')
+        return Response(Instrument.objects.asset_tag_numbers(pks))
+
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
