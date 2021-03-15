@@ -1,35 +1,56 @@
 import django.core.exceptions
+from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
-from djoser import serializers as s
 from django.core import exceptions as django_exceptions
+from djoser import serializers as s
 from djoser.conf import settings
-from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from user_portal.models import PowerUser as User
+from user_portal.enums import UserEnum
+from user_portal.models import User
 
 
 class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['pk', 'username', 'name']
+        fields = [UserEnum.PK.value,
+                  UserEnum.USERNAME.value,
+                  UserEnum.NAME.value]
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['name']
 
 
 class CustomUserSerializer(s.UserSerializer):
+    groups = GroupSerializer(many=True)
+
     class Meta:
         model = User
-        fields = tuple(User.REQUIRED_FIELDS) + (
-            settings.USER_ID_FIELD,
-            settings.LOGIN_FIELD,
-            'is_staff'
+        fields = (settings.USER_ID_FIELD, settings.LOGIN_FIELD,) + tuple(User.REQUIRED_FIELDS) + (
+            UserEnum.IS_STAFF.value,
+            UserEnum.GROUPS.value,
         )
         read_only_fields = (settings.LOGIN_FIELD, 'is_staff')
 
 
 class CustomUserCreateSerializer(s.UserCreateSerializer):
+    groups = serializers.SlugRelatedField(queryset=Group.objects.all(), many=True, slug_field='name', required=False)
+
+    class Meta:
+        model = User
+        fields = (settings.USER_ID_FIELD, settings.LOGIN_FIELD,) + tuple(User.REQUIRED_FIELDS) + (
+            UserEnum.GROUPS.value,
+            "password",
+        )
+
     def validate(self, attrs):
+        groups = attrs.pop('groups')
         user = User(**attrs)
+        attrs['groups'] = groups
         password = attrs.get("password")
 
         try:
@@ -43,6 +64,20 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
             raise serializers.ValidationError("Usernames may not contain '@' character")
 
         return attrs
+
+    def create(self, validated_data):
+        try:
+            groups_data = validated_data.pop('groups')
+        except KeyError:
+            groups_data = []
+        try:
+            user = User.objects.create(**validated_data)
+        except django.core.exceptions.ValidationError as e:
+            raise ValidationError(e.messages)
+        for group_data in groups_data:
+            user.groups.add(Group.objects.get(name=group_data))
+        return user
+
 
 class IsStaffSerializer(serializers.Serializer):
     is_staff = serializers.BooleanField(required=True)

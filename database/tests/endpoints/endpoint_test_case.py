@@ -9,7 +9,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from database.models.model import Model
 from database.models.model_category import ModelCategory
 from database.views import ModelViewSet
-from user_portal.models import PowerUser
+from user_portal.models import User
 
 TEST_ROOT = "http://127.0.0.1:8000/api/"
 
@@ -34,7 +34,7 @@ class EndpointTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.factory = APIRequestFactory()
-        cls.admin = PowerUser.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
+        cls.admin = User.objects.create_superuser('admin', 'admin', 'email', 'DukeECE458', is_active=True)
         c1 = ModelCategory.objects.create(name="voltmeter")
         c2 = ModelCategory.objects.create(name="multimeter")
         c3 = ModelCategory.objects.create(name='oscilloscope')

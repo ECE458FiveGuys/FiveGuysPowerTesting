@@ -12,7 +12,7 @@ from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, CalibrationEvent
     INVALID_DATE_FIELD_ERROR_MESSAGE, InvalidDateException, NULL_FIELD_ERROR_MESSAGE, UserError
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
-from user_portal.models import PowerUser as User
+from user_portal.models import User as User
 
 
 class InstrumentManager(models.Manager):

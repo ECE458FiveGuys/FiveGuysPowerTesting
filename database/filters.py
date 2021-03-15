@@ -4,7 +4,7 @@ Base code from https://www.django-rest-framework.org/api-guide/filtering/
 from django_filters import rest_framework as rf
 from rest_framework import filters
 
-from database.model_enums import InstrumentEnum, ModelEnum
+from database.enums import InstrumentEnum, ModelEnum
 from database.models.instrument import Instrument
 from database.models.model import Model
 
