@@ -163,7 +163,6 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
-    permission_classes = [IsAuthenticated]
     filter_backends = []
 
     @action(detail=False, methods=['get'])

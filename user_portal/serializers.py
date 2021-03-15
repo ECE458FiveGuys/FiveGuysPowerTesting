@@ -71,7 +71,7 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
         except KeyError:
             groups_data = []
         try:
-            user = User.objects.create(**validated_data)
+            user = User.objects.create_user(**validated_data)
         except django.core.exceptions.ValidationError as e:
             raise ValidationError(e.messages)
         for group_data in groups_data:
