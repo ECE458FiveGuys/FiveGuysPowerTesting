@@ -1,33 +1,43 @@
 import base64
 
 import requests
-from djoser.serializers import TokenSerializer
-from rest_framework.authtoken.models import Token
-
-from rest_framework.views import APIView
-
-from user_portal.secrets import OAuthEnum
-from user_portal.serializers import IsStaffSerializer, CustomUserSerializer
 from djoser import serializers
-from rest_framework import permissions, viewsets
+from djoser.conf import settings
+from djoser.serializers import TokenSerializer
+from djoser.views import UserViewSet
+from rest_framework import permissions
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from user_portal.models import User
+from rest_framework.views import APIView
+
 from database.enums import UserEnum
+from user_portal.models import User
+from user_portal.secrets import OAuthEnum
+from user_portal.serializers import CustomUserSerializer, IsStaffSerializer
 
 
-class ExtendedUserViewSet(viewsets.ModelViewSet):
+class ExtendedUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
     filterset_fields = [UserEnum.USERNAME.value]
     search_fields = [UserEnum.USERNAME.value]
     ordering_fields = [UserEnum.USERNAME.value]
 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super(UserViewSet, self).get_queryset()
+        if (
+                settings.HIDE_USERS
+                and self.action == "list"
+                and not (user.is_staff or user.has_perm('user_portal.add_user'))
+        ):
+            queryset = queryset.filter(pk=user.pk)
+        return queryset
+
     def get_serializer_class(self):
         if self.action == 'update_admin_status':
             return IsStaffSerializer
-        return serializers.UserSerializer
+        return super(ExtendedUserViewSet, self).get_serializer_class()
 
     @action(['post'], detail=True)
     def deactivate(self, request, pk, *args, **kwargs):

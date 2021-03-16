@@ -102,7 +102,6 @@ class ModelBaseSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError('Non-calibratable model cannot have a calibration mode')
         return attrs
 
-    # TODO: Make sure only models with non-zero calibration_frequency can change calibration_mode
     def update(self, instance, validated_data):
         try:
             calibration_frequency_data = validated_data.pop('calibration_frequency')
@@ -123,6 +122,7 @@ class ModelBaseSerializer(serializers.ModelSerializer):
         instance.calibration_frequency = calibration_frequency
         instance.calibration_mode = validated_data.get(ModelEnum.CALIBRATION_MODE.value, instance.calibration_mode)
         instance.model_categories.set(model_categories)
+        instance.full_clean()
         instance.save()
         return instance
 

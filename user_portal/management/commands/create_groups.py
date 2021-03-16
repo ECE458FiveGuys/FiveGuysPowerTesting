@@ -18,6 +18,7 @@ from django.core.management.base import BaseCommand
 
 from database.models.instrument import CalibrationEvent, Instrument, InstrumentCategory
 from database.models.model import Model, ModelCategory
+from user_portal.models import User
 from user_portal.enums import PermissionGroupEnum
 
 GROUP_PERMISSIONS = {
@@ -27,6 +28,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['view'],
+        User: ['view'],
     },
     PermissionGroupEnum.INSTRUMENT_MANAGEMENT.value: {
         Model: ['view'],
@@ -34,6 +36,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
+        User: ['view'],
     },
     PermissionGroupEnum.MODEL_MANAGEMENT.value: {
         Model: ['add', 'change', 'delete', 'view'],
@@ -41,6 +44,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['add', 'change', 'delete', 'view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
+        User: ['view'],
     },
     PermissionGroupEnum.CALIBRATION.value: {
         Model: ['view'],
@@ -48,6 +52,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        User: ['view'],
     },
     PermissionGroupEnum.ADMINISTRATOR.value: {
         Model: ['add', 'change', 'delete', 'view'],
@@ -55,6 +60,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['add', 'change', 'delete', 'view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        User: ['add', 'change', 'delete', 'view'],
     },
 }
 
@@ -71,11 +77,11 @@ class Command(BaseCommand):
             for model_cls in GROUP_PERMISSIONS[group_name]:
                 for perm_index, perm_name in enumerate(GROUP_PERMISSIONS[group_name][model_cls]):
                     # Generate permission name as Django would generate it
-                    codename = perm_name + "_" + model_cls._meta.model_name
+                    codename = f'{perm_name}_{model_cls._meta.model_name}'
                     try:
                         perm = Permission.objects.get(codename=codename)
                         group.permissions.add(perm)
-                        print(f'Adding {codename} to group {group}')
+                        print(f'Adding {codename} to group {group}.')
                     except Permission.DoesNotExist:
-                        logging.warning(f'Permission not found with name {codename}')
-        print("Created default group and permissions.")
+                        logging.warning(f'Permission not found with name {codename}.')
+        print('Created default group and permissions.')

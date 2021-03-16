@@ -26,7 +26,7 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(s.UserSerializer):
-    groups = GroupSerializer(many=True)
+    groups = serializers.SlugRelatedField(queryset=Group.objects.all(), many=True, slug_field='name', required=False)
 
     class Meta:
         model = User
@@ -48,7 +48,10 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
         )
 
     def validate(self, attrs):
-        groups = attrs.pop('groups')
+        try:
+            groups = attrs.pop('groups')
+        except KeyError:
+            groups = []
         user = User(**attrs)
         attrs['groups'] = groups
         password = attrs.get("password")
