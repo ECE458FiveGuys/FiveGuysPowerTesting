@@ -19,7 +19,6 @@ from database.enums import UserEnum
 class ExtendedUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
     filterset_fields = [UserEnum.USERNAME.value]
     search_fields = [UserEnum.USERNAME.value]
     ordering_fields = [UserEnum.USERNAME.value]
