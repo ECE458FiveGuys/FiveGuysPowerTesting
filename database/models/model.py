@@ -58,7 +58,8 @@ class Model(models.Model):
     CALIBRATION_CHOICES = [
         ('NOT_CALIBRATABLE', 'Cannot calibrate this instrument'),
         ('DEFAULT', 'Simple Event or File Input'),
-        ('LOAD_BANK', 'Simple Event, File Input, or Load Bank Input')
+        ('LOAD_BANK', 'Simple Event, File Input, or Load Bank Input'),
+        ('GUIDED_HARDWARE', 'Simple Event, File Input, or Guided Hardware Input')
     ]
 
     vendor = models.CharField(blank=False, max_length=VENDOR_LENGTH)
