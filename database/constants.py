@@ -5,3 +5,6 @@ DESCRIPTION_LENGTH = 100
 COMMENT_LENGTH = 2000
 CALIBRATION_FREQUENCY_LENGTH = 10  # needs to be validated in manager, length not valid for integer field
 CATEGORY_LENGTH = 40
+INSTRUMENT_TEMPLATE = '(Model:{0.model}, Asset Tag Number:{0.asset_tag_number}, Serial Number:{0.serial_number}, ' \
+                      'Comment:{0.comment})'
+CALIBRATION_EVENT_TEMPLATE = '(Instrument:{0.instrument}, Date:{0.date}, User:{0.user}, Comment:{0.comment})'

@@ -6,10 +6,7 @@ from django.core.validators import FileExtensionValidator, MaxValueValidator, Mi
 from django.db import models
 from django.db.models import UniqueConstraint
 
-from database.constants import COMMENT_LENGTH, SERIAL_NUMBER_LENGTH
-from database.exceptions import CHARACTER_LENGTH_ERROR_MESSAGE, CalibrationEventFieldLengthException, \
-    CalibrationEventRequiredFieldsEmptyException, \
-    INVALID_DATE_FIELD_ERROR_MESSAGE, InvalidDateException, NULL_FIELD_ERROR_MESSAGE, UserError
+from database.constants import CALIBRATION_EVENT_TEMPLATE, COMMENT_LENGTH, INSTRUMENT_TEMPLATE, SERIAL_NUMBER_LENGTH
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 from user_portal.models import User as User
@@ -94,8 +91,7 @@ class Instrument(models.Model):
         ]
 
     def __str__(self):
-        template = '(Model:{0.model}, Asset Tag Number:{0.asset_tag_number}, Serial Number:{0.serial_number}, Comment:{0.comment})'
-        return template.format(self)
+        return INSTRUMENT_TEMPLATE.format(self)
 
     def is_calibratable(self):
         return self.model.is_calibratable()
@@ -109,37 +105,22 @@ class CalibrationEventManager(models.Manager):
                date=None,
                comment=None,
                additional_evidence=None,
-               load_bank_data=None):
+               load_bank_data=None,
+               guided_hardware_data=None):
         if load_bank_data is None:
             load_bank_data = ''
-        try:
-            calibration_event = CalibrationEvent(instrument=instrument,
-                                                 user=user,
-                                                 date=date,
-                                                 comment=comment,
-                                                 additional_evidence=additional_evidence,
-                                                 load_bank_data=load_bank_data)
-            calibration_event.full_clean()
-            calibration_event.save(using=self.db)
-            return calibration_event
-        except ValidationError as e:
-            for error_message in e.messages:
-                if NULL_FIELD_ERROR_MESSAGE in error_message:
-                    raise CalibrationEventRequiredFieldsEmptyException(
-                        vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
-                        model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
-                        serial_number=None if instrument is None or instrument.model is None else instrument.model.serial_number,
-                        date=date)
-                elif CHARACTER_LENGTH_ERROR_MESSAGE.format(COMMENT_LENGTH) in error_message:
-                    raise CalibrationEventFieldLengthException("comment", COMMENT_LENGTH,
-                                                               vendor=None if instrument is None or instrument.model is None else instrument.model.vendor,
-                                                               model_number=None if instrument is None or instrument.model is None else instrument.model.model_number,
-                                                               serial_number=None if instrument is None else instrument.serial_number,
-                                                               date=date)
-                elif INVALID_DATE_FIELD_ERROR_MESSAGE in error_message:
-                    raise InvalidDateException(date)
-                else:
-                    raise UserError(error_message)
+        if guided_hardware_data is None:
+            guided_hardware_data = ''
+        calibration_event = CalibrationEvent(instrument=instrument,
+                                             user=user,
+                                             date=date,
+                                             comment=comment,
+                                             additional_evidence=additional_evidence,
+                                             load_bank_data=load_bank_data,
+                                             guided_hardware_data=guided_hardware_data)
+        calibration_event.full_clean()
+        calibration_event.save(using=self.db)
+        return calibration_event
 
 
 def instrument_evidence_directory_path(instance, filename):
@@ -162,6 +143,7 @@ class CalibrationEvent(models.Model):
                                            validators=[
                                                FileExtensionValidator(['jpg', 'png', 'PNG', 'gif', 'pdf', 'xlsx'])])
     load_bank_data = models.TextField(blank=True, default='')
+    guided_hardware_data = models.TextField(blank=True, default='')
 
     objects = CalibrationEventManager()
 
@@ -169,8 +151,7 @@ class CalibrationEvent(models.Model):
         ordering = ['-date']
 
     def __str__(self):
-        template = '(Instrument:{0.instrument}, Date:{0.date}, User:{0.user}, Comment:{0.comment})'
-        return template.format(self)
+        return CALIBRATION_EVENT_TEMPLATE.format(self)
 
     def clean(self):
         if not self.instrument.is_calibratable():

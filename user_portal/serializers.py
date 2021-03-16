@@ -36,6 +36,23 @@ class CustomUserSerializer(s.UserSerializer):
         )
         read_only_fields = (settings.LOGIN_FIELD, 'is_staff')
 
+    def validate(self, attrs):
+        if "username" in attrs and attrs["username"].find("@") != -1:
+            raise serializers.ValidationError("Usernames may not contain '@' character")
+        return attrs
+
+    def update(self, instance, validated_data):
+        groups = []
+        try:
+            groups_data = validated_data.pop('groups')
+            for group_data in groups_data:
+                groups.append(Group.objects.get(name=group_data))
+        except KeyError:
+            groups = instance.groups.all()
+        instance.groups.set(groups)
+        instance.save()
+        return super().update(instance, validated_data)
+
 
 class CustomUserCreateSerializer(s.UserCreateSerializer):
     groups = serializers.SlugRelatedField(queryset=Group.objects.all(), many=True, slug_field='name', required=False)
