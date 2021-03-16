@@ -2,6 +2,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 
+from user_portal.enums import PermissionGroupEnum
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -36,6 +38,8 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, name=name, email=email, is_active=True)
         user.set_password(self.make_random_password())
         user.save(using=self._db)
+        user.groups.add(PermissionGroupEnum.UNPRIVILEGED.value)
+        user.save()
         return user
 
     def create_superuser(self, username, name, email, password, is_active=True, **extra_fields):

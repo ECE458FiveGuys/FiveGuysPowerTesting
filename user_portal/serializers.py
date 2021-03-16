@@ -7,7 +7,7 @@ from djoser.conf import settings
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from user_portal.enums import UserEnum
+from user_portal.enums import PermissionGroupEnum, UserEnum
 from user_portal.models import User
 
 
@@ -68,7 +68,7 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
         try:
             groups = attrs.pop('groups')
         except KeyError:
-            groups = []
+            groups = [PermissionGroupEnum.UNPRIVILEGED.value]
         user = User(**attrs)
         attrs['groups'] = groups
         password = attrs.get("password")
@@ -86,10 +86,7 @@ class CustomUserCreateSerializer(s.UserCreateSerializer):
         return attrs
 
     def create(self, validated_data):
-        try:
-            groups_data = validated_data.pop('groups')
-        except KeyError:
-            groups_data = []
+        groups_data = validated_data.pop('groups')
         try:
             user = User.objects.create_user(**validated_data)
         except django.core.exceptions.ValidationError as e:
