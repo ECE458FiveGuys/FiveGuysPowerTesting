@@ -20,3 +20,12 @@ class UserEnum(AutoName):
     IS_STAFF = auto()
     IS_SUPERUSER = auto()
     GROUPS = auto()
+
+
+class MinUserEnum(AutoName):
+    USERNAME = auto()
+    PASSWORD = auto()
+    NAME = auto()
+    EMAIL = auto()
+    IS_ACTIVE = auto()
+    IS_STAFF = auto()

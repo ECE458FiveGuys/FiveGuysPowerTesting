@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from FiveGuysPowerTesting.secret_settings import *
+from rest_framework.permissions import DjangoModelPermissions
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,8 +131,8 @@ DJOSER = {
         'set_username': ['djoser.permissions.CurrentUserOrAdmin'],
         'user_create': ['rest_framework.permissions.DjangoModelPermissions'],
         'user_delete': ['rest_framework.permissions.DjangoModelPermissions'],
-        'user': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user_list': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user': ['rest_framework.permissions.DjangoModelPermissions'],
+        'user_list': ['rest_framework.permissions.DjangoModelPermissions'],
         'token_create': ['rest_framework.permissions.AllowAny'],
         'token_destroy': ['rest_framework.permissions.IsAuthenticated'],
     }
