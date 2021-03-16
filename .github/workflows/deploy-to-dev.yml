@@ -32,12 +32,16 @@ jobs:
         run: ssh dev_server 'cd ~/FiveGuysPowerTesting && git pull'
 
       - name: Add secret key
-        run: ssh dev_server 'echo "$SECRET_KEY" > ~/FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py'
+        run: |
+          echo "$SECRET_KEY" > temp
+          scp temp dev_server:~/FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py
         env:
           SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY }}
 
       - name: Add secret oauth settings
-        run: ssh dev_server 'echo "$SECRET_OAUTH" > ~/FiveGuysPowerTesting/user_portal/secrets.py'
+        run: |
+          echo "$SECRET_OAUTH" > temp
+          scp temp dev_server:~/FiveGuysPowerTesting/user_portal/secrets.py
         env:
           SECRET_OAUTH: ${{ secrets.DEPLOY_OAUTH }}
 
