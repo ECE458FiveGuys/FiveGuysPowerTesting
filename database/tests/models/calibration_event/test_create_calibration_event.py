@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils.timezone import localtime, now
 
@@ -39,7 +40,7 @@ class CreateCalibrationEventTestCase(TestCase):
             CalibrationEvent.objects.create(instrument=instrument, user=user, comment=OVERLONG_STRING,
                                             date=date.replace(year=date.year - 1))
             self.fail("overlong comment allowed")
-        except FieldLengthException:
+        except ValidationError:
             pass
 
     def test_invalid_date_field_test(self):
@@ -48,5 +49,5 @@ class CreateCalibrationEventTestCase(TestCase):
         try:
             CalibrationEvent.objects.create(instrument=instrument, user=user, comment="comment", date="date")
             self.fail("invalid date allowed")
-        except InvalidDateException:
+        except ValidationError:
             pass
