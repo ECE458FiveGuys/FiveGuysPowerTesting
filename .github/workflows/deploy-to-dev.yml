@@ -28,9 +28,18 @@ jobs:
       - name: Stop the server
         run: ssh dev_server 'sudo systemctl stop gunicorn && sudo systemctl stop nginx'
 
-      # dev_server always on origin master
       - name: Check out the source
-        run: ssh dev_server 'cd FiveGuysPowerTesting && git pull'
+        run: ssh dev_server 'cd ~/FiveGuysPowerTesting && git pull'
+
+      - name: Add secret key
+        run: ssh dev_server 'echo "$SECRET_KEY" > ~/FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py'
+        env:
+          SECRET_KEY: ${{ secrets.DEPLOY_SECRET_KEY }}
+
+      - name: Add secret oauth settings
+        run: ssh dev_server 'echo "$SECRET_OAUTH" > ~/FiveGuysPowerTesting/user_portal/secrets.py'
+        env:
+          SECRET_OAUTH: ${{ secrets.DEPLOY_OAUTH }}
 
       - name: Install dependencies
         run: ssh dev_server 'cd FiveGuysPowerTesting && source env/bin/activate && pip install -r requirements.txt && deactivate'
