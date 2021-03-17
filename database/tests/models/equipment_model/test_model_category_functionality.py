@@ -38,7 +38,7 @@ class CreateModelCategoryTestCase(TestCase):
 
     def test_multiple_models_for_category(self):
         queryset = ModelCategory.objects.get(name="Voltmeter").model_list.all()
-        expected_queryset = Model.objects.filter(model_categories=1)  # want this to be string
+        expected_queryset = Model.objects.filter(model_categories__name="Voltmeter")  # want this to be string
         self.assertEqual(f'{queryset}', f'{expected_queryset}')
 
     def test_create_model_with_existing_category(self):
