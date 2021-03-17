@@ -1,5 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, Group, PermissionsMixin
 from django.db import models
 
 from user_portal.enums import PermissionGroupEnum
@@ -36,7 +36,7 @@ class UserManager(BaseUserManager):
         user = self.model(username=username, name=name, email=email, is_active=True)
         user.set_password(self.make_random_password())
         user.save(using=self._db)
-        user.groups.add(PermissionGroupEnum.UNPRIVILEGED.value)
+        user.groups.add(Group.objects.get(name=PermissionGroupEnum.UNPRIVILEGED.value))
         user.save()
         return user
 
@@ -50,7 +50,6 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         user = self.create_user(username, name, email, password, is_active, **extra_fields)
-        user.groups.add(PermissionGroupEnum.ADMINISTRATOR.value)
         user.save()
         return user
 
