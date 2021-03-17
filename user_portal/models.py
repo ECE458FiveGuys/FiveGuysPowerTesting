@@ -8,9 +8,7 @@ from user_portal.enums import PermissionGroupEnum
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
-    def create_user(
-            self, username, name, email, password, is_active=True, **extra_fields
-    ):
+    def create_user(self, username, name, email, password, is_active=True, **extra_fields):
         if not username:
             raise ValueError("The given username must be set")
         if not name:
@@ -51,7 +49,10 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(username, name, email, password, is_active, **extra_fields)
+        user = self.create_user(username, name, email, password, is_active, **extra_fields)
+        user.groups.add(PermissionGroupEnum.ADMINISTRATOR.value)
+        user.save()
+        return user
 
     def oauth_users(self):
         return self.filter(username__contains='@')
