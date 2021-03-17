@@ -93,6 +93,16 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                   InstrumentEnum.ASSET_TAG_NUMBER.value,
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value]
 
+    def validate_asset_tag_number(self, value):
+        if self.instance.asset_tag_number is not None:
+            raise serializers.ValidationError("Value of asset tag number may not be modified")
+        return value
+
+    def validate_serial_number(self, value):
+        if value == '':
+            return None
+        return value
+
     def create(self, validated_data):
         try:
             instrument_categories_data = validated_data.pop('instrument_categories')
@@ -114,13 +124,8 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                 instrument_categories.append(InstrumentCategory.objects.get(name=instrument_category_data))
         except KeyError:
             instrument_categories = instance.instrument_categories.all()
-        instance.model = validated_data.get(InstrumentEnum.MODEL.value, instance.model)
-        instance.serial_number = validated_data.get(InstrumentEnum.SERIAL_NUMBER.value, instance.serial_number)
-        instance.comment = validated_data.get(InstrumentEnum.COMMENT.value, instance.comment)
-        instance.asset_tag_number = validated_data.get(InstrumentEnum.ASSET_TAG_NUMBER, instance.asset_tag_number)
         instance.instrument_categories.set(instrument_categories)
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
 
 class InstrumentSerializer(InstrumentBaseSerializer):
