@@ -5,8 +5,6 @@ Be sure to set environment variable DJANGO_SETTINGS_MODULE as such:
     DJANGO_SETTINGS_MODULE=FiveGuysPowerTesting.dev_settings
 """
 
-from FiveGuysPowerTesting.settings import *
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -19,7 +17,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
