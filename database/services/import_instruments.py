@@ -62,6 +62,6 @@ class ImportInstruments(ImportService):
         if value == '':
             return None
         try:
-            return datetime.strptime(value, '%m/%d/%Y').date()
+            return datetime.strptime(value, '%m/%d/%Y').astimezone()
         except ValueError:
             raise IllegalValueError(self.reader.line_num, key, "format MM/DD/YYYY", value)

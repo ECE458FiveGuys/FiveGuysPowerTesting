@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
-from django.utils.timezone import localtime, now
 
-from database.exceptions import FieldLengthException, InvalidDateException, RequiredFieldsEmptyException
+from database.exceptions import RequiredFieldsEmptyException
 from database.models.instrument import CalibrationEvent, Instrument
 from database.tests.test_utils import OVERLONG_STRING, create_model_and_instrument, create_non_admin_user
 
@@ -11,12 +12,10 @@ class CreateCalibrationEventTestCase(TestCase):
     def test_create_calib_happy_case(self):
         model, instrument = create_model_and_instrument(10)
         user = create_non_admin_user()
-        date = localtime(now()).date()
-        calib_event = CalibrationEvent.objects.create(user=user, instrument=instrument,
-                                                      date=date.replace(year=date.year - 1))
-        calib_events = CalibrationEvent.objects.all()
-        if calib_events.count() != 1 or calib_events.get(id=calib_event.id) != calib_event:
-            self.fail("selected wrong instrument")
+        date = datetime.today().astimezone()
+        c1 = CalibrationEvent.objects.create(user=user, instrument=instrument, date=date.replace(year=date.year - 1))
+        c2 = CalibrationEvent.objects.get(user=user)
+        self.assertEqual(c1, c2)
 
     def test_create_instrument_without_required_fields_throws_exception(self):
         try:
@@ -36,7 +35,7 @@ class CreateCalibrationEventTestCase(TestCase):
     def test_overlong_comment_field_test(self):
         model, instrument = create_model_and_instrument()
         user = create_non_admin_user()
-        date = localtime(now()).date()
+        date = datetime.today().astimezone()
         try:
             CalibrationEvent.objects.create(instrument=instrument, user=user, comment=OVERLONG_STRING,
                                             date=date.replace(year=date.year - 1))

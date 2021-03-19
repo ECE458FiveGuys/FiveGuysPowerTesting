@@ -27,6 +27,8 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 
 
 class CalibrationEventSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format="%Y-%m-%d", input_formats=["%Y-%m-%d"])
+
     class Meta:
         model = CalibrationEvent
         fields = [e.value for e in CalibrationEventEnum]
@@ -45,3 +47,7 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('Model needs calibration mode of GUIDED_HARDWARE in order to have '
                                                   'input from the guided hardware wizard.')
         return attrs
+
+    def create(self, validated_data):
+        validated_data['date'] = validated_data['date'].astimezone()
+        return super().create(validated_data)

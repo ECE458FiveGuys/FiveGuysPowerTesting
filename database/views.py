@@ -165,10 +165,6 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     serializer_class = CalibrationEventSerializer
     filter_backends = []
 
-    @action(detail=False, methods=['get'])
-    def all(self, request):
-        return Response(InstrumentSerializer(self.queryset, many=True).data)
-
 
 class ModelUploadView(APIView):
     parser_classes = [MultiPartParser, ]

@@ -84,7 +84,7 @@ class ImportTestCase(TestCase):
         _ = self.import_helper('model-pre.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         response = self.import_helper('instrument-incorrect-date-format.csv', self.Endpoints.IMPORT_INSTRUMENT.value,
                                       InstrumentUploadView)
-        self.assertEqual(response.data, ['Illegal value in row 2 of column Calibration-Date. Expected format '
+        self.assertEqual(response.data, ['Illegal value in row 3 of column Calibration-Date. Expected format '
                                          'MM/DD/YYYY but got 03-01/2021.'])
 
     def test_instrument_no_vendor(self):

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import random
 
 from django.core.exceptions import ValidationError
@@ -134,7 +134,7 @@ class CalibrationEvent(models.Model):
     be rejected. Allowed for all models.
     """
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
-    date = models.DateTimeField(blank=False, validators=[MaxValueValidator(limit_value=datetime.date.today)])
+    date = models.DateTimeField(blank=False, validators=[MaxValueValidator(limit_value=datetime.today().astimezone())])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
     additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
