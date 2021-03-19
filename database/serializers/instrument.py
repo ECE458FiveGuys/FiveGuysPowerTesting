@@ -3,9 +3,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from database.enums import CategoryEnum, InstrumentEnum, ModelEnum
+from database.models.instrument import Instrument
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
-from database.models.instrument import Instrument
 from database.serializers.calibration_event import CalibrationHistoryRetrieveSerializer
 from database.serializers.model import ModelCategorySerializer
 
@@ -19,8 +19,7 @@ class ModelForInstrumentSerializer(serializers.ModelSerializer):
                   ModelEnum.VENDOR.value,
                   ModelEnum.MODEL_NUMBER.value,
                   ModelEnum.DESCRIPTION.value,
-                  ModelEnum.MODEL_CATEGORIES.value,
-                  ModelEnum.CALIBRATION_MODE.value]
+                  ModelEnum.MODEL_CATEGORIES.value]
 
 
 class InstrumentUniqueFieldsSerializer(serializers.ModelSerializer):
