@@ -93,11 +93,13 @@ class OAuthView(APIView):
 
         env = request.data.get('env')
         if env == 'local':
-            redirect_uri = "http://localhost:3000/oauth/consume"
+            redirect_uri = OAuthEnum.LOCAL_REDIRECT_URI.value
         elif env == 'dev':
             redirect_uri = OAuthEnum.DEV_REDIRECT_URI.value
-        else:
+        elif env == 'prod':
             redirect_uri = OAuthEnum.PROD_REDIRECT_URI.value
+        else:
+            redirect_uri = OAuthEnum.LOCAL_REDIRECT_URI.value
 
         payload_for_token = {
             "grant_type": "authorization_code",
