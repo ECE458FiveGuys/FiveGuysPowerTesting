@@ -31,7 +31,7 @@ class ExtendedUserViewSet(UserViewSet):
                 and self.action == "list"
                 and not (user.is_staff or user.has_perm('user_portal.add_user'))
         ):
-            queryset = queryset.filter(pk=user.pk)
+            queryset = queryset.filter(id=user.id)
         return queryset
 
     def get_serializer_class(self):
@@ -40,27 +40,27 @@ class ExtendedUserViewSet(UserViewSet):
         return super(ExtendedUserViewSet, self).get_serializer_class()
 
     @action(['post'], detail=True)
-    def deactivate(self, request, pk, *args, **kwargs):
-        user = User.objects.get(pk=pk)
+    def deactivate(self, request, id=None):
+        user = User.objects.get(id=id)
         user.is_active = False
         user.save()
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
 
     @action(['post'], detail=True)
-    def activate(self, request, pk, *args, **kwargs):
-        user = User.objects.get(pk=pk)
+    def activate(self, request, id=None):
+        user = User.objects.get(id=id)
         user.is_active = True
         user.save()
         user_serializer = serializers.UserSerializer(user)
         return Response(user_serializer.data)
 
     @action(['post'], detail=True)
-    def update_admin_status(self, request, pk, *args, **kwargs):
+    def update_admin_status(self, request, id=None):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = User.objects.get(pk=pk)
+        user = User.objects.get(id=id)
         user.is_staff = serializer.data['is_staff']
         user.save()
 
