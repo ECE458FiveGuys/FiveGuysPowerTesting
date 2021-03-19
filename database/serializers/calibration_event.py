@@ -7,6 +7,7 @@ from user_portal.serializers import UserFieldsForCalibrationEventSerializer
 
 class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
     user = UserFieldsForCalibrationEventSerializer(many=False, read_only=True)
+    date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
 
     class Meta:
         model = CalibrationEvent
@@ -20,6 +21,8 @@ class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
 
 
 class CalibrationHistorySerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+
     class Meta:
         model = CalibrationEvent
         fields = [CalibrationEventEnum.PK.value,
