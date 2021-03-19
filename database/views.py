@@ -1,6 +1,6 @@
 import importlib
 
-from django.db.models import DateField, ExpressionWrapper, F, Max
+from django.db.models import DateField, DateTimeField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -131,7 +131,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return InstrumentSerializer  # 2.2.3
 
     def get_queryset(self):
-        mrc = Max('calibration_history__date')
+        mrc = Max('calibration_history__date', output_field=DateTimeField())
         cf = F('model__calibration_frequency')
         expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
         qs = super().get_queryset().annotate(most_recent_calibration_date=mrc)

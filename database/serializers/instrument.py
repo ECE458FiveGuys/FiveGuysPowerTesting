@@ -44,7 +44,7 @@ class InstrumentCategorySerializer(serializers.ModelSerializer):
 
 
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
-    calibration_expiration_date = serializers.DateField()
+    calibration_expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
     calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
     model = ModelForInstrumentSerializer(many=False, read_only=True)
     instrument_categories = InstrumentCategorySerializer(many=True, read_only=True)
@@ -64,8 +64,8 @@ class InstrumentBulkImportSerializer(serializers.ModelSerializer):
 
 
 class InstrumentListSerializer(serializers.ModelSerializer):
-    most_recent_calibration_date = serializers.DateField()
-    calibration_expiration_date = serializers.DateField()
+    # most_recent_calibration_date = serializers.DateField(format="%Y-%m-%d")
+    calibration_expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
     model = ModelForInstrumentSerializer(many=False, read_only=True)
     instrument_categories = InstrumentCategorySerializer(many=True, read_only=True)
 
@@ -76,7 +76,7 @@ class InstrumentListSerializer(serializers.ModelSerializer):
                   InstrumentEnum.SERIAL_NUMBER.value,
                   InstrumentEnum.ASSET_TAG_NUMBER.value,
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value,
-                  'most_recent_calibration_date',
+                  # 'most_recent_calibration_date',
                   'calibration_expiration_date']
 
 
@@ -132,5 +132,6 @@ class InstrumentSerializer(InstrumentBaseSerializer):
     def to_representation(self, instance):
         try:
             return InstrumentListSerializer(instance).data
-        except AttributeError:
+        except AttributeError as e:
+            print(e)
             return InstrumentBaseSerializer(instance).data
