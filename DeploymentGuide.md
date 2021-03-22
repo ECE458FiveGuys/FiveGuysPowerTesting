@@ -103,13 +103,13 @@ $ sudo -u postgres psql
 Now, we are in a postgres prompt. We seek to create a user and database for our project. We will set all the requesite permissions and then exit the prompt by executing the command  `\q`.
 
 ```console
-postgres=# CREATE DATABASE FIVEGUYSPOWERTESTING;
+postgres=# CREATE DATABASE fiveguyspowertesting;
 postgres=# CREATE USER netid WITH PASSWORD 'HardPassword';
 postgres=# ALTER USER netid CREATEDB;
 postgres=# ALTER ROLE netid SET client_encoding TO 'utf8';
 postgres=# ALTER ROLE netid SET default_transaction_isolation TO 'read committed';
 postgres=# ALTER ROLE netid SET timezone TO 'UTC';
-postgres=# GRANT ALL PRIVILEGES ON DATABASE myproject TO netid;
+postgres=# GRANT ALL PRIVILEGES ON DATABASE fiveguyspowertesting TO netid;
 postgres=# \q
 ```
 
