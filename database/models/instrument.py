@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import random
 
 from django.core.exceptions import ValidationError
@@ -9,6 +9,7 @@ from django.db.models import UniqueConstraint
 from database.constants import CALIBRATION_EVENT_TEMPLATE, COMMENT_LENGTH, INSTRUMENT_TEMPLATE, SERIAL_NUMBER_LENGTH
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
+from database.validators import validate_max_date
 from user_portal.models import User as User
 
 
@@ -134,7 +135,7 @@ class CalibrationEvent(models.Model):
     be rejected. Allowed for all models.
     """
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
-    date = models.DateTimeField(blank=False, validators=[MaxValueValidator(limit_value=datetime.today().astimezone())])
+    date = models.DateTimeField(blank=False, validators=[validate_max_date])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
     additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
