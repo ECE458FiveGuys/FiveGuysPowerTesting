@@ -1,16 +1,16 @@
 from enum import Enum, auto
 
 
-class AutoName(Enum):
+class AutoName(str, Enum):
     def _generate_next_value_(name, start, count, last_values):
         return name.lower()
 
 
-class ModelsEnum(Enum):
-    USER = "user"
-    MODEL = "model"
-    INSTRUMENT = "instrument"
-    CALIBRATION_EVENT = "calibration_event"
+class ModelsEnum(AutoName):
+    USER = auto()
+    MODEL = auto()
+    INSTRUMENT = auto()
+    CALIBRATION_EVENT = auto()
 
 
 class UserEnum(AutoName):
