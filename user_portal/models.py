@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
         user.set_password(self.make_random_password())
         user.save(using=self._db)
         user.groups.add(Group.objects.get(name=PermissionGroupEnum.UNPRIVILEGED.value))
-        user.save()
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, username, name, email, password, is_active=True, **extra_fields):
@@ -50,7 +50,9 @@ class UserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         user = self.create_user(username, name, email, password, is_active, **extra_fields)
-        user.save()
+        user.save(using=self._db)
+        user.groups.add(Group.objects.get(name=PermissionGroupEnum.ADMINISTRATOR.value))
+        user.save(using=self._db)
         return user
 
     def oauth_users(self):
