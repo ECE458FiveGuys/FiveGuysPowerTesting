@@ -28,9 +28,9 @@ At this point, we install the dependencies we need for the front-end, back-end, 
 ```bash
 $ sudo apt update
 $ sudo apt upgrade
-$ sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib 	# backend; database
-$ sudo apt install npm nodejs 														# frontend
-$ sudo apt install nginx snapd 														# server
+$ sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib  # backend; database
+$ sudo apt install npm nodejs                                                       # frontend
+$ sudo apt install nginx snapd                                                      # server
 ```
 
 Next, we install core and certbot using snap.
@@ -40,7 +40,7 @@ $ sudo snap install core
 $ sudo snap install --classic certbot
 ```
 
-Finally, we create a symbolic link to allow us to use the `certbot` command.
+We also create a symbolic link to allow us to use the `certbot` command.
 
 ```shell
 $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
@@ -90,6 +90,7 @@ Navigate to the project folder, install dependencies, and create a production bu
 $ cd hostname
 $ npm install
 $ npm run build
+$ cd ..
 ```
 
 ### Create PostgreSQL Database
@@ -118,7 +119,7 @@ postgres=# \q
 Next, we clone the git repo in the home directory of our VM.
 
 ```shell
-$ git clone https://github.com/ECE458FiveGuys/FiveGuysPowerTesting
+$ git clone git@github.com:ECE458FiveGuys/FiveGuysPowerTesting.git
 ```
 
 We then navigate to the project folder and create a new virtual environment. We activate it with the `source` command.
@@ -153,8 +154,39 @@ Also make sure to change `DEBUG = True` to `DEBUG = False` as we don't want all 
 
 ### Add Secrets
 
-Add file `FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py.` This file should contain a single variable, `SECRET_KEY.` The value for this variable can generated using the following code:
+Add file `FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py.` This file should contain all the variables that change based on whether the build is for production or development. In the example file below, you should be sure to change `hostname`, `netid`, and `HardPassword` to more appropriate values. Furthermore, 
 
+```python
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = '' # WE WILL GENERATE THIS VALUE
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+ALLOWED_HOSTS = ['hostname', 'localhost']
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Database
+# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'fiveguyspowertesting',
+        'USER': 'netid',
+        'PASSWORD': 'HardPassword',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+```
+You would generate the value for `SECRET_KEY` by executing the following python code:
 ```python
 import secrets
 
@@ -174,6 +206,7 @@ from enum import Enum
 class OAuthEnum(Enum):
     CLIENT_ID = 'SECRET'
     CLIENT_SECRET = 'SECRET'
+    LOCAL_REDIRECT_URI = 'SECRET'
     DEV_REDIRECT_URI = 'SECRET'
     PROD_REDIRECT_URI = 'SECRET'
 
@@ -238,6 +271,7 @@ After=network.target
 
 [Service]
 User=netid
+EnvironmentFile=/etc/environment
 Group=www-data
 WorkingDirectory=/home/netid/FiveGuysPowerTesting
 ExecStart=/home/netid/FiveGuysPowerTesting/env/bin/gunicorn --access-logfile - --workers 3 --timeout 960 --bind unix:/home/netid/FiveGuysPowerTesting/FiveGuysPowerTesting.sock FiveGuysPowerTesting.wsgi:application
