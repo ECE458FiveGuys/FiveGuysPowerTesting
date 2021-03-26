@@ -1,30 +1,20 @@
 # Five Guys Power Testing Deployment Guide
-
 ## Prerequisites
-
 * Virtual Machine running Ubuntu 20.04.2 LTS
-
 ### Reserve Virtual Machine
-
 You will need to reserve two virtual machines: one for the frontend and one for the backend.
 
 Navigate to <https://vcm.duke.edu/reservations/new/vm?> and select `Ubuntu Server 20.04`. Click `Agree` at the bottom
 left-hand corner of the screen. Note the hostname of your virtual machine. It should follow the format
 `vcm-#####.vm.duke.edu`. The instructions will use the placeholder hostname `vcm-00000.vm.duke.edu`.
-
 ### Access Virtual Machine
-
 After reserving our Ubuntu VM, we need to access it. We will do so using ssh. Here, `netid` is a placeholder.
-
 ```shell
 $ ssh netid@vcm-00000.vm.duke.edu
 ```
-
 ## Setup
 ### Install required software & packages
-
 At this point, we install the dependencies we need for the front-end, back-end, and to deploy the both of them.
-
 ```bash
 $ sudo apt update
 $ sudo apt upgrade
@@ -32,56 +22,39 @@ $ sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contr
 $ sudo apt install npm nodejs                                                       # frontend
 $ sudo apt install nginx snapd                                                      # server
 ```
-
 Next, we install core and certbot using snap.
-
 ```shell
 $ sudo snap install core 
 $ sudo snap install --classic certbot
 ```
-
 We also create a symbolic link to allow us to use the `certbot` command.
-
 ```shell
 $ sudo ln -s /snap/bin/certbot /usr/bin/certbot
 ```
-
 Since it's recommended to use a virtual environment when working with a python project, we go ahead and install the
 virtualenv package using pip:
-
 ```shell
 $ sudo pip3 install virtualenv
 ```
-
 ### Add environment variables for OAuth
-
 Add variables to the `/etc/environment` file. Here, the `SECRET` values should be the same value as the corresponding variable in the enum in the backend server. The following two variables should be added to the bottom of the environment file.
-
-```shell
+```text
 REACT_APP_CLIENT_ID=SECRET
 REACT_APP_REDIRECT_URI=SECRET
 ```
-
 After adding the variables, exit this session and start another ssh session. You can exit the session with the `exit` command:
-
 ```shell
 $ exit
 ```
-
 Start a new ssh session the same way we started it the first time:
-
 ```shell
 $ ssh netid@vcm-00000.vm.duke.edu
 ```
-
 ### Clone front-end git repository
-
 Next, we clone the git repo in the home directory of our VM. Replace `hostname` with the hostname of your website.
-
 ```shell
 $ git clone git@github.com:ECE458FiveGuys/FiveGuysFront.git hostname
 ```
-
 ### Build react project
 
 Navigate to the project folder, install dependencies, and create a production build
@@ -135,27 +108,8 @@ Within this virtual environment we will install all the requirements in the file
 ```shell
 (env) $ pip install -r requirements/server.txt
 ```
-
-### Modify settings.py
-
-We now have to change the `settings.py` file to include our server's public ip address. In this case, it is the same as our VM's hostname. Navigate to the line
-
-```python
-ALLOWED_HOSTS = []
-```
-
-and change it to
-
-```python
-ALLOWED_HOSTS = ['vcm-00000.vm.duke.edu', 'localhost']
-```
-
-Also make sure to change `DEBUG = True` to `DEBUG = False` as we don't want all the debug information to be sent to anyone accessing our website as it is a security issue.
-
 ### Add Secrets
-
-Add file `FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py.` This file should contain all the variables that change based on whether the build is for production or development. In the example file below, you should be sure to change `hostname`, `netid`, and `HardPassword` to more appropriate values. Furthermore, 
-
+Add file `FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py.` This file should contain all the variables that change based on whether the build is for production or development. In the example file below, you should be sure to change `hostname`, `netid`, and `HardPassword` to more appropriate values. Furthermore,
 ```python
 from pathlib import Path
 
@@ -197,9 +151,7 @@ secret_key = ''.join(secrets.choice(chars) for i in range(length))
 
 print(secret_key)
 ```
-
 Next, add file `FiveGuysPowerTesting/user_portal/secrets.py` This file should contain an Enum class with four fields. Replace `'SECRET'` with value provided by Duke's OAuth group.
-
 ```python
 from enum import Enum
 
@@ -212,9 +164,7 @@ class OAuthEnum(Enum):
 
 ```
 ### Setup database tables
-
-Next, we migrate our database to SQLite. In this step, we will also create a superuser. As per the instructions, this initial user should have `username = admin`. 
-
+Next, we migrate our database to SQLite. In this step, we will also create a superuser. As per the instructions, this initial user should have `username = admin`.
 ```shell
 (env) $ python manage.py makemigrations database
 (env) $ python manage.py makemigrations user_portal
