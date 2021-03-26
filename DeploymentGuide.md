@@ -219,6 +219,7 @@ Next, we migrate our database to SQLite. In this step, we will also create a sup
 (env) $ python manage.py makemigrations database
 (env) $ python manage.py makemigrations user_portal
 (env) $ python manage.py migrate
+(env) $ python manage.py create_groups
 (env) $ python manage.py createsuperuser --username admin --email admin@localhost
 ```
 
