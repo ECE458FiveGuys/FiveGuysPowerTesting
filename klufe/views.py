@@ -1,9 +1,10 @@
 import paramiko
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import re
 import time
+from klufe.klufe_secrets import hostname, port, username, password
 
 
 def receive_handler(client, conn):
@@ -16,54 +17,60 @@ def receive_handler(client, conn):
     client.close()
     return Response({re.split(r'\x1B[\[0-9;]*m', prompt)[2]})
 
+
 def connect_ssh():
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-    client.connect('hpt-k5700.colab.duke.edu', port=2222, username='admin6', password='foxY458')
+    client.connect(hostname, port=port, username=username, password=password)
     conn = client.invoke_shell()
     conn.recv(10000)
     return client, conn
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def voltage_on(request):
     client, conn = connect_ssh()
     conn.send('on\n')
-
     return receive_handler(client, conn)
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def voltage_off(request):
     client, conn = connect_ssh()
-
-    conn.recv(10000)
     conn.send('off\n')
-
     return receive_handler(client, conn)
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
-def set_DCVoltage(request, volts=0):
+@permission_classes([IsAuthenticated])
+def set_DCVoltage(request):
     client, conn = connect_ssh()
 
-    # TODO: Where get volts
-    conn.recv(10000)
-    conn.send('set dc ' + volts + '\n')
+    try:
+        volts = request.data['volts']
+    except KeyError:
+        return Response(status=400, data={"detail": "Must include value for key 'volts' in request body"})
 
+    conn.send(f'set dc {volts}\n')
     return receive_handler(client, conn)
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
-def set_ACVoltage(request, volts=0, freq=0):
+@permission_classes([IsAuthenticated])
+def set_ACVoltage(request):
     client, conn = connect_ssh()
 
-    # TODO: Where get volts and frequency
-    conn.recv(10000)
-    conn.send('set ac ' + volts + ' ' + freq + '\n')
+    try:
+        volts = request.data['volts']
+    except KeyError:
+        return Response(status=400, data={"detail": "Must include value for key 'volts' in request body"})
 
+    try:
+        frequency = request.data['frequency']
+    except KeyError:
+        return Response(status=400, data={"detail": "Must include value for key 'frequency' in request body"})
+
+    conn.send(f'set ac {volts} {frequency}\n')
     return receive_handler(client, conn)
