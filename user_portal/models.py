@@ -51,8 +51,6 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(username, name, email, password, is_active, **extra_fields)
         user.save(using=self._db)
-        user.groups.add(Group.objects.get(name=PermissionGroupEnum.ADMINISTRATOR.value))
-        user.save(using=self._db)
         return user
 
     def oauth_users(self):
