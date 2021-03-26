@@ -4,14 +4,21 @@ from database.models.instrument import CalibrationEvent
 from database.services.table_enums import MaxInstrumentTableColumnNames, ModelTableColumnNames
 
 
+def special_file(calibration_mode, calibration_event):
+    if calibration_mode == 'DEFAULT':
+        return calibration_event.addtional_evidence
+    elif calibration_mode == 'LOAD_BANK':
+        return 'Load Bank Calibration'
+    elif calibration_mode == 'GUIDED_HARDWARE':
+        return 'Guided Hardware Calibration'
+    return None
+
+
 def write_instrument_file(writer, queryset):
     instruments = queryset
     writer.writerow([e.value for e in MaxInstrumentTableColumnNames])
     for instrument in instruments:
-        latest_calibration_event = CalibrationEvent.objects \
-            .filter(instrument=instrument) \
-            .order_by("-date") \
-            .first()
+        latest_calibration_event = CalibrationEvent.objects.filter(instrument=instrument).order_by("-date").first()
         writer.writerow([instrument.model.vendor,
                          instrument.model.model_number,
                          instrument.serial_number,
@@ -23,8 +30,7 @@ def write_instrument_file(writer, queryset):
                                 latest_calibration_event.date.year),
                          None if latest_calibration_event is None else latest_calibration_event.comment,
                          ' '.join([mc.__str__() for mc in instrument.instrument_categories.all()]),
-                         None if latest_calibration_event is None else latest_calibration_event.additional_evidence,
-                         None if latest_calibration_event is None else None if latest_calibration_event.load_bank_data == "" else "Y"])
+                         special_file(instrument.model.calibration_mode, latest_calibration_event)])
 
 
 def write_model_file(writer, queryset):

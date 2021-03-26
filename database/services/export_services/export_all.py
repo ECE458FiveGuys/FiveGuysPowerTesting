@@ -7,7 +7,7 @@ from zipfile import ZipFile
 
 from django.http import HttpResponse
 
-from database.services.bulk_data_services.export_services.export_utils import write_instrument_file, write_model_file
+from database.services.export_services.export_utils import write_instrument_file, write_model_file
 # file name of folder inside zip:
 from database.services.service import Service
 

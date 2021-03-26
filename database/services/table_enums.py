@@ -12,7 +12,7 @@ class ModelTableColumnNames(Enum):
     DESCRIPTION = "Short-Description"
     COMMENT = "Comment"
     MODEL_CATEGORIES = "Model-Categories"
-    LOAD_BANK_SUPPORT = "Load-Bank-Support"
+    SPECIAL_CALIBRATION_SUPPORT = "Special-Calibration-Support"
     CALIBRATION_FREQUENCY = "Calibration-Frequency"
 
 
@@ -25,8 +25,7 @@ class MaxInstrumentTableColumnNames(Enum):
     CALIBRATION_DATE = "Calibration-Date"
     CALIBRATION_COMMENT = "Calibration-Comment"
     INSTRUMENT_CATEGORIES = "Instrument-Categories"
-    CALIBRATION_FILE_ATTACHMENT = "Calibration-File-Attachment"
-    CALIBRATION_LOAD_BANK_RESULTS_EXISTS = 'Calibration-Load-Bank-Results-Exists'
+    CALIBRATION_ATTACHMENT_TYPE = "Calibration-Attachment-Type"
 
 
 class MinInstrumentTableColumnNames(Enum):

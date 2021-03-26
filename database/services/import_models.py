@@ -35,11 +35,13 @@ class ImportModels(ImportService):
             raise IllegalValueError(self.reader.line_num, key, "positive integer", value)
 
     def parse_calibration_mode(self, row):
-        key = self.min_column_enum.LOAD_BANK_SUPPORT.value
+        key = self.min_column_enum.SPECIAL_CALIBRATION_SUPPORT.value
         value = self.parse_field(row, key)
-        if value == 'Y':
+        if value == 'Load-Bank':
             return 'LOAD_BANK'
+        elif value == 'Klufe':
+            return 'GUIDED_HARDWARE'
         elif value == '':
             return 'DEFAULT'
         else:
-            raise IllegalValueError(self.reader.line_num, key, "Y or empty string", value)
+            raise IllegalValueError(self.reader.line_num, key, "Load-Bank, Klufe, or empty string", value)
