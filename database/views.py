@@ -2,10 +2,10 @@ import importlib
 
 from django.db.models import DateField, DateTimeField, ExpressionWrapper, F, Max
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -152,8 +152,9 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return Response(serializer(self.get_queryset(), many=True).data)
 
     @action(['get'], detail=False)
+    @permission_classes([IsAuthenticated])
     def asset_tag_numbers(self, request, *args, **kwargs):
-        pks = request.data.get('pks')
+        pks = request.query_params.get('pks').split(",")
         return Response(Instrument.objects.asset_tag_numbers(pks))
 
 
