@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Local
     'user_portal.apps.UserPortalConfig',
     'database.apps.DatabaseConfig',
+    'klufe.apps.KlufeConfig'
 ]
 
 MIDDLEWARE = [

@@ -20,6 +20,7 @@ from django.urls import include, path
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api/', include('database.urls')),
+    path('api/klufe/', include('klufe.urls')),
     path('api/auth/', include('user_portal.urls')),
     path('api/api-auth/', include('rest_framework.urls'))
 ]

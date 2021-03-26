@@ -16,8 +16,8 @@ from database.serializers.calibration_event import CalibrationEventSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
     InstrumentSerializer
 from database.serializers.model import *
-from database.services.bulk_data_services.export_services.export_instruments import ExportInstrumentsService
-from database.services.bulk_data_services.export_services.export_models import ExportModelsService
+from database.services.export_services.export_instruments import ExportInstrumentsService
+from database.services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
 from database.services.import_models import ImportModels
 from database.services.table_enums import MaxInstrumentTableColumnNames, MinInstrumentTableColumnNames, \
