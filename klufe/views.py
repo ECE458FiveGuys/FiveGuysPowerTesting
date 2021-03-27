@@ -1,10 +1,11 @@
 import paramiko
+import os
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import re
 import time
-from klufe.klufe_secrets import hostname, port, username, password
+from klufe.constants import hostname, port
 
 
 def receive_handler(client, conn):
@@ -21,7 +22,7 @@ def receive_handler(client, conn):
 def connect_ssh():
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy)
-    client.connect(hostname, port=port, username=username, password=password)
+    client.connect(hostname, port=port, username=os.getenv('KLUFE_USERNAME'), password=os.getenv('KLUFE_PASSWORD'))
     conn = client.invoke_shell()
     conn.recv(10000)
     return client, conn

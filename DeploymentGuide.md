@@ -37,10 +37,13 @@ virtualenv package using pip:
 $ sudo pip3 install virtualenv
 ```
 ### Add environment variables for OAuth
-Add variables to the `/etc/environment` file. Here, the `SECRET` values should be the same value as the corresponding variable in the enum in the backend server. The following two variables should be added to the bottom of the environment file.
+Add variables to the `/etc/environment` file. Here, the `SECRET` values should all have been provided to you by Duke OAuth and Professor Bletsch. The following variables should be added to the bottom of the environment file.
 ```text
 REACT_APP_CLIENT_ID=SECRET
+REACT_APP_CLIENT_SECRET=SECRET
 REACT_APP_REDIRECT_URI=SECRET
+KLUFE_USERNAME=SECRET
+KLUFE_PASSWORD=SECRET
 ```
 After adding the variables, exit this session and start another ssh session. You can exit the session with the `exit` command:
 ```shell
@@ -108,7 +111,7 @@ Within this virtual environment we will install all the requirements in the file
 ```shell
 (env) $ pip install -r requirements/server.txt
 ```
-### Add Secrets
+### Add Secret Settings
 Add file `FiveGuysPowerTesting/FiveGuysPowerTesting/secret_settings.py.` This file should contain all the variables that change based on whether the build is for production or development. In the example file below, you should be sure to change `hostname`, `netid`, and `HardPassword` to more appropriate values. Furthermore,
 ```python
 from pathlib import Path
@@ -140,7 +143,7 @@ DATABASES = {
     }
 }
 ```
-You would generate the value for `SECRET_KEY` by executing the following python code:
+You can generate the value for `SECRET_KEY` by executing the following python code:
 ```python
 import secrets
 
@@ -150,18 +153,6 @@ chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 secret_key = ''.join(secrets.choice(chars) for i in range(length))
 
 print(secret_key)
-```
-Next, add file `FiveGuysPowerTesting/user_portal/secrets.py` This file should contain an Enum class with four fields. Replace `'SECRET'` with value provided by Duke's OAuth group.
-```python
-from enum import Enum
-
-class OAuthEnum(Enum):
-    CLIENT_ID = 'SECRET'
-    CLIENT_SECRET = 'SECRET'
-    LOCAL_REDIRECT_URI = 'SECRET'
-    DEV_REDIRECT_URI = 'SECRET'
-    PROD_REDIRECT_URI = 'SECRET'
-
 ```
 ### Setup database tables
 Next, we migrate our database to SQLite. In this step, we will also create a superuser. As per the instructions, this initial user should have `username = admin`.

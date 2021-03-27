@@ -14,7 +14,6 @@ from rest_framework.views import APIView
 
 from database.enums import UserEnum
 from user_portal.models import User
-from user_portal.secrets import OAuthEnum
 from user_portal.serializers import CustomUserSerializer, IsStaffSerializer
 
 
@@ -81,7 +80,7 @@ class OAuthView(APIView):
 
     @staticmethod
     def format_auth_string():
-        string = f"{OAuthEnum.CLIENT_ID.value}:{OAuthEnum.CLIENT_SECRET.value}"
+        string = f"{os.getenv('REACT_APP_CLIENT_ID')}:{os.getenv('REACT_APP_CLIENT_SECRET')}"
         data = base64.b64encode(string.encode())
         return data.decode("utf-8")
 
@@ -92,7 +91,7 @@ class OAuthView(APIView):
 
         url = "https://oauth.oit.duke.edu/oidc/token"
 
-        redirect_uri = os.getenv('REACT_APP_REDIRECT_URI', OAuthEnum.LOCAL_REDIRECT_URI.value)
+        redirect_uri = os.getenv('REACT_APP_REDIRECT_URI', 'http://localhost:3000/oauth/consume')
 
         payload_for_token = {
             "grant_type": "authorization_code",
