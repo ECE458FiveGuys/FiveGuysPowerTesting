@@ -112,7 +112,7 @@ DJOSER = {
         'set_username': ['djoser.permissions.CurrentUserOrAdmin'],
         'user_create': ['rest_framework.permissions.DjangoModelPermissions'],
         'user_delete': ['rest_framework.permissions.DjangoModelPermissions'],
-        'user': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
         'user_list': ['rest_framework.permissions.DjangoModelPermissions'],
         'token_create': ['rest_framework.permissions.AllowAny'],
         'token_destroy': ['rest_framework.permissions.IsAuthenticated'],
