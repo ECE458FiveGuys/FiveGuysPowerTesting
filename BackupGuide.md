@@ -190,8 +190,19 @@ Paste the following into the file:
 ### Restore Database
 To restore the database called `fiveguyspowertesting` with the file `backup.dump`, we can use the following commands:
 ```shell
-$ scp -i SSH_PRIVATE_KEY /path/to/file netid@hostname:/path/to/put/file 
-$ dropdb fiveguyspowertesting
-$ pg_restore -C -d fiveguyspowertesting backup.dump
+pgsql_backup@backup.colab.duke.edu $ scp -i /home/pgsql_backup/.ssh/backup /path/to/file netid@hostname:/home/netid/
+pgsql_backup@backup.colab.duke.edu $ ssh -i /home/pgsql_backup/.ssh/backup netid@hostname "sudo -u postgres dropdb fiveguyspowertesting"
+pgsql_backup@backup.colab.duke.edu $ ssh -i /home/pgsql_backup/.ssh/backup netid@hostname "sudo -u postgres pg_restore -C -d postgres fiveguyspowertesting.dump"
 ```
 ### Test for Validity
+The test for validity is similar to how we restore database, instead we target a developer server and not a production server.
+
+First, we make a backup of the current state of the dev server and then we follow the instructions for restoring a database. Finally,
+we can navigate to the url where the dev server is hosted and see if the restore was successful and the data is valid. Below is the code
+that we would execute:
+```shell
+pgsql_backup@backup.colab.duke.edu $ ssh -i /home/pgsql_backup/.ssh/backup netid@devhost "sudo -u postgres pg_dump -Fc fiveguyspowertesting > test.dump"
+pgsql_backup@backup.colab.duke.edu $ scp -i /home/pgsql_backup/.ssh/backup /path/to/file netid@hostname:/home/netid/
+pgsql_backup@backup.colab.duke.edu $ ssh -i /home/pgsql_backup/.ssh/backup netid@devhost "sudo -u postgres dropdb fiveguyspowertesting"
+pgsql_backup@backup.colab.duke.edu $ ssh -i /home/pgsql_backup/.ssh/backup netid@devhost "sudo -u postgres pg_restore -C -d postgres fiveguyspowertesting.dump"
+```
