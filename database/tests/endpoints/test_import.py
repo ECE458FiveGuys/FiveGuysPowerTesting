@@ -37,7 +37,7 @@ class ImportTestCase(TestCase):
         response = self.import_helper('model-incorrect-headers.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.data, ['Illegal column headers. Column headers are unique and should be Vendor, '
                                          'Model-Number, Short-Description, Comment, Model-Categories, '
-                                         'Load-Bank-Support, Calibration-Frequency.'])
+                                         'Special-Calibration-Support, Calibration-Frequency.'])
 
     def test_illegal_newline_character(self):
         response = self.import_helper('model-illegal-character.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
@@ -46,8 +46,8 @@ class ImportTestCase(TestCase):
     def test_illegal_load_bank_value(self):
         response = self.import_helper('model-illegal-load-bank-value.csv', self.Endpoints.IMPORT_MODEL.value,
                                       ModelUploadView)
-        self.assertEqual(response.data, ['Illegal value in row 3 of column Load-Bank-Support. Expected Y or empty '
-                                         'string but got LOAD_BANK.'])
+        self.assertEqual(response.data, ['Illegal value in row 3 of column Special-Calibration-Support. Expected '
+                                         'Load-Bank, Klufe, or empty string but got LOAD_BANK.'])
 
     def test_illegal_calibration_frequency(self):
         response = self.import_helper('model-illegal-calibration-frequency.csv', self.Endpoints.IMPORT_MODEL.value,
@@ -71,7 +71,7 @@ class ImportTestCase(TestCase):
         response = self.import_helper('model-extra-column.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.data, ['Illegal column headers. Column headers are unique and should be Vendor, '
                                          'Model-Number, Short-Description, Comment, Model-Categories, '
-                                         'Load-Bank-Support, Calibration-Frequency.'])
+                                         'Special-Calibration-Support, Calibration-Frequency.'])
 
     def test_import_model_in_instrument_endpoint(self):
         response = self.import_helper('model-extra-column.csv', self.Endpoints.IMPORT_INSTRUMENT.value,

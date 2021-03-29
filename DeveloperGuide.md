@@ -52,13 +52,17 @@ Requests to the backend were made using the JavaScript Fetch API. The Fetch API 
 
 ### Node.js/Npm
 
-The project runs using Node.js, and project dependencies are managed by npm, which is installed with Node.js. 
+The project runs using Node.js, and project dependencies are managed by yarn and npm. Yarn can be installed by running 
+
+   ```shell
+   sudo npm install --global yarn
+   ```
 
 If you want to add a library to the project, you just run 
 
-    npm install <library>
+    yarn add <library>
 
-When you pull from the repository, just run npm install, and everything in your package.json will be installed into a working set of dependencies called node_modules.
+When you pull from the repository, just run ```yarn```, and everything in your package.json will be installed into a working set of dependencies called node_modules.
 
 ## <a name="Front"></a> Frontend Workspace
 
@@ -130,15 +134,19 @@ CategoryPage:
 UsersPage:
 * A page with an actionable table of users, allowing you to deactivate, create, and change permissions
 
-UserSettings:
+UserSettingsPage:
 * A page allowing you to customize your settings
 * Now, just supports password change
 
-LoadBank:
+LoadBankPage:
 * A module for all the logic for the load bank wizzard
 
 ImportPage:
 * A module for a page walking users through the instrument/model import process
+
+KlufeWizardPage:
+* A module containing the .js file for the Klufe guided harware calibration page as well as components and functions used in the calibrator.
+
 
 ## Controller
 
@@ -151,6 +159,9 @@ The shared libraries are:
 * UserRequests
 * CategoryRequests
 * ImportExportRequests
+* KlufeRequests
+* LoginRequests
+* Calibration Requests
 
 There is also a RequestUtils folder which is used by all the Request modules; namely all request functions use the same universal fetch method.
 

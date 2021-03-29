@@ -1,7 +1,7 @@
-﻿Vendor,Model-Number,Short-Description,Comment,Model-Categories,Load-Bank-Support,Calibration-Frequency
+﻿Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency
 Fluke,1KA,current shunt meter,1K,,,60
 Fluke,99V,voltmeter,voltmeter,voltmeter,,60
-HPT,LBC21,load bank,calibrator,,Y,10
+HPT,LBC21,load bank,calibrator,,Load-Bank,10
 Fluke,5080A,High Compliance Multi-Product Calibrator,calibrates your analog and digital workload accurately and economically,Multi-Product Calibrator,,41
 Fluke,52120A,Transconductance Amplifier,"supplies dc current up to 100 amps and ac current up to 120 amps, at accuracies to 140 ppm.",Transconductance Amplifier,,5
 Fluke,7526A,Precision Process Calibrator,"Easily calibrate RTD and thermocouple readouts, pressure gauges, temperature transmitters, digital process simulators, data loggers, multimeters",Precision Process Calibrator,,58
@@ -14,12 +14,12 @@ Fluke,9600FLT,1 GHz Wide Offset Phase Noise Filter,filter connects easily to 96x
 Keysight Technologies,B2981A,Femto / Picoammeter,0.01 fA pico current resolution,Femto Picoammeter,,3
 Keysight Technologies,PA2203A,IntegraVision Power Analyzer,3-Phase AC,IntegraVision Power Analyzer,,28
 Keysight Technologies,N6731B,DC Power Analyzer,DC power,DC Power Analyzer,,61
-Keysight Technologies,N4960A,Serial BERT 32,Bit error rate tester,Serial BERT 32,,47
-Keysight Technologies,N8976B,Noise Figure Analyzer,high performance noise figure analyzer,Noise Figure Analyzer,,24
-AMETEK,BURST NX8,ELECTRICAL FAST TRANSIENT GENERATOR,EFT/Burst tester with a built-in coupling/decoupling network for single phase or three-phase mains supply lines and a HV terminal to connect a capacitive coupling clamp,ELECTRICAL FAST TRANSIENT GENERATOR,,79
-AMETEK,DITO,ESD Simulator,simulates electrostatic discharges,ESD Simulator,,49
-AMETEK,IMN2,Impedance Matching Network,Impedance Matching Network for Surge impulse Generators,Impedance Matching Network,,77
-AMETEK,VCS 500N10,Combination Wave Simulator,surge voltages up to 10kV and surge currents up to 5kVA,Combination Wave Simulator,,79
+Keysight Technologies,N4960A,Serial BERT 32,Bit error rate tester,Serial BERT 32,Klufe,47
+Keysight Technologies,N8976B,Noise Figure Analyzer,high performance noise figure analyzer,Noise Figure Analyzer,Klufe,24
+AMETEK,BURST NX8,ELECTRICAL FAST TRANSIENT GENERATOR,EFT/Burst tester with a built-in coupling/decoupling network for single phase or three-phase mains supply lines and a HV terminal to connect a capacitive coupling clamp,ELECTRICAL FAST TRANSIENT GENERATOR,Klufe,79
+AMETEK,DITO,ESD Simulator,simulates electrostatic discharges,ESD Simulator,Klufe,49
+AMETEK,IMN2,Impedance Matching Network,Impedance Matching Network for Surge impulse Generators,Impedance Matching Network,Klufe,77
+AMETEK,VCS 500N10,Combination Wave Simulator,surge voltages up to 10kV and surge currents up to 5kVA,Combination Wave Simulator,Klufe,79
 AMETEK,AS0104,solid-state power amplifiers,upgradeable microwave power amplifier solution,solid-state power amplifiers,,72
 Teledyne Technologies,3014z,WaveSurfer Oscilloscope,"100 MHz, 2 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,22
 Teledyne Technologies,3054z,WaveSurfer Oscilloscope,"500 MHz, 4 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,81
