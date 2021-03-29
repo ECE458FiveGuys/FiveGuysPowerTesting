@@ -64,8 +64,8 @@ Navigate to the project folder, install dependencies, and create a production bu
 
 ```shell
 $ cd hostname
-$ npm install
-$ npm run build
+$ yarn
+$ yarn build
 $ cd ..
 ```
 
