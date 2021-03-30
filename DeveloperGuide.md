@@ -10,9 +10,7 @@ The Django REST Framework processes front end requests made
 to access the inventory, handling validation, sorting, and other business logic. The front end is constructed using HTML templates, which 
 behave as a structural skeleton that frames logic-handling views. 
 
-The database app contains all the inventory-related models and the REST API. The other apps handle the structure and logic of the interface:
-front_lp handles various functions like logging in and creating models, detail_views handles pages for individual models and instruments, 
-and page_views handle the table views of models and instruments, along with the bulk or the functional dashboards.
+The database app contains all the inventory-related models and the REST API.
 
 # Front End (React)
 
