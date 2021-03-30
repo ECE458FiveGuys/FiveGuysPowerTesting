@@ -12,6 +12,8 @@ behave as a structural skeleton that frames logic-handling views.
 
 The database app contains all the inventory-related models and the REST API.
 
+![design](images/SystemDesign.png)
+
 # Front End (React)
 
 ## Frontend Technologies
