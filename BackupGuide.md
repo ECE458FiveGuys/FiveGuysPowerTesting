@@ -10,7 +10,6 @@ We will make the following assumptions in order to make it easier to read this d
 ## Notes
 * Every time you see the values `user`, `netid`, `hostname.colab.duke.edu`, and `backup.colab.duke.edu`, they should be replaced with more appropriate values.
 ## Steps
-Ideally, we would create a new user, `pgsql_backup`, on the server hosting the database for security purposes. However, since we are using Duke VMs, it is difficult to add a new user to our Linux server. As such, we will be accessing the server as the user `netid`, where `netid` is the account of the user who owns the VM.
 ### Reserve Virtual Machine
 You will need to reserve a new virtual machine to store the backups.
 
@@ -18,9 +17,9 @@ Navigate to <https://vcm.duke.edu/reservations/new/vm?> and select `Ubuntu Serve
 left-hand corner of the screen. Note the hostname of your virtual machine. It should follow the format
 `vcm-#####.vm.duke.edu`. The instructions will assume you added an alias, `backup.colab.duke.edu`, for this virtual machine.
 ### Access Virtual Machine
-After reserving our Ubuntu VM, we need to access it. We will do so using ssh. Here, `netid` is a placeholder.
+After reserving our Ubuntu VM, we need to access it. We will do so using ssh. Here, `user` is a placeholder.
 ```shell
-$ ssh netid@backup.colab.duke.edu
+$ ssh user@backup.colab.duke.edu
 ```
 ### Create New User
 We will create a new user in the virtual machine so that other admins are able to login to an account not connected to

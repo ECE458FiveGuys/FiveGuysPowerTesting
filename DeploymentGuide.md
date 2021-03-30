@@ -1,6 +1,7 @@
 # Five Guys Power Testing Deployment Guide
 ## Prerequisites
 * Virtual Machine running Ubuntu 20.04.2 LTS
+* Existing server with backup data
 ### Reserve Virtual Machine
 You will need to reserve two virtual machines: one for the frontend and one for the backend.
 
@@ -70,26 +71,43 @@ $ cd ..
 ```
 
 ### Create PostgreSQL Database
-
+#### Creating Database from scratch
 When Postgres was installed, a new system user, `postgres` was added. We use this user to perform administrative tasks on the Postgres database.
-
 ```shell
 $ sudo -u postgres psql
 ```
-
 Now, we are in a postgres prompt. We seek to create a user and database for our project. We will set all the requesite permissions and then exit the prompt by executing the command  `\q`.
-
 ```console
 postgres=# CREATE DATABASE fiveguyspowertesting;
 postgres=# CREATE USER netid WITH PASSWORD 'HardPassword';
 postgres=# ALTER USER netid CREATEDB;
 postgres=# ALTER ROLE netid SET client_encoding TO 'utf8';
 postgres=# ALTER ROLE netid SET default_transaction_isolation TO 'read committed';
-postgres=# ALTER ROLE netid SET timezone TO 'UTC';
+postgres=# ALTER ROLE netid SET timezone TO 'UTC''
 postgres=# GRANT ALL PRIVILEGES ON DATABASE fiveguyspowertesting TO netid;
 postgres=# \q
 ```
-
+#### Disaster Recovery
+In the case of disaster recovery, we will assume that PostgreSQL server is still running, but that the data in the `fiveguyspowertesting` database needs to be recovered. We can do this by accessing the backup server and getting a copy of the database from that server.
+##### Assumptions
+* Backup server created using instructions in the Backup Guide
+##### Steps
+First, we will ssh to the backup server and see which files are available.
+```shell
+$ ssh pgsql_backup@backup.colab.duke.edu
+pgsql_backup@backup.colab.duke.edu $ ll backup
+```
+We should see a list of backups. Entries should include `daily.0` through `daily.6`, `weekly.0` through `weekly.3` and `monthly.0` through `monthly.11`. Choose one and copy it to the production server. If we chose `daily.5`, we could copy it to the production server this way:
+```shell
+pgsql_backup@backup.colab.duke.edu $ exit
+$ scp pgsql_backup@backup.colab.duke.edu:/home/pgsql_backup/backup/daily.5/hostname/fiveguyspowertesting.dump /home/netid/
+```
+Next, we will recover the data:
+```shell
+$ sudo -u postgres dropdb fiveguyspowertesting
+$ sudo -u postgres pg_restore -C -d postgres fiveguyspowertesting.dump
+```
+Done! We should now have successfully recovered the data from the chosen backup.
 ### Clone back-end git repository & set up environment
 
 Next, we clone the git repo in the home directory of our VM.
