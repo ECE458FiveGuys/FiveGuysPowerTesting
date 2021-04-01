@@ -54,6 +54,14 @@ GROUP_PERMISSIONS = {
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
         User: ['view'],
     },
+    PermissionGroupEnum.CALIBRATION_APPROVER.value: {
+        Model: ['view'],
+        Instrument: ['view'],
+        ModelCategory: ['view'],
+        InstrumentCategory: ['view'],
+        CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        User: ['view'],
+    },
     PermissionGroupEnum.ADMINISTRATOR.value: {
         Model: ['add', 'change', 'delete', 'view'],
         Instrument: ['add', 'change', 'delete', 'view'],
