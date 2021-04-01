@@ -6,7 +6,7 @@ from database.services.table_enums import MaxInstrumentTableColumnNames, ModelTa
 
 def special_file(calibration_mode, calibration_event):
     if calibration_mode == 'DEFAULT':
-        return calibration_event.addtional_evidence
+        return calibration_event.additional_evidence
     elif calibration_mode == 'LOAD_BANK':
         return 'Load Bank Calibration'
     elif calibration_mode == 'GUIDED_HARDWARE':
