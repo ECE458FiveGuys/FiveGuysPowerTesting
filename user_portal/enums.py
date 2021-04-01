@@ -7,6 +7,7 @@ class PermissionGroupEnum(AutoName):
     INSTRUMENT_MANAGEMENT = auto()
     MODEL_MANAGEMENT = auto()
     CALIBRATION = auto()
+    CALIBRATION_APPROVER = auto()
     ADMINISTRATOR = auto()
 
 
