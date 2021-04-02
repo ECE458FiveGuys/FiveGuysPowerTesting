@@ -107,7 +107,7 @@ class ModelBaseSerializer(serializers.ModelSerializer):
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
 
         for calibrator_categories_datum in calibrator_categories_data:
-            model.calibration_categories.add(ModelCategory.objects.get(name=calibrator_categories_datum))
+            model.calibrator_categories.add(ModelCategory.objects.get(name=calibrator_categories_datum))
 
         return model
 
