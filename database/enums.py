@@ -37,6 +37,8 @@ class ModelEnum(AutoName):
     CALIBRATION_FREQUENCY = auto()
     MODEL_CATEGORIES = auto()
     CALIBRATION_MODE = auto()
+    APPROVAL_REQUIRED = auto()
+    CALIBRATOR_CATEGORIES = auto()
 
 
 class InstrumentEnum(AutoName):

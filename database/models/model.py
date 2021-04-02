@@ -3,20 +3,24 @@ from datetime import timedelta
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from database.constants import COMMENT_LENGTH, DESCRIPTION_LENGTH, MODEL_NUMBER_LENGTH, VENDOR_LENGTH
+from database.constants import COMMENT_LENGTH, DESCRIPTION_LENGTH, MODEL_NUMBER_LENGTH, MODEL_TEMPLATE, VENDOR_LENGTH
 from database.models.model_category import ModelCategory
 
 
 class ModelManager(models.Manager):
 
-    def create(self,
-               vendor=None,
-               model_number=None,
-               description=None,
-               comment=None,
-               calibration_frequency=None,
-               model_categories=None,
-               calibration_mode=None):
+    def create(
+            self,
+            vendor=None,
+            model_number=None,
+            description=None,
+            comment=None,
+            calibration_frequency=None,
+            model_categories=None,
+            calibration_mode=None,
+            approval_required=None,
+            calibration_categories=None
+    ):
         if comment is None:
             comment = ''
         if calibration_frequency is None or calibration_frequency == timedelta(days=0):
@@ -26,21 +30,33 @@ class ModelManager(models.Manager):
             model_categories = []
         if calibration_mode is None:
             calibration_mode = 'DEFAULT'
+        if approval_required is None:
+            approval_required = False
+        if calibration_categories is None:
+            calibration_categories = []
 
         m = Model(vendor=vendor,
                   model_number=model_number,
                   description=description,
                   comment=comment,
                   calibration_frequency=calibration_frequency,
-                  calibration_mode=calibration_mode)
+                  calibration_mode=calibration_mode,
+                  approval_required=approval_required)
         m.full_clean()
         m.save(using=self.db)
+
         for model_category in model_categories:
             mc, created = ModelCategory.objects.get_or_create(name=model_category)
             if created:
                 mc.full_clean()
             m.model_categories.add(mc)
-        m.save()
+
+        # TODO: Fix ModelCategory DoesNotExist error
+        for calibration_category in calibration_categories:
+            cc = ModelCategory.objects.get(name=calibration_category)
+            m.calibrator_categories.add(cc)
+
+        m.save(using=self.db)
         return m
 
     def vendors(self, model_number):
@@ -59,7 +75,8 @@ class Model(models.Model):
         ('NOT_CALIBRATABLE', 'Cannot calibrate this instrument'),
         ('DEFAULT', 'Simple Event or File Input'),
         ('LOAD_BANK', 'Simple Event, File Input, or Load Bank Input'),
-        ('GUIDED_HARDWARE', 'Simple Event, File Input, or Guided Hardware Input')
+        ('GUIDED_HARDWARE', 'Simple Event, File Input, or Guided Hardware Input'),
+        ('CUSTOM', 'Simple Event, File Input, or Custom Input'),
     ]
 
     vendor = models.CharField(blank=False, max_length=VENDOR_LENGTH)
@@ -72,6 +89,8 @@ class Model(models.Model):
                                                              MaxValueValidator(timedelta(days=3653))])
     model_categories = models.ManyToManyField(ModelCategory, related_name='model_list', blank=True)
     calibration_mode = models.CharField(blank=True, max_length=16, choices=CALIBRATION_CHOICES, default='DEFAULT')
+    approval_required = models.BooleanField(blank=True, default=False)
+    calibrator_categories = models.ManyToManyField(ModelCategory, related_name='calibrator_list', blank=True)
 
     objects = ModelManager()
 
@@ -83,6 +102,4 @@ class Model(models.Model):
         return self.calibration_frequency is not None
 
     def __str__(self):
-        template = '(Vendor:{0.vendor}, Model Number:{0.model_number}, Description:{0.description}, Comment:{' \
-                   '0.comment}, Calibration Frequency:{0.calibration_frequency}, Calibration Mode:{0.calibration_mode})'
-        return template.format(self)
+        return MODEL_TEMPLATE.format(self)

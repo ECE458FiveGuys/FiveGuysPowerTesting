@@ -13,17 +13,21 @@ from database.models.model_category import ModelCategory
 class InstrumentForModelRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instrument
-        fields = [InstrumentEnum.PK.value,
-                  InstrumentEnum.SERIAL_NUMBER.value,
-                  InstrumentEnum.ASSET_TAG_NUMBER.value]
+        fields = [
+            InstrumentEnum.PK.value,
+            InstrumentEnum.SERIAL_NUMBER.value,
+            InstrumentEnum.ASSET_TAG_NUMBER.value,
+        ]
 
 
 class ModelUniqueFieldsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Model
-        fields = [ModelEnum.PK.value,
-                  ModelEnum.VENDOR.value,
-                  ModelEnum.MODEL_NUMBER.value]
+        fields = [
+            ModelEnum.PK.value,
+            ModelEnum.VENDOR.value,
+            ModelEnum.MODEL_NUMBER.value,
+        ]
 
 
 class ModelCategoryRetrieveSerializer(serializers.ModelSerializer):
@@ -42,6 +46,7 @@ class ModelCategorySerializer(serializers.ModelSerializer):
 
 class ModelRetrieveSerializer(serializers.ModelSerializer):
     model_categories = ModelCategorySerializer(many=True, read_only=True)
+    calibrator_categories = ModelCategorySerializer(many=True, read_only=True)
     instruments = InstrumentForModelRetrieveSerializer(many=True, read_only=True)
 
     class Meta:
@@ -54,18 +59,23 @@ class ModelListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = [ModelEnum.PK.value,
-                  ModelEnum.VENDOR.value,
-                  ModelEnum.MODEL_NUMBER.value,
-                  ModelEnum.DESCRIPTION.value,
-                  ModelEnum.CALIBRATION_FREQUENCY.value,
-                  ModelEnum.MODEL_CATEGORIES.value]
+        fields = [
+            ModelEnum.PK.value,
+            ModelEnum.VENDOR.value,
+            ModelEnum.MODEL_NUMBER.value,
+            ModelEnum.DESCRIPTION.value,
+            ModelEnum.CALIBRATION_FREQUENCY.value,
+            ModelEnum.MODEL_CATEGORIES.value,
+            ModelEnum.APPROVAL_REQUIRED.value,
+        ]
 
 
 class ModelBaseSerializer(serializers.ModelSerializer):
+    calibration_frequency = serializers.IntegerField(required=False, min_value=0, max_value=3653)
     model_categories = serializers.SlugRelatedField(queryset=ModelCategory.objects.all(), many=True, slug_field='name',
                                                     required=False)
-    calibration_frequency = serializers.IntegerField(required=False, min_value=0, max_value=3653)
+    calibrator_categories = serializers.SlugRelatedField(queryset=ModelCategory.objects.all(), many=True,
+                                                         slug_field='name', required=False)
 
     class Meta:
         model = Model
@@ -74,20 +84,31 @@ class ModelBaseSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         try:
             calibration_frequency_data = validated_data.pop('calibration_frequency')
-            calibration_frequency = timedelta(days=calibration_frequency_data)
+            validated_data['calibration_frequency'] = timedelta(days=calibration_frequency_data)
         except KeyError:
-            calibration_frequency = timedelta(days=0)
+            validated_data['calibration_frequency'] = timedelta(days=0)
+
         try:
             model_categories_data = validated_data.pop('model_categories')
         except KeyError:
             model_categories_data = []
-        validated_data['calibration_frequency'] = calibration_frequency
+
+        try:
+            calibrator_categories_data = validated_data.pop('calibrator_categories')
+        except KeyError:
+            calibrator_categories_data = []
+
         try:
             model = Model.objects.create(**validated_data)
         except django.core.exceptions.ValidationError as e:
             raise ValidationError(e.messages)
+
         for model_category_data in model_categories_data:
             model.model_categories.add(ModelCategory.objects.get(name=model_category_data))
+
+        for calibrator_categories_datum in calibrator_categories_data:
+            model.calibration_categories.add(ModelCategory.objects.get(name=calibrator_categories_datum))
+
         return model
 
     def validate(self, attrs):
@@ -105,9 +126,10 @@ class ModelBaseSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         try:
             calibration_frequency_data = validated_data.pop('calibration_frequency')
-            calibration_frequency = timedelta(days=calibration_frequency_data)
+            validated_data['calibration_frequency'] = timedelta(days=calibration_frequency_data)
         except KeyError:
-            calibration_frequency = instance.calibration_frequency
+            validated_data['calibration_frequency'] = instance.calibration_frequency
+
         model_categories = []
         try:
             model_categories_data = validated_data.pop('model_categories')
@@ -115,16 +137,18 @@ class ModelBaseSerializer(serializers.ModelSerializer):
                 model_categories.append(ModelCategory.objects.get(name=model_category_data))
         except KeyError:
             model_categories = instance.model_categories.all()
-        instance.vendor = validated_data.get(ModelEnum.VENDOR.value, instance.vendor)
-        instance.model_number = validated_data.get(ModelEnum.MODEL_NUMBER.value, instance.model_number)
-        instance.description = validated_data.get(ModelEnum.DESCRIPTION.value, instance.description)
-        instance.comment = validated_data.get(ModelEnum.COMMENT.value, instance.comment)
-        instance.calibration_frequency = calibration_frequency
-        instance.calibration_mode = validated_data.get(ModelEnum.CALIBRATION_MODE.value, instance.calibration_mode)
+
+        calibrator_categories = []
+        try:
+            calibrator_categories_data = validated_data.pop('calibrator_categories')
+            for calibrator_categories_datum in calibrator_categories_data:
+                calibrator_categories.append(ModelCategory.objects.get(name=calibrator_categories_datum))
+        except KeyError:
+            calibrator_categories = instance.calibrator_categories.all()
+
         instance.model_categories.set(model_categories)
-        instance.full_clean()
-        instance.save()
-        return instance
+        instance.calibrator_categories.set(calibrator_categories)
+        return super().update(instance, validated_data)
 
 
 class ModelSerializer(ModelBaseSerializer):

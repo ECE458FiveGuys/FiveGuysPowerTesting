@@ -124,6 +124,7 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                 instrument_categories.append(InstrumentCategory.objects.get(name=instrument_category_data))
         except KeyError:
             instrument_categories = instance.instrument_categories.all()
+
         instance.instrument_categories.set(instrument_categories)
         return super().update(instance, validated_data)
 
