@@ -48,6 +48,15 @@ class InstrumentEnum(AutoName):
     INSTRUMENT_CATEGORIES = auto()
 
 
+class ApprovalDataEnum(AutoName):
+    PK = auto()
+    CALIBRATION_EVENT = auto()
+    APPROVED = auto()
+    APPROVER = auto()
+    DATE = auto()
+    COMMENT = auto()
+
+
 class CalibrationEventEnum(AutoName):
     PK = auto()
     INSTRUMENT = auto()
@@ -57,3 +66,6 @@ class CalibrationEventEnum(AutoName):
     ADDITIONAL_EVIDENCE = auto()
     LOAD_BANK_DATA = auto()
     GUIDED_HARDWARE_DATA = auto()
+    CUSTOM_DATA = auto()
+    APPROVAL_DATA = auto()
+    CALIBRATED_WITH = auto()

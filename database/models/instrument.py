@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import random
 
 from django.core.exceptions import ValidationError
@@ -72,7 +71,8 @@ class InstrumentManager(models.Manager):
             return self.order_by().filter(pk__in=pks).values_list('asset_tag_number', flat=True)
 
     def calibratable_asset_tag_numbers(self):
-        return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
+        return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number',
+                                                                                               flat=True)
 
 
 class Instrument(models.Model):
@@ -100,25 +100,34 @@ class Instrument(models.Model):
 
 class CalibrationEventManager(models.Manager):
 
-    def create(self,
-               user=None,
-               instrument=None,
-               date=None,
-               comment=None,
-               additional_evidence=None,
-               load_bank_data=None,
-               guided_hardware_data=None):
+    def create(
+            self,
+            user=None,
+            instrument=None,
+            date=None,
+            comment=None,
+            additional_evidence=None,
+            load_bank_data=None,
+            guided_hardware_data=None,
+            custom_data=None,
+            calibrated_with=None,
+    ):
         if load_bank_data is None:
             load_bank_data = ''
         if guided_hardware_data is None:
             guided_hardware_data = ''
-        calibration_event = CalibrationEvent(instrument=instrument,
-                                             user=user,
-                                             date=date,
-                                             comment=comment,
-                                             additional_evidence=additional_evidence,
-                                             load_bank_data=load_bank_data,
-                                             guided_hardware_data=guided_hardware_data)
+        if custom_data is None:
+            custom_data = ''
+        calibration_event = CalibrationEvent(
+            instrument=instrument,
+            user=user,
+            date=date,
+            comment=comment,
+            additional_evidence=additional_evidence,
+            load_bank_data=load_bank_data,
+            guided_hardware_data=guided_hardware_data,
+            custom_data=custom_data,
+        )
         calibration_event.full_clean()
         calibration_event.save(using=self.db)
         return calibration_event
@@ -135,7 +144,7 @@ class CalibrationEvent(models.Model):
     be rejected. Allowed for all models.
     """
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
-    date = models.DateTimeField(blank=False, validators=[validate_max_date])
+    date = models.DateTimeField(validators=[validate_max_date])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, null=True)
     additional_evidence = models.FileField(upload_to=instrument_evidence_directory_path,
@@ -145,7 +154,9 @@ class CalibrationEvent(models.Model):
                                                FileExtensionValidator(['jpg', 'png', 'PNG', 'gif', 'pdf', 'xlsx'])])
     load_bank_data = models.TextField(blank=True, default='')
     guided_hardware_data = models.TextField(blank=True, default='')
-
+    custom_data = models.TextField(blank=True, default='')
+    calibrated_with = models.ManyToManyField(Instrument, related_name="used_to_calibrate")
+    # pk, asset_tag, serial_number
     objects = CalibrationEventManager()
 
     class Meta:
@@ -157,3 +168,14 @@ class CalibrationEvent(models.Model):
     def clean(self):
         if not self.instrument.is_calibratable():
             raise ValidationError("Cannot add Calibration Event to Instrument whose Model cannot be calibrated")
+
+
+class ApprovalData(models.Model):
+    calibration_event = models.OneToOneField(CalibrationEvent, related_name="approval_data", on_delete=models.CASCADE)
+    approved = models.BooleanField(default=False)
+    approver = models.ForeignKey(User, on_delete=models.PROTECT)
+    date = models.DateTimeField(validators=[validate_max_date])
+    comment = models.CharField(max_length=COMMENT_LENGTH, blank=True, default='')
+
+    class Meta:
+        ordering = ['-date']

@@ -5,14 +5,14 @@ from rest_framework import viewsets
 from rest_framework.decorators import action, permission_classes
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from database.filters import InstrumentFilter, ModelFilter
-from database.models.instrument import CalibrationEvent
+from database.models.instrument import ApprovalData, CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
-from database.serializers.calibration_event import CalibrationEventSerializer
+from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
     InstrumentSerializer
 from database.serializers.model import *
@@ -157,14 +157,33 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         pks = request.query_params.get('pks').split(",")
         return Response(Instrument.objects.asset_tag_numbers(pks))
 
+    @action(['get'], detail=True)
+    def calibrators(self, request, *args, **kwargs):
+        return Response("ENDPOINT COMING SOON")
+
+
+class ApprovalDataViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows approval data to be viewed or edited.
+    """
+    queryset = ApprovalData.objects.all()
+    serializer_class = ApprovalDataSerializer
+
 
 class CalibrationEventViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    API endpoint that allows calibration events to be viewed or edited.
     """
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
     filter_backends = []
+
+    @action(['get'], detail=False)
+    def pending_approval(self, request, *args, **kwargs):
+        """
+        Returns list of instruments with calibrations pending approval
+        """
+        return Response("ENDPOINT COMING SOON")
 
 
 class ModelUploadView(APIView):
