@@ -14,9 +14,10 @@ from user_portal.models import User
 class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [UserEnum.PK.value,
-                  UserEnum.USERNAME.value,
-                  UserEnum.NAME.value]
+        fields = [
+            UserEnum.PK.value,
+            UserEnum.USERNAME.value,
+        ]
 
 
 class GroupSerializer(serializers.ModelSerializer):

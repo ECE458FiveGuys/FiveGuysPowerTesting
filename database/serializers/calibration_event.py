@@ -1,10 +1,19 @@
 from rest_framework import serializers
 from datetime import datetime
 
-from database.serializers.model import InstrumentForModelRetrieveSerializer
-from database.enums import ApprovalDataEnum, CalibrationEventEnum
+from database.enums import ApprovalDataEnum, CalibrationEventEnum, InstrumentEnum
 from database.models.instrument import ApprovalData, CalibrationEvent, Instrument
 from user_portal.serializers import UserFieldsForCalibrationEventSerializer
+
+
+class InstrumentForCalibrationEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instrument
+        fields = [
+            InstrumentEnum.PK.value,
+            InstrumentEnum.SERIAL_NUMBER.value,
+            InstrumentEnum.ASSET_TAG_NUMBER.value,
+        ]
 
 
 class ApprovalDataSerializer(serializers.ModelSerializer):
@@ -25,11 +34,11 @@ class ApprovalDataSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-class CalibrationHistoryRetrieveSerializer(serializers.ModelSerializer):
+class CalibrationRetrieveSerializer(serializers.ModelSerializer):
     user = UserFieldsForCalibrationEventSerializer(many=False, read_only=True)
     date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
     approval_data = ApprovalDataSerializer(many=False, read_only=True)
-    calibrated_with = InstrumentForModelRetrieveSerializer(many=True, read_only=True)
+    calibrated_with = InstrumentForCalibrationEventSerializer(many=True, read_only=True)
 
     class Meta:
         model = CalibrationEvent

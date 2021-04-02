@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
@@ -112,6 +113,8 @@ class CalibrationEventManager(models.Manager):
             custom_data=None,
             calibrated_with=None,
     ):
+        if comment is None:
+            comment = ''
         if load_bank_data is None:
             load_bank_data = ''
         if guided_hardware_data is None:
@@ -130,6 +133,17 @@ class CalibrationEventManager(models.Manager):
         )
         calibration_event.full_clean()
         calibration_event.save(using=self.db)
+        if not instrument.model.approval_required:
+            approval_data = ApprovalData(
+                calibration_event=calibration_event,
+                approved=True,
+                approver=user,
+                date=datetime.utcnow().astimezone(),
+                comment='',
+            )
+            approval_data.save(using=self.db)
+            calibration_event.approval_data = approval_data
+            calibration_event.save(using=self.db)
         return calibration_event
 
 

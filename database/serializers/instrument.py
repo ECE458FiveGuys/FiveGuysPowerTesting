@@ -6,7 +6,7 @@ from database.enums import CategoryEnum, InstrumentEnum, ModelEnum
 from database.models.instrument import Instrument
 from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
-from database.serializers.calibration_event import CalibrationHistoryRetrieveSerializer
+from database.serializers.calibration_event import CalibrationRetrieveSerializer
 from database.serializers.model import ModelCategorySerializer
 
 
@@ -45,7 +45,7 @@ class InstrumentCategorySerializer(serializers.ModelSerializer):
 
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
     calibration_expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
-    calibration_history = CalibrationHistoryRetrieveSerializer(many=True, read_only=True)
+    calibration_history = CalibrationRetrieveSerializer(many=True, read_only=True)
     model = ModelForInstrumentSerializer(many=False, read_only=True)
     instrument_categories = InstrumentCategorySerializer(many=True, read_only=True)
 

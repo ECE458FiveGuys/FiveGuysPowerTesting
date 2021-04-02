@@ -12,7 +12,8 @@ from rest_framework.views import APIView
 from database.filters import InstrumentFilter, ModelFilter
 from database.models.instrument import ApprovalData, CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
-from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer
+from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
+    CalibrationRetrieveSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
     InstrumentSerializer
 from database.serializers.model import *
@@ -127,8 +128,8 @@ class InstrumentViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
-            return InstrumentRetrieveSerializer  # 2.2.4
-        return InstrumentSerializer  # 2.2.3
+            return InstrumentRetrieveSerializer
+        return InstrumentSerializer
 
     def get_queryset(self):
         mrc = Max('calibration_history__date', output_field=DateTimeField())
@@ -177,6 +178,11 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     queryset = CalibrationEvent.objects.all()
     serializer_class = CalibrationEventSerializer
     filter_backends = []
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return CalibrationRetrieveSerializer
+        return CalibrationEventSerializer
 
     @action(['get'], detail=False)
     def pending_approval(self, request, *args, **kwargs):
