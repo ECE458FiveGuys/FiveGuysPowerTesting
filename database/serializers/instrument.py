@@ -15,12 +15,16 @@ class ModelForInstrumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Model
-        fields = [ModelEnum.PK.value,
-                  ModelEnum.VENDOR.value,
-                  ModelEnum.MODEL_NUMBER.value,
-                  ModelEnum.DESCRIPTION.value,
-                  ModelEnum.MODEL_CATEGORIES.value,
-                  ModelEnum.CALIBRATION_MODE.value]
+        fields = [
+            ModelEnum.PK.value,
+            ModelEnum.VENDOR.value,
+            ModelEnum.MODEL_NUMBER.value,
+            ModelEnum.DESCRIPTION.value,
+            ModelEnum.MODEL_CATEGORIES.value,
+            ModelEnum.CALIBRATION_MODE.value,
+            ModelEnum.CALIBRATOR_CATEGORIES.value,
+            ModelEnum.APPROVAL_REQUIRED.value,
+        ]
 
 
 class InstrumentUniqueFieldsSerializer(serializers.ModelSerializer):
