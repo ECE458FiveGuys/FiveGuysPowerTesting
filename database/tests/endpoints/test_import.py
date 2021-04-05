@@ -37,7 +37,8 @@ class ImportTestCase(TestCase):
         response = self.import_helper('model-incorrect-headers.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.data, ['Illegal column headers. Column headers are unique and should be Vendor, '
                                          'Model-Number, Short-Description, Comment, Model-Categories, '
-                                         'Special-Calibration-Support, Calibration-Frequency.'])
+                                         'Special-Calibration-Support, Calibration-Frequency, '
+                                         'Calibration-Requires-Approval, Calibrator-Categories.'])
 
     def test_illegal_newline_character(self):
         response = self.import_helper('model-illegal-character.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
@@ -71,7 +72,8 @@ class ImportTestCase(TestCase):
         response = self.import_helper('model-extra-column.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.data, ['Illegal column headers. Column headers are unique and should be Vendor, '
                                          'Model-Number, Short-Description, Comment, Model-Categories, '
-                                         'Special-Calibration-Support, Calibration-Frequency.'])
+                                         'Special-Calibration-Support, Calibration-Frequency, '
+                                         'Calibration-Requires-Approval, Calibrator-Categories.'])
 
     def test_import_model_in_instrument_endpoint(self):
         response = self.import_helper('model-extra-column.csv', self.Endpoints.IMPORT_INSTRUMENT.value,

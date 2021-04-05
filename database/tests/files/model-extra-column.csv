@@ -1,2 +1,2 @@
-Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency,Model-Categories
-Fluke,1KAu,current shunt meter,1K,,,60,
+Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency,Calibration-Requires-Approval,Calibrator-Categories,Model-Categories
+Fluke,1KAu,current shunt meter,1K,,,60,,,

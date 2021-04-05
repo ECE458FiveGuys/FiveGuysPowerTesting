@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -51,9 +52,10 @@ class ModelManager(models.Manager):
                 mc.full_clean()
             m.model_categories.add(mc)
 
-        # TODO: Fix ModelCategory DoesNotExist error
         for calibration_category in calibration_categories:
-            cc = ModelCategory.objects.get(name=calibration_category)
+            cc, created = ModelCategory.objects.get_or_create(name=calibration_category)
+            if created:
+                cc.full_clean()
             m.calibrator_categories.add(cc)
 
         m.save(using=self.db)

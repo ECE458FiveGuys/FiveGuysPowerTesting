@@ -15,11 +15,13 @@ from user_portal.models import User as User
 
 class InstrumentManager(models.Manager):
 
-    def create(self,
-               model=None,
-               serial_number=None,
-               comment=None,
-               asset_tag_number=None):
+    def create(
+            self,
+            model=None,
+            serial_number=None,
+            comment=None,
+            asset_tag_number=None
+    ):
         if asset_tag_number is None:
             used_values = self.asset_tag_numbers()
             asset_tag_number = random.choice(list(set(range(10 ** 5, 10 ** 6)) - set(used_values)))
@@ -33,8 +35,18 @@ class InstrumentManager(models.Manager):
         instrument.save()
         return instrument
 
-    def create_for_import(self, vendor=None, model_number=None, serial_number=None, asset_tag_number=None, comment=None,
-                          user=None, calibration_date=None, calibration_comment=None, instrument_categories=None):
+    def create_for_import(
+            self,
+            vendor=None,
+            model_number=None,
+            serial_number=None,
+            asset_tag_number=None,
+            comment=None,
+            user=None,
+            calibration_date=None,
+            calibration_comment=None,
+            instrument_categories=None
+    ):
         if vendor is None:
             raise ValidationError('Cannot import instrument without vendor')
         if model_number is None:
@@ -145,6 +157,9 @@ class CalibrationEventManager(models.Manager):
             calibration_event.approval_data = approval_data
             calibration_event.save(using=self.db)
         return calibration_event
+
+    def pending_approval(self):
+        return self.order_by().filter(approval_data=None).values_list('instrument_id', flat=True)
 
 
 def instrument_evidence_directory_path(instance, filename):

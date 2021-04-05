@@ -1,11 +1,11 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import django.core.exceptions
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from database.enums import CategoryEnum, InstrumentEnum, ModelEnum
-from database.models.instrument import Instrument
+from database.enums import CalibrationEventEnum, CategoryEnum, InstrumentEnum, ModelEnum
+from database.models.instrument import ApprovalData, Instrument
 from database.models.model import Model
 from database.models.model_category import ModelCategory
 
@@ -130,6 +130,22 @@ class ModelBaseSerializer(serializers.ModelSerializer):
         except KeyError:
             validated_data['calibration_frequency'] = instance.calibration_frequency
 
+        if 'approval_required' in validated_data:
+            if validated_data['approval_required'] is False and instance.approval_required is True:
+                for instrument in instance.instruments.all():
+                    for calibration_event in instrument.calibration_history.all():
+                        if not hasattr(calibration_event, CalibrationEventEnum.APPROVAL_DATA.value):
+                            approval_data = ApprovalData(
+                                calibration_event=calibration_event,
+                                approved=True,
+                                approver=validated_data['user'],
+                                date=datetime.utcnow().astimezone(),
+                                comment='',
+                            )
+                            approval_data.save()
+                            calibration_event.approval_data = approval_data
+                            calibration_event.save()
+
         model_categories = []
         try:
             model_categories_data = validated_data.pop('model_categories')
@@ -148,6 +164,7 @@ class ModelBaseSerializer(serializers.ModelSerializer):
 
         instance.model_categories.set(model_categories)
         instance.calibrator_categories.set(calibrator_categories)
+
         return super().update(instance, validated_data)
 
 

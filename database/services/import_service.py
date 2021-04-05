@@ -43,8 +43,7 @@ class ImportService(ABC):
         try:
             return self.create_object(row)
         except ObjectDoesNotExist:
-            raise ModelDoesNotExistError(self.reader.line_num, row[MTCN.VENDOR.value],
-                                         row[MTCN.MODEL_NUMBER.value])
+            raise ModelDoesNotExistError(self.reader.line_num, row[MTCN.VENDOR.value], row[MTCN.MODEL_NUMBER.value])
         except ValidationError as v:
             try:
                 key = list(v.message_dict.keys())[0]

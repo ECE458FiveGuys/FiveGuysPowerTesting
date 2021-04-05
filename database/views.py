@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from database.filters import InstrumentFilter, ModelFilter
-from database.models.instrument import ApprovalData, CalibrationEvent
+from database.models.instrument import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
     CalibrationRetrieveSerializer
@@ -77,6 +77,9 @@ class ModelViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return ModelRetrieveSerializer
         return ModelSerializer
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     @action(['get'], detail=False)
     def vendors(self, request):
@@ -187,9 +190,9 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     @action(['get'], detail=False)
     def pending_approval(self, request, *args, **kwargs):
         """
-        Returns list of instruments with calibrations pending approval
+        Returns list of calibration events pending approval
         """
-        return Response("ENDPOINT COMING SOON")
+        return Response(CalibrationEvent.objects.pending_approval())
 
 
 class ModelUploadView(APIView):

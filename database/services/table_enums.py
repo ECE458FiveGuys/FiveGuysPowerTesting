@@ -1,4 +1,9 @@
-from enum import Enum
+from enum import Enum, auto
+
+
+class AutoName(str, Enum):
+    def _generate_next_value_(name, start, count, last_values):
+        return "-".join([x.capitalize() for x in name.split('_')])
 
 
 class ExportFileNames(Enum):
@@ -6,34 +11,36 @@ class ExportFileNames(Enum):
     MODELS = "models.csv"
 
 
-class ModelTableColumnNames(Enum):
-    VENDOR = "Vendor"
-    MODEL_NUMBER = "Model-Number"
-    DESCRIPTION = "Short-Description"
-    COMMENT = "Comment"
-    MODEL_CATEGORIES = "Model-Categories"
-    SPECIAL_CALIBRATION_SUPPORT = "Special-Calibration-Support"
-    CALIBRATION_FREQUENCY = "Calibration-Frequency"
+class ModelTableColumnNames(AutoName):
+    VENDOR = auto()
+    MODEL_NUMBER = auto()
+    SHORT_DESCRIPTION = auto()
+    COMMENT = auto()
+    MODEL_CATEGORIES = auto()
+    SPECIAL_CALIBRATION_SUPPORT = auto()
+    CALIBRATION_FREQUENCY = auto()
+    CALIBRATION_REQUIRES_APPROVAL = auto()
+    CALIBRATOR_CATEGORIES = auto()
 
 
-class MaxInstrumentTableColumnNames(Enum):
-    VENDOR = ModelTableColumnNames.VENDOR.value
-    MODEL_NUMBER = ModelTableColumnNames.MODEL_NUMBER.value
-    SERIAL_NUMBER = "Serial-Number"
-    ASSET_TAG_NUMBER = "Asset-Tag-Number"
-    COMMENT = "Comment"
-    CALIBRATION_DATE = "Calibration-Date"
-    CALIBRATION_COMMENT = "Calibration-Comment"
-    INSTRUMENT_CATEGORIES = "Instrument-Categories"
-    CALIBRATION_ATTACHMENT_TYPE = "Calibration-Attachment-Type"
+class MaxInstrumentTableColumnNames(AutoName):
+    VENDOR = auto()
+    MODEL_NUMBER = auto()
+    SERIAL_NUMBER = auto()
+    ASSET_TAG_NUMBER = auto()
+    COMMENT = auto()
+    CALIBRATION_DATE = auto()
+    CALIBRATION_COMMENT = auto()
+    INSTRUMENT_CATEGORIES = auto()
+    CALIBRATION_ATTACHMENT_TYPE = auto()
 
 
-class MinInstrumentTableColumnNames(Enum):
-    VENDOR = ModelTableColumnNames.VENDOR.value
-    MODEL_NUMBER = ModelTableColumnNames.MODEL_NUMBER.value
-    SERIAL_NUMBER = "Serial-Number"
-    ASSET_TAG_NUMBER = "Asset-Tag-Number"
-    COMMENT = "Comment"
-    CALIBRATION_DATE = "Calibration-Date"
-    CALIBRATION_COMMENT = "Calibration-Comment"
-    INSTRUMENT_CATEGORIES = "Instrument-Categories"
+class MinInstrumentTableColumnNames(AutoName):
+    VENDOR = auto()
+    MODEL_NUMBER = auto()
+    SERIAL_NUMBER = auto()
+    ASSET_TAG_NUMBER = auto()
+    COMMENT = auto()
+    CALIBRATION_DATE = auto()
+    CALIBRATION_COMMENT = auto()
+    INSTRUMENT_CATEGORIES = auto()
