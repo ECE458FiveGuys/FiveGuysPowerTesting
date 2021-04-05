@@ -20,7 +20,7 @@ class ModelManager(models.Manager):
             model_categories=None,
             calibration_mode=None,
             approval_required=None,
-            calibration_categories=None
+            calibrator_categories=None
     ):
         if comment is None:
             comment = ''
@@ -33,8 +33,8 @@ class ModelManager(models.Manager):
             calibration_mode = 'DEFAULT'
         if approval_required is None:
             approval_required = False
-        if calibration_categories is None:
-            calibration_categories = []
+        if calibrator_categories is None:
+            calibrator_categories = []
 
         m = Model(vendor=vendor,
                   model_number=model_number,
@@ -52,8 +52,8 @@ class ModelManager(models.Manager):
                 mc.full_clean()
             m.model_categories.add(mc)
 
-        for calibration_category in calibration_categories:
-            cc, created = ModelCategory.objects.get_or_create(name=calibration_category)
+        for calibrator_category in calibrator_categories:
+            cc, created = ModelCategory.objects.get_or_create(name=calibrator_category)
             if created:
                 cc.full_clean()
             m.calibrator_categories.add(cc)
