@@ -24,9 +24,10 @@ class ApprovalDataSerializer(serializers.ModelSerializer):
         fields = [e.value for e in ApprovalDataEnum]
 
     def validate(self, attrs):
-        if not attrs['calibration_event'].instrument.model.approval_required:
-            raise serializers.ValidationError(
-                "Cannot approve a calibration event for a model whose calibration does not require approval.")
+        if 'calibration_event' in attrs:
+            if not attrs['calibration_event'].instrument.model.approval_required:
+                raise serializers.ValidationError(
+                    "Cannot approve a calibration event for a model whose calibration does not require approval.")
         return attrs
 
     def create(self, validated_data):
