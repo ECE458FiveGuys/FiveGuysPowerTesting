@@ -13,7 +13,7 @@ from database.filters import InstrumentFilter, ModelFilter
 from database.models.instrument import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
-    CalibrationRetrieveSerializer
+    CalibrationRetrieveSerializer, InstrumentsPendingApprovalSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
     InstrumentSerializer
 from database.serializers.model import *
@@ -185,14 +185,14 @@ class CalibrationEventViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return CalibrationRetrieveSerializer
+        elif self.action == 'pending_approval':
+            return InstrumentsPendingApprovalSerializer
         return CalibrationEventSerializer
 
     @action(['get'], detail=False)
     def pending_approval(self, request, *args, **kwargs):
-        """
-        Returns list of calibration events pending approval
-        """
-        return Response(CalibrationEvent.objects.pending_approval())
+        serializer = self.get_serializer_class()
+        return Response(serializer(CalibrationEvent.objects.pending_approval(), many=True).data)
 
 
 class ModelUploadView(APIView):

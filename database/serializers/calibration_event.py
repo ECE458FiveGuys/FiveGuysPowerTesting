@@ -16,6 +16,17 @@ class InstrumentForCalibrationEventSerializer(serializers.ModelSerializer):
         ]
 
 
+class InstrumentsPendingApprovalSerializer(serializers.ModelSerializer):
+    instrument = InstrumentForCalibrationEventSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = CalibrationEvent
+        fields = [
+            CalibrationEventEnum.PK.value,
+            CalibrationEventEnum.INSTRUMENT.value,
+        ]
+
+
 class ApprovalDataSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
 

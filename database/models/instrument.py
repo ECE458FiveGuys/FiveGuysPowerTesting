@@ -159,7 +159,7 @@ class CalibrationEventManager(models.Manager):
         return calibration_event
 
     def pending_approval(self):
-        return self.order_by().filter(approval_data=None).values_list('instrument_id', flat=True)
+        return self.filter(approval_data=None)
 
 
 def instrument_evidence_directory_path(instance, filename):
