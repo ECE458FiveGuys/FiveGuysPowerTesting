@@ -133,6 +133,8 @@ class CalibrationEventManager(models.Manager):
             guided_hardware_data = ''
         if custom_data is None:
             custom_data = ''
+        if calibrated_with is None:
+            calibrated_with = []
 
         calibration_event = CalibrationEvent(
             instrument=instrument,
