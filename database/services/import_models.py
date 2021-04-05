@@ -20,7 +20,7 @@ class ImportModels(ImportService):
             calibration_frequency=self.parse_calibration_frequency(row),
             calibration_mode=self.parse_calibration_mode(row),
             approval_required=self.parse_approval_required(row),
-            calibration_categories=self.parse_categories(row, self.min_column_enum.CALIBRATOR_CATEGORIES.value),
+            calibrator_categories=self.parse_categories(row, self.min_column_enum.CALIBRATOR_CATEGORIES.value),
         )
 
     def parse_categories(self, row, key):
