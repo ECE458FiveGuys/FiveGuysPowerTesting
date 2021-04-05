@@ -11,7 +11,7 @@ from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 from database.validators import validate_max_date
 from user_portal.models import User as User
-
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 class InstrumentManager(models.Manager):
 
@@ -133,6 +133,7 @@ class CalibrationEventManager(models.Manager):
             guided_hardware_data = ''
         if custom_data is None:
             custom_data = ''
+
         calibration_event = CalibrationEvent(
             instrument=instrument,
             user=user,
@@ -145,6 +146,7 @@ class CalibrationEventManager(models.Manager):
         )
         calibration_event.full_clean()
         calibration_event.save(using=self.db)
+
         if not instrument.model.approval_required:
             approval_data = ApprovalData(
                 calibration_event=calibration_event,
@@ -156,6 +158,15 @@ class CalibrationEventManager(models.Manager):
             approval_data.save(using=self.db)
             calibration_event.approval_data = approval_data
             calibration_event.save(using=self.db)
+
+        for instrument in calibrated_with:
+            try:
+                i = Instrument.objects.get(id=instrument)
+                calibration_event.calibrated_with.add(i)
+            except ObjectDoesNotExist:
+                raise ValidationError("Could not have calibrated using this instrument. Instrument does not exist.")
+
+        calibration_event.save(using=self.db)
         return calibration_event
 
     def pending_approval(self):
@@ -185,7 +196,6 @@ class CalibrationEvent(models.Model):
     guided_hardware_data = models.TextField(blank=True, default='')
     custom_data = models.TextField(blank=True, default='')
     calibrated_with = models.ManyToManyField(Instrument, related_name="used_to_calibrate")
-    # pk, asset_tag, serial_number
     objects = CalibrationEventManager()
 
     class Meta:

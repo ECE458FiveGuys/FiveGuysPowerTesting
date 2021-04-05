@@ -92,7 +92,6 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
                                                   'input from the guided hardware wizard.')
         return attrs
 
-    # TODO: When model has approval_required=False, create approval_data with approved=True
     def create(self, validated_data):
         validated_data['date'] = validated_data['date'].astimezone()
         return super().create(validated_data)
