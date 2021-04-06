@@ -90,8 +90,6 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
             if calibration_mode in {'DEFAULT', 'LOAD_BANK', 'CUSTOM'}:
                 raise serializers.ValidationError('Model needs calibration mode of GUIDED_HARDWARE in order to have '
                                                   'input from the guided hardware wizard.')
+        if 'date' in attrs:
+            attrs['date'] = attrs['date'].astimezone()
         return attrs
-
-    def create(self, validated_data):
-        validated_data['date'] = validated_data['date'].astimezone()
-        return super().create(validated_data)
