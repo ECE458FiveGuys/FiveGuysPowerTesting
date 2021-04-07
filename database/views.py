@@ -136,9 +136,9 @@ class InstrumentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True).order_by('-date')
-        expression = F('latest_valid_calibration') + F('model__calibration_frequency')
+        expression = F('most_recent_calibration_date') + F('model__calibration_frequency')
         expiration = ExpressionWrapper(expression, output_field=DateField())
-        qs = super().get_queryset().annotate(latest_valid_calibration=Subquery(sq.values('date')[:1]))
+        qs = super().get_queryset().annotate(most_recent_calibration_date=Subquery(sq.values('date')[:1]))
         return qs.annotate(calibration_expiration_date=expiration)
 
     @action(['get'], detail=False)
