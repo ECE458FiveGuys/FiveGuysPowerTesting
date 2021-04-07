@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -11,7 +11,7 @@ from database.models.instrument_category import InstrumentCategory
 from database.models.model import Model
 from database.validators import validate_max_date
 from user_portal.models import User as User
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
 
 class InstrumentManager(models.Manager):
 
@@ -84,8 +84,28 @@ class InstrumentManager(models.Manager):
             return self.order_by().filter(pk__in=pks).values_list('asset_tag_number', flat=True)
 
     def calibratable_asset_tag_numbers(self):
-        return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number',
-                                                                                               flat=True)
+        return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
+
+    def possible_calibrators(self, model_categories):
+        """
+        Returns list of all instruments whose models contain model_categories
+        """
+        if model_categories is None:
+            return self.none()
+        return self.order_by('pk').filter(model__model_categories__in=model_categories).values_list('pk', flat=True)
+
+    def calibrators(self, instruments, target):
+        if instruments is None:
+            return self.none()
+        # for list of instrument pks, filter instrument queryset by that pk and then filter for those with valid calibrations
+        qs = self.order_by().filter(pk__in=instruments)
+
+
+        # for each instrument, do a BFS and make sure target not in the BFS
+        # if target is in BFS, remove instrument
+        for instrument in instruments:
+            pass
+        return
 
 
 class Instrument(models.Model):

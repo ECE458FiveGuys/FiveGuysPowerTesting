@@ -1,6 +1,6 @@
 import importlib
 
-from django.db.models import DateField, DateTimeField, ExpressionWrapper, F, Max
+from django.db.models import DateField, DateTimeField, ExpressionWrapper, F, Max, Subquery, OuterRef
 from rest_framework import viewsets
 from rest_framework.decorators import action, permission_classes
 from rest_framework.pagination import PageNumberPagination
@@ -135,10 +135,15 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return InstrumentSerializer
 
     def get_queryset(self):
+        # mrc = Case(When(calibration_history__approval_data__approved=True, then=Max('calibration_history__date', output_field=DateTimeField())),
+        #          default=None)
+        # filter(calibration_history__approval_data__approved=True)
+        sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True)
         mrc = Max('calibration_history__date', output_field=DateTimeField())
         cf = F('model__calibration_frequency')
         expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
-        qs = super().get_queryset().annotate(most_recent_calibration_date=mrc)
+        qs = super().get_queryset().annotate(valid_calibration_dates=Subquery(sq))
+        qs = qs.annotate(most_recent_calibration_date=mrc)
         return qs.annotate(calibration_expiration_date=expiration)
 
     @action(['get'], detail=False)
@@ -153,17 +158,22 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     @action(['get'], detail=False)
     def all(self, request, *args, **kwargs):
         serializer = self.get_serializer_class()
-        return Response(serializer(self.get_queryset(), many=True).data)
+        queryset = self.filter_queryset(self.get_queryset())
+        return Response(serializer(queryset, many=True).data)
 
     @action(['get'], detail=False)
     @permission_classes([IsAuthenticated])
     def asset_tag_numbers(self, request, *args, **kwargs):
-        pks = request.query_params.get('pks').split(",")
+        pks = request.query_params.get('pks').split(',')
         return Response(Instrument.objects.asset_tag_numbers(pks))
 
     @action(['get'], detail=True)
-    def calibrators(self, request, *args, **kwargs):
-        return Response("ENDPOINT COMING SOON")
+    def calibrators(self, request, pk=None, *args, **kwargs):
+        """
+        Given a model_category for instrument pk, return all possible calibrators for that instrument
+        """
+        instrument = Instrument.objects.get(pk=pk)
+        return Response(Instrument.objects.possible_calibrators(instrument.model.calibrator_categories.all()))
 
 
 class ApprovalDataViewSet(viewsets.ModelViewSet):

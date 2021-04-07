@@ -79,6 +79,7 @@ class InstrumentFilter(rf.FilterSet):
         """
         model = Instrument
         fields = [
+            'id',
             'model__' + ModelEnum.VENDOR.value,
             'model__' + ModelEnum.MODEL_NUMBER.value,
             'model__' + ModelEnum.DESCRIPTION.value,

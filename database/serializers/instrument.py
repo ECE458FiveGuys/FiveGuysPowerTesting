@@ -12,6 +12,7 @@ from database.serializers.model import ModelCategorySerializer
 
 class ModelForInstrumentSerializer(serializers.ModelSerializer):
     model_categories = ModelCategorySerializer(many=True, read_only=True)
+    calibrator_categories = ModelCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Model
@@ -50,12 +51,13 @@ class InstrumentCategorySerializer(serializers.ModelSerializer):
 class InstrumentRetrieveSerializer(serializers.ModelSerializer):
     calibration_expiration_date = serializers.DateTimeField(format="%Y-%m-%d")
     calibration_history = CalibrationRetrieveSerializer(many=True, read_only=True)
+    valid_calibration_dates = CalibrationRetrieveSerializer(many=True, read_only=True)
     model = ModelForInstrumentSerializer(many=False, read_only=True)
     instrument_categories = InstrumentCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Instrument
-        fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration_date']
+        fields = [e.value for e in InstrumentEnum] + ['calibration_history', 'calibration_expiration_date', 'valid_calibration_history']
 
 
 class InstrumentBulkImportSerializer(serializers.ModelSerializer):

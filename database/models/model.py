@@ -71,6 +71,9 @@ class ModelManager(models.Manager):
             vendor = ''
         return self.order_by().filter(vendor__contains=vendor).values_list('model_number', flat=True).distinct()
 
+    def calibrator_ids(self):
+        return
+
 
 class Model(models.Model):
     CALIBRATION_CHOICES = [
