@@ -135,15 +135,10 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         return InstrumentSerializer
 
     def get_queryset(self):
-        # mrc = Case(When(calibration_history__approval_data__approved=True, then=Max('calibration_history__date', output_field=DateTimeField())),
-        #          default=None)
-        # filter(calibration_history__approval_data__approved=True)
-        sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True)
-        mrc = Max('calibration_history__date', output_field=DateTimeField())
-        cf = F('model__calibration_frequency')
-        expiration = ExpressionWrapper(mrc + cf, output_field=DateField())
-        qs = super().get_queryset().annotate(valid_calibration_dates=Subquery(sq))
-        qs = qs.annotate(most_recent_calibration_date=mrc)
+        sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True).order_by('-date')
+        expression = F('latest_valid_calibration') + F('model__calibration_frequency')
+        expiration = ExpressionWrapper(expression, output_field=DateField())
+        qs = super().get_queryset().annotate(latest_valid_calibration=Subquery(sq.values('date')[:1]))
         return qs.annotate(calibration_expiration_date=expiration)
 
     @action(['get'], detail=False)
