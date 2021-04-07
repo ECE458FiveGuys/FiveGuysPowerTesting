@@ -12,6 +12,7 @@ from database.serializers.model import ModelCategorySerializer
 
 class ModelForInstrumentSerializer(serializers.ModelSerializer):
     model_categories = ModelCategorySerializer(many=True, read_only=True)
+    calibrator_categories = ModelCategorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Model
