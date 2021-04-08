@@ -4,7 +4,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import UniqueConstraint
+from django.db.models import DateField, ExpressionWrapper, F, OuterRef, Subquery, UniqueConstraint
 
 from database.constants import CALIBRATION_EVENT_TEMPLATE, COMMENT_LENGTH, INSTRUMENT_TEMPLATE, SERIAL_NUMBER_LENGTH
 from database.models.instrument_category import InstrumentCategory
@@ -86,26 +86,31 @@ class InstrumentManager(models.Manager):
     def calibratable_asset_tag_numbers(self):
         return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
 
-    def possible_calibrators(self, model_categories):
-        """
-        Returns list of all instruments whose models contain model_categories
-        """
-        if model_categories is None:
-            return self.none()
-        return self.order_by('pk').filter(model__model_categories__in=model_categories).values_list('pk', flat=True)
-
-    def calibrators(self, instruments, target):
-        if instruments is None:
-            return self.none()
-        # for list of instrument pks, filter instrument queryset by that pk and then filter for those with valid calibrations
-        qs = self.order_by().filter(pk__in=instruments)
-
+    def calibrators(self, instrument):
+        sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True)
+        expression = F('most_recent_calibration_date') + F('model__calibration_frequency')
+        expiration = ExpressionWrapper(expression, output_field=DateField())
+        qs = self.order_by('pk').exclude(pk=instrument.pk)
+        qs = qs.filter(model__model_categories__in=instrument.model.calibrator_categories.all())
+        qs = qs.annotate(most_recent_calibration_date=Subquery(sq.order_by('-date').values('date')[:1]))
+        qs = qs.annotate(calibration_expiration_date=expiration)
+        qs = qs.filter(calibration_expiration_date__gte=datetime.today().astimezone())
+        qs = qs.annotate(valid_calibration=Subquery(sq.order_by('-date').values('pk')[:1]))
 
         # for each instrument, do a BFS and make sure target not in the BFS
         # if target is in BFS, remove instrument
-        for instrument in instruments:
+        for instance in qs:
+            # go to most recent calibration
+            # look at instruments in calibrated_with field
+            # check if instrument in instruments
+            # if yes, remove instance from possible calibrators
+            # if no, recurse through instruments
+            print('------')
+            print(instance.pk)
+            instruments = CalibrationEvent.objects.filter(pk=instance.valid_calibration).values_list('calibrated_with')
+            print(instruments)
             pass
-        return
+        return qs.values_list('pk', flat=True)
 
 
 class Instrument(models.Model):

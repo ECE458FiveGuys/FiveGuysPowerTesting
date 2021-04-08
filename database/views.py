@@ -1,6 +1,6 @@
 import importlib
 
-from django.db.models import DateField, DateTimeField, ExpressionWrapper, F, Max, Subquery, OuterRef
+from django.db.models import DateField, ExpressionWrapper, F, OuterRef, Subquery
 from rest_framework import viewsets
 from rest_framework.decorators import action, permission_classes
 from rest_framework.pagination import PageNumberPagination
@@ -168,7 +168,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         Given a model_category for instrument pk, return all possible calibrators for that instrument
         """
         instrument = Instrument.objects.get(pk=pk)
-        return Response(Instrument.objects.possible_calibrators(instrument.model.calibrator_categories.all()))
+        return Response(Instrument.objects.calibrators(instrument))
 
 
 class ApprovalDataViewSet(viewsets.ModelViewSet):
