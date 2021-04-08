@@ -99,8 +99,11 @@ class InstrumentBaseSerializer(serializers.ModelSerializer):
                   InstrumentEnum.INSTRUMENT_CATEGORIES.value]
 
     def validate_asset_tag_number(self, value):
-        if self.instance.asset_tag_number is not None:
-            raise serializers.ValidationError("Value of asset tag number may not be modified")
+        try:
+            if self.instance.asset_tag_number is not None:
+                raise serializers.ValidationError("Value of asset tag number may not be modified")
+        except AttributeError:
+            pass
         return value
 
     def validate_serial_number(self, value):
