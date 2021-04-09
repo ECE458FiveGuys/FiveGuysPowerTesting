@@ -211,8 +211,8 @@ class CalibrationEventManager(models.Manager):
 
 
 def instrument_evidence_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/instrument_<pk>/<filename>
-    return 'instrument_{0}/{1}/{2}'.format(instance.instrument.pk, instance.date, filename)
+    """ Returns file upload path """
+    return f'instrument_{instance.instrument.pk}/{instance.date}/{filename}'
 
 
 class CalibrationEvent(models.Model):
