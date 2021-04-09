@@ -107,6 +107,11 @@ class InstrumentManager(models.Manager):
             pass
         return
 
+    def chain(self):
+
+        return chain
+
+
 
 class Instrument(models.Model):
     model = models.ForeignKey(Model, related_name='instruments', on_delete=models.PROTECT)
@@ -204,7 +209,7 @@ class CalibrationEvent(models.Model):
     """
     Upload a file: The user may attach a single file of type JPG, PNG, GIF, PDF, or XLSX. Files larger than 32 MB must
     be rejected. Allowed for all models.
-    """
+    """ 
     instrument = models.ForeignKey(Instrument, related_name='calibration_history', on_delete=models.CASCADE)
     date = models.DateTimeField(validators=[validate_max_date])
     user = models.ForeignKey(User, on_delete=models.PROTECT)
