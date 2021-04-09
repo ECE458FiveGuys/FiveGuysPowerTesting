@@ -1,6 +1,7 @@
 import random
 from datetime import datetime
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
@@ -86,31 +87,34 @@ class InstrumentManager(models.Manager):
     def calibratable_asset_tag_numbers(self):
         return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
 
+    def can_calibrate(self, instrument, calibrator):
+        """ Returns False if calibrating instrument with calibrator would result in a cycle. """
+        queue = [(calibrator, datetime.today().astimezone())]  # initial queue
+
+        while queue:
+            n, date = queue.pop(0)
+            calibration_event = CalibrationEvent.objects.find_calibration_event(n.pk, date)
+            if instrument in calibration_event.calibrated_with.all():
+                return False
+            queue.extend([(i, calibration_event.date) for i in calibration_event.calibrated_with.all()])
+
+        return True
+
     def calibrators(self, instrument):
         sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True)
         expression = F('most_recent_calibration_date') + F('model__calibration_frequency')
         expiration = ExpressionWrapper(expression, output_field=DateField())
-        qs = self.order_by('pk').exclude(pk=instrument.pk)
-        qs = qs.filter(model__model_categories__in=instrument.model.calibrator_categories.all())
-        qs = qs.annotate(most_recent_calibration_date=Subquery(sq.order_by('-date').values('date')[:1]))
-        qs = qs.annotate(calibration_expiration_date=expiration)
-        qs = qs.filter(calibration_expiration_date__gte=datetime.today().astimezone())
-        qs = qs.annotate(valid_calibration=Subquery(sq.order_by('-date').values('pk')[:1]))
+        qs = self.order_by('pk').exclude(pk=instrument.pk)\
+            .filter(model__model_categories__in=instrument.model.calibrator_categories.all())\
+            .annotate(most_recent_calibration_date=Subquery(sq.order_by('-date').values('date')[:1]))\
+            .annotate(calibration_expiration_date=expiration)\
+            .filter(calibration_expiration_date__gte=datetime.today().astimezone())
+        calibrators = []
+        for calibrator in qs:
+            if self.can_calibrate(instrument, calibrator):
+                calibrators.append(calibrator.pk)
 
-        # for each instrument, do a BFS and make sure target not in the BFS
-        # if target is in BFS, remove instrument
-        for instance in qs:
-            # go to most recent calibration
-            # look at instruments in calibrated_with field
-            # check if instrument in instruments
-            # if yes, remove instance from possible calibrators
-            # if no, recurse through instruments
-            print('------')
-            print(instance.pk)
-            instruments = CalibrationEvent.objects.filter(pk=instance.valid_calibration).values_list('calibrated_with')
-            print(instruments)
-            pass
-        return qs.values_list('pk', flat=True)
+        return qs.filter(pk__in=calibrators).values_list('pk', flat=True)
 
 
 class Instrument(models.Model):
@@ -198,6 +202,13 @@ class CalibrationEventManager(models.Manager):
 
     def pending_approval(self):
         return self.filter(approval_data=None)
+
+    def find_calibration_event(self, pk, date):
+        """ Given an instrument pk and a date, return most recent calibration event valid at that date """
+        expression = ExpressionWrapper(F('date') + F('instrument__model__calibration_frequency'),
+                                       output_field=DateField())
+        return self.filter(instrument__pk=pk).filter(approval_data__approved=True).filter(date__lte=date)\
+                   .annotate(expiration=expression).filter(expiration__gte=date).order_by('-date').first()
 
 
 def instrument_evidence_directory_path(instance, filename):
