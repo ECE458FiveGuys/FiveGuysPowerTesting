@@ -1,10 +1,11 @@
 import random
 from datetime import datetime
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import UniqueConstraint
+from django.db.models import DateField, ExpressionWrapper, F, OuterRef, Subquery, UniqueConstraint
 
 from database.constants import CALIBRATION_EVENT_TEMPLATE, COMMENT_LENGTH, INSTRUMENT_TEMPLATE, SERIAL_NUMBER_LENGTH
 from database.models.instrument_category import InstrumentCategory
@@ -86,26 +87,34 @@ class InstrumentManager(models.Manager):
     def calibratable_asset_tag_numbers(self):
         return self.order_by().exclude(model__calibration_mode='NOT_CALIBRATABLE').values_list('asset_tag_number', flat=True)
 
-    def possible_calibrators(self, model_categories):
-        """
-        Returns list of all instruments whose models contain model_categories
-        """
-        if model_categories is None:
-            return self.none()
-        return self.order_by('pk').filter(model__model_categories__in=model_categories).values_list('pk', flat=True)
+    def can_calibrate(self, instrument, calibrator):
+        """ Returns False if calibrating instrument with calibrator would result in a cycle. """
+        queue = [(calibrator, datetime.today().astimezone())]  # initial queue
 
-    def calibrators(self, instruments, target):
-        if instruments is None:
-            return self.none()
-        # for list of instrument pks, filter instrument queryset by that pk and then filter for those with valid calibrations
-        qs = self.order_by().filter(pk__in=instruments)
+        while queue:
+            n, date = queue.pop(0)
+            calibration_event = CalibrationEvent.objects.find_calibration_event(n.pk, date)
+            if instrument in calibration_event.calibrated_with.all():
+                return False
+            queue.extend([(i, calibration_event.date) for i in calibration_event.calibrated_with.all()])
 
+        return True
 
-        # for each instrument, do a BFS and make sure target not in the BFS
-        # if target is in BFS, remove instrument
-        for instrument in instruments:
-            pass
-        return
+    def calibrators(self, instrument):
+        sq = CalibrationEvent.objects.filter(instrument=OuterRef('pk')).filter(approval_data__approved=True)
+        expression = F('most_recent_calibration_date') + F('model__calibration_frequency')
+        expiration = ExpressionWrapper(expression, output_field=DateField())
+        qs = self.order_by('pk').exclude(pk=instrument.pk)\
+            .filter(model__model_categories__in=instrument.model.calibrator_categories.all())\
+            .annotate(most_recent_calibration_date=Subquery(sq.order_by('-date').values('date')[:1]))\
+            .annotate(calibration_expiration_date=expiration)\
+            .filter(calibration_expiration_date__gte=datetime.today().astimezone())
+        calibrators = []
+        for calibrator in qs:
+            if self.can_calibrate(instrument, calibrator):
+                calibrators.append(calibrator.pk)
+
+        return qs.filter(pk__in=calibrators).values_list('pk', flat=True)
 
     def chain(self):
 
@@ -198,6 +207,13 @@ class CalibrationEventManager(models.Manager):
 
     def pending_approval(self):
         return self.filter(approval_data=None)
+
+    def find_calibration_event(self, pk, date):
+        """ Given an instrument pk and a date, return most recent calibration event valid at that date """
+        expression = ExpressionWrapper(F('date') + F('instrument__model__calibration_frequency'),
+                                       output_field=DateField())
+        return self.filter(instrument__pk=pk).filter(approval_data__approved=True).filter(date__lte=date)\
+                   .annotate(expiration=expression).filter(expiration__gte=date).order_by('-date').first()
 
 
 def instrument_evidence_directory_path(instance, filename):
