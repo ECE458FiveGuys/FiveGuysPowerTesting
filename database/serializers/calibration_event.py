@@ -71,7 +71,7 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 class CalibrationEventSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(format="%Y-%m-%d", input_formats=["%Y-%m-%d"])
     approval_data = ApprovalDataSerializer(many=False, read_only=True)
-    calibrated_with = serializers.PrimaryKeyRelatedField(queryset=Instrument.objects.all(), many=True)
+    calibrated_with = serializers.SlugRelatedField(queryset=Instrument.objects.all(), many=True, slug_field='asset_tag_number', required=False)
 
     class Meta:
         model = CalibrationEvent
