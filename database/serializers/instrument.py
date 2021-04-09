@@ -10,6 +10,15 @@ from database.serializers.calibration_event import CalibrationRetrieveSerializer
 from database.serializers.model import ModelCategorySerializer
 
 
+class InstrumentCalibratorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Instrument
+        fields = [
+            InstrumentEnum.PK,
+            InstrumentEnum.ASSET_TAG_NUMBER,
+        ]
+
+
 class ModelForInstrumentSerializer(serializers.ModelSerializer):
     model_categories = ModelCategorySerializer(many=True, read_only=True)
     calibrator_categories = ModelCategorySerializer(many=True, read_only=True)

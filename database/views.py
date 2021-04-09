@@ -15,7 +15,7 @@ from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
     CalibrationRetrieveSerializer, InstrumentsPendingApprovalSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
-    InstrumentSerializer
+    InstrumentSerializer, InstrumentCalibratorSerializer
 from database.serializers.model import *
 from database.services.export_services.export_instruments import ExportInstrumentsService
 from database.services.export_services.export_models import ExportModelsService
@@ -132,6 +132,8 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return InstrumentRetrieveSerializer
+        elif self.action == 'calibrators':
+            return InstrumentCalibratorSerializer
         return InstrumentSerializer
 
     def get_queryset(self):
@@ -164,11 +166,9 @@ class InstrumentViewSet(viewsets.ModelViewSet):
 
     @action(['get'], detail=True)
     def calibrators(self, request, pk=None, *args, **kwargs):
-        """
-        Given a model_category for instrument pk, return all possible calibrators for that instrument
-        """
-        instrument = Instrument.objects.get(pk=pk)
-        return Response(Instrument.objects.calibrators(instrument))
+        """ Return all possible calibrators for given instrument """
+        serializer = self.get_serializer_class()
+        return Response(serializer(Instrument.objects.calibrators(Instrument.objects.get(pk=pk)), many=True).data)
 
 
 class ApprovalDataViewSet(viewsets.ModelViewSet):

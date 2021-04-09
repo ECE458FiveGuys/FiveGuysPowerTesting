@@ -1,7 +1,6 @@
 import random
 from datetime import datetime
 
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.db import models
@@ -114,7 +113,7 @@ class InstrumentManager(models.Manager):
             if self.can_calibrate(instrument, calibrator):
                 calibrators.append(calibrator.pk)
 
-        return qs.filter(pk__in=calibrators).values_list('pk', flat=True)
+        return qs.filter(pk__in=calibrators)
 
 
 class Instrument(models.Model):
