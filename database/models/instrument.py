@@ -93,9 +93,11 @@ class InstrumentManager(models.Manager):
         while queue:
             n, date = queue.pop(0)
             calibration_event = CalibrationEvent.objects.find_calibration_event(n.pk, date)
-            if instrument in calibration_event.calibrated_with.all():
-                return False
-            queue.extend([(i, calibration_event.date) for i in calibration_event.calibrated_with.all()])
+            if calibration_event is not None:
+                if instrument in calibration_event.calibrated_with.all():
+                    return False
+
+                queue.extend([(i, calibration_event.date) for i in calibration_event.calibrated_with.all()])
 
         return True
 
