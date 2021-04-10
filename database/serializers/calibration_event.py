@@ -71,7 +71,8 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 class CalibrationEventSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(format="%Y-%m-%d", input_formats=["%Y-%m-%d"])
     approval_data = ApprovalDataSerializer(many=False, read_only=True)
-    calibrated_with = serializers.SlugRelatedField(queryset=Instrument.objects.all(), many=True, slug_field='asset_tag_number', required=False)
+    calibrated_with = serializers.SlugRelatedField(queryset=Instrument.objects.all(), many=True,
+                                                   slug_field='asset_tag_number', required=False)
 
     class Meta:
         model = CalibrationEvent
@@ -81,16 +82,18 @@ class CalibrationEventSerializer(serializers.ModelSerializer):
         if 'instrument' in attrs:
             calibration_mode = attrs['instrument'].model.calibration_mode
             if calibration_mode == 'NOT_CALIBRATABLE':
-                raise serializers.ValidationError('Instrument whose model is not calibratable may not have a calibration'
-                                                  ' event associated with it.')
+                raise serializers.ValidationError(
+                    'Instrument whose model is not calibratable may not have a calibration'
+                    ' event associated with it.')
             if CalibrationEventEnum.LOAD_BANK_DATA.value in attrs:
                 if calibration_mode in {'DEFAULT', 'GUIDED_HARDWARE', 'CUSTOM'}:
                     raise serializers.ValidationError('Model needs calibration mode of LOAD_BANK in order to have input'
                                                       ' from the load calibration wizard.')
             if CalibrationEventEnum.GUIDED_HARDWARE_DATA.value in attrs:
                 if calibration_mode in {'DEFAULT', 'LOAD_BANK', 'CUSTOM'}:
-                    raise serializers.ValidationError('Model needs calibration mode of GUIDED_HARDWARE in order to have '
-                                                      'input from the guided hardware wizard.')
+                    raise serializers.ValidationError(
+                        'Model needs calibration mode of GUIDED_HARDWARE in order to have '
+                        'input from the guided hardware wizard.')
             if 'date' in attrs:
                 attrs['date'] = attrs['date'].astimezone()
         return attrs
