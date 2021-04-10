@@ -39,6 +39,7 @@ class ModelEnum(AutoName):
     CALIBRATION_MODE = auto()
     APPROVAL_REQUIRED = auto()
     CALIBRATOR_CATEGORIES = auto()
+    CUSTOM_FORM = auto()
 
 
 class InstrumentEnum(AutoName):

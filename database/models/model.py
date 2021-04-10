@@ -96,6 +96,7 @@ class Model(models.Model):
     calibration_mode = models.CharField(blank=True, max_length=16, choices=CALIBRATION_CHOICES, default='DEFAULT')
     approval_required = models.BooleanField(blank=True, default=False)
     calibrator_categories = models.ManyToManyField(ModelCategory, related_name='calibrator_list', blank=True)
+    custom_form = models.TextField(blank=True, default='')
 
     objects = ModelManager()
 
