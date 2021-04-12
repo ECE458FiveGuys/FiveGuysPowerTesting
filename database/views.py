@@ -10,10 +10,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from database.filters import InstrumentFilter, ModelFilter
-from database.models.instrument import CalibrationEvent
+from database.models.instrument import CalibrationEvent, CalibrationEventManager
 from database.models.instrument_category import InstrumentCategory
 from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
-    CalibrationRetrieveSerializer, InstrumentsPendingApprovalSerializer
+    CalibrationRetrieveSerializer, InstrumentsPendingApprovalSerializer, InstrumentForCalibrationEventSerializer
 from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
     InstrumentSerializer
 from database.serializers.model import *
@@ -169,6 +169,39 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         """
         instrument = Instrument.objects.get(pk=pk)
         return Response(Instrument.objects.calibrators(instrument))
+
+    # TODO
+    @action(['get'], detail=True)
+    def calibration_certificate(self, request, pk=None, date=None, *args, **kwargs):
+        # initial_calibration = CalibrationEventManager.find_calibration_event(pk, date)
+        # instruments = initial_calibration.calibrated_with
+        # date = initial_calibration.date
+        if pk is not None:
+            self.recursive_Calibration_Mod(self, pk, date)
+
+        return CalibrationEventManager.find_calibration_event(pk, date)
+
+    def recursive_instrument_modifier(self, instrument, calibration):
+        # TODO code to implement Serializer Changes
+        instrument = InstrumentForCalibrationEventSerializer(instrument).data
+        instrument.update({"calibration_event": calibration})
+
+        return instrument
+
+    def recursive_calibration_modifier(self, pk, date):
+        initial_calibration = CalibrationEventManager.find_calibration_event(pk, date)
+        instruments = CalibrationRetrieveSerializer(initial_calibration).data['calibrated_with']
+        modified_instrs = []
+        for instrument in instruments:
+            next_calibration = CalibrationEventManager.find_calibration_event(instrument.get(pk), date)
+            # TODO code to implement serializer changes
+            next_instruments = CalibrationRetrieveSerializer(next_calibration).data['calibrated_with']
+            modified_instrs.append(self.recursive_instrument_modifier(self, instrument, next_calibration))
+            for next_instrument in next_instruments:
+                if next_instrument is not None:
+                    self.recursive_calibration_modifier(self, next_instrument.pk, next_calibration.date)
+        CalibrationRetrieveSerializer(initial_calibration).data['calibrated_with'] = modified_instrs
+        return None
 
 
 class ApprovalDataViewSet(viewsets.ModelViewSet):

@@ -116,7 +116,38 @@ class InstrumentManager(models.Manager):
 
         return qs.filter(pk__in=calibrators).values_list('pk', flat=True)
 
-    def chain(self):
+    def find_next_links(self, instrument, calibrationList, chain, date):
+
+        links = calibrationList.filter(instrument=instrument)
+
+        # isolate most recent link with valid date
+        links.order_by('date')
+
+
+
+        # get instrument from calibration
+
+        instr = []
+        chain.append(links)
+        return chain, instr
+
+    def chain(self, instrument):
+
+        valid_calibrations = CalibrationEvent.objects.filter(instrument__pk=instrument.pk).filter(approval_data__approved=True)
+
+        #isolate most recent calibration
+        target_calibrations.order_by('-date')
+        calib = target_calibrations
+
+        # get Instrument and calibration date from calibration
+
+        instr = None
+        ground = None
+
+        # Iterate until current instrument is ground truth
+
+        while instr != ground:
+            chain, instr = self.find_next_links(self, instr, valid_calibrations, chain)
 
         return chain
 
