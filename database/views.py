@@ -12,10 +12,11 @@ from rest_framework.views import APIView
 from database.filters import InstrumentFilter, ModelFilter
 from database.models.instrument import CalibrationEvent
 from database.models.instrument_category import InstrumentCategory
-from database.serializers.calibration_event import ApprovalDataSerializer, CalibrationEventSerializer, \
-    CalibrationRetrieveSerializer, InstrumentsPendingApprovalSerializer
-from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentRetrieveSerializer, \
-    InstrumentSerializer, InstrumentCalibratorSerializer
+from database.serializers.calibration_event import ApprovalDataSerializer, \
+    CalibrationEventSerializer, \
+    CalibrationRetrieveSerializer, InstrumentForCalibrationEventSerializer, InstrumentsPendingApprovalSerializer
+from database.serializers.instrument import InstrumentBulkImportSerializer, InstrumentCalibratorSerializer, \
+    InstrumentRetrieveSerializer, InstrumentSerializer
 from database.serializers.model import *
 from database.services.export_services.export_instruments import ExportInstrumentsService
 from database.services.export_services.export_models import ExportModelsService
@@ -134,6 +135,8 @@ class InstrumentViewSet(viewsets.ModelViewSet):
             return InstrumentRetrieveSerializer
         elif self.action == 'calibrators':
             return InstrumentCalibratorSerializer
+        elif self.action == 'calibration_certificate':
+            return CalibrationRetrieveSerializer, InstrumentForCalibrationEventSerializer
         return InstrumentSerializer
 
     def get_queryset(self):
@@ -142,6 +145,36 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         expiration = ExpressionWrapper(expression, output_field=DateField())
         qs = super().get_queryset().annotate(most_recent_calibration_date=Subquery(sq.values('date')[:1]))
         return qs.annotate(calibration_expiration_date=expiration)
+
+    def recurse_calibration_event(self, calibration_event, calibration_serializer, instrument_serializer):
+        if not calibration_event:
+            return
+
+        calibration_event_dict = calibration_serializer(calibration_event).data
+
+        index = 0
+        for instrument in calibration_event.calibrated_with.all():
+            calibration_event_dict['calibrated_with'][index] = \
+                self.recurse_instrument(
+                    instrument,
+                    calibration_event.date,
+                    calibration_serializer,
+                    instrument_serializer
+                )
+            index += 1
+
+        return calibration_event_dict
+
+    def recurse_instrument(self, instrument, date, calibration_serializer, instrument_serializer):
+        if not instrument:
+            return
+
+        instrument_dict = instrument_serializer(instrument).data
+        calibration_event = CalibrationEvent.objects.find_calibration_event(instrument.pk, date)
+        instrument_dict['calibration_event'] = \
+            self.recurse_calibration_event(calibration_event, calibration_serializer, instrument_serializer)
+
+        return instrument_dict
 
     @action(['get'], detail=False)
     def calibratable_asset_tag_numbers(self, request, *args, **kwargs):
@@ -169,6 +202,13 @@ class InstrumentViewSet(viewsets.ModelViewSet):
         """ Return all possible calibrators for given instrument """
         serializer = self.get_serializer_class()
         return Response(serializer(Instrument.objects.calibrators(Instrument.objects.get(pk=pk)), many=True).data)
+
+    @action(['get'], detail=True)
+    def calibration_certificate(self, request, pk=None, *args, **kwargs):
+        """ Return calibration certificate for given instrument """
+        c_e_s, i_s = self.get_serializer_class()
+        calibration_event = CalibrationEvent.objects.find_calibration_event(pk, datetime.today().astimezone())
+        return Response(self.recurse_calibration_event(calibration_event, c_e_s, i_s))
 
 
 class ApprovalDataViewSet(viewsets.ModelViewSet):
