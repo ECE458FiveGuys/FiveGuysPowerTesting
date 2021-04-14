@@ -161,6 +161,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
                     calibration_serializer,
                     instrument_serializer
                 )
+
             index += 1
 
         return calibration_event_dict

@@ -20,6 +20,17 @@ class UserFieldsForCalibrationEventSerializer(serializers.ModelSerializer):
         ]
 
 
+class UserForApprovalDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            UserEnum.PK.value,
+            UserEnum.NAME.value,
+            UserEnum.USERNAME.value,
+            UserEnum.EMAIL.value,
+        ]
+
+
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group

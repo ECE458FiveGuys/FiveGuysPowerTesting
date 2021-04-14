@@ -3,7 +3,7 @@ from datetime import datetime
 
 from database.enums import ApprovalDataEnum, CalibrationEventEnum, InstrumentEnum
 from database.models.instrument import ApprovalData, CalibrationEvent, Instrument
-from user_portal.serializers import UserFieldsForCalibrationEventSerializer
+from user_portal.serializers import UserFieldsForCalibrationEventSerializer, UserForApprovalDataSerializer
 
 
 class InstrumentForCalibrationEventSerializer(serializers.ModelSerializer):
@@ -46,10 +46,19 @@ class ApprovalDataSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
+class ApprovalDataRetrieveSerializer(serializers.ModelSerializer):
+    date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+    approver = UserForApprovalDataSerializer()
+
+    class Meta:
+        model = ApprovalData
+        fields = [e.value for e in ApprovalDataEnum]
+
+
 class CalibrationRetrieveSerializer(serializers.ModelSerializer):
     user = UserFieldsForCalibrationEventSerializer(many=False, read_only=True)
     date = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
-    approval_data = ApprovalDataSerializer(many=False, read_only=True)
+    approval_data = ApprovalDataRetrieveSerializer(many=False, read_only=True)
     calibrated_with = InstrumentForCalibrationEventSerializer(many=True, read_only=True)
 
     class Meta:
@@ -70,7 +79,7 @@ class CalibrationHistorySerializer(serializers.ModelSerializer):
 
 class CalibrationEventSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(format="%Y-%m-%d", input_formats=["%Y-%m-%d"])
-    approval_data = ApprovalDataSerializer(many=False, read_only=True)
+    approval_data = ApprovalDataRetrieveSerializer(many=False, read_only=True)
     calibrated_with = serializers.SlugRelatedField(queryset=Instrument.objects.all(), many=True,
                                                    slug_field='asset_tag_number', required=False)
 
