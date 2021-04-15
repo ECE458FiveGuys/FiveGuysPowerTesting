@@ -151,6 +151,8 @@ class InstrumentViewSet(viewsets.ModelViewSet):
             return
 
         calibration_event_dict = calibration_serializer(calibration_event).data
+        calibration_event_dict['calibration_expiration_date'] = \
+            (calibration_event.date + calibration_event.instrument.model.calibration_frequency).date()
 
         index = 0
         for instrument in calibration_event.calibrated_with.all():
