@@ -34,6 +34,7 @@ class ModelForInstrumentSerializer(serializers.ModelSerializer):
             ModelEnum.CALIBRATION_MODE.value,
             ModelEnum.CALIBRATOR_CATEGORIES.value,
             ModelEnum.APPROVAL_REQUIRED.value,
+            ModelEnum.CUSTOM_FORM.value,
         ]
 
 
