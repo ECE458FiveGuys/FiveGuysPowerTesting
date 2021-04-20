@@ -69,10 +69,12 @@ class InstrumentManager(models.Manager):
             instrument.instrument_categories.add(ic)
         instrument.save()
         if calibration_date is not None:
-            ce = CalibrationEvent.objects.create(user=user,
-                                                 instrument=instrument,
-                                                 date=calibration_date,
-                                                 comment=calibration_comment)
+            ce = CalibrationEvent.objects.create_for_import(
+                user=user,
+                instrument=instrument,
+                date=calibration_date,
+                comment=calibration_comment
+            )
             ce.full_clean()
             ce.save()
         return instrument
@@ -198,6 +200,42 @@ class CalibrationEventManager(models.Manager):
             except ObjectDoesNotExist:
                 raise ValidationError("Could not have calibrated using this instrument. Instrument does not exist.")
 
+        calibration_event.save(using=self.db)
+        return calibration_event
+
+    def create_for_import(
+            self,
+            user=None,
+            instrument=None,
+            date=None,
+            comment=None,
+    ):
+        if comment is None:
+            comment = ''
+
+        calibration_event = CalibrationEvent(
+            instrument=instrument,
+            user=user,
+            date=date,
+            comment=comment,
+            additional_evidence=None,
+            load_bank_data='',
+            guided_hardware_data='',
+            custom_data='',
+        )
+        calibration_event.full_clean()
+        calibration_event.save(using=self.db)
+
+        approval_data = ApprovalData(
+            calibration_event=calibration_event,
+            approved=True,
+            approver=user,
+            date=datetime.utcnow().astimezone(),
+            comment='',
+        )
+
+        approval_data.save(using=self.db)
+        calibration_event.approval_data = approval_data
         calibration_event.save(using=self.db)
         return calibration_event
 
