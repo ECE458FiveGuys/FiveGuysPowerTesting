@@ -33,6 +33,11 @@ class ImportTestCase(TestCase):
         response = self.import_helper('model-pre.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.status_code, 200)
 
+    def test_duplicate_model_upload(self):
+        _ = self.import_helper('model-pre.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
+        response = self.import_helper('model-duplicate.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
+        self.assertEqual(response.status_code, 400)
+
     def test_incorrect_headers(self):
         response = self.import_helper('model-incorrect-headers.csv', self.Endpoints.IMPORT_MODEL.value, ModelUploadView)
         self.assertEqual(response.data, ['Illegal column headers. Column headers are unique and should be Vendor, '

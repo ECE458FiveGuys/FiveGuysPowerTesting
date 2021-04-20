@@ -47,10 +47,13 @@ class ImportService(ABC):
         except ValidationError as v:
             try:
                 key = list(v.message_dict.keys())[0]
+                if key == '__all__':
+                    raise v
                 value = v.message_dict[key][0]
                 if key in [e.value.lower().replace('-', '_') for e in self.min_column_enum]:
                     raise SpecificValidationError(self.reader.line_num, key.title().replace('_', '-'), value)
             except AttributeError:
+                print(v.messages)
                 raise v
 
     @abstractmethod
