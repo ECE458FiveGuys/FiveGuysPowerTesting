@@ -16,7 +16,7 @@ import logging
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 
-from database.models.instrument import CalibrationEvent, Instrument, InstrumentCategory
+from database.models.instrument import CalibrationEvent, Instrument, InstrumentCategory, ApprovalData
 from database.models.model import Model, ModelCategory
 from user_portal.models import User
 from user_portal.enums import PermissionGroupEnum
@@ -28,6 +28,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['view'],
+        ApprovalData: ['view'],
         User: ['view'],
     },
     PermissionGroupEnum.INSTRUMENT_MANAGEMENT.value: {
@@ -36,6 +37,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
+        ApprovalData: ['view'],
         User: ['view'],
     },
     PermissionGroupEnum.MODEL_MANAGEMENT.value: {
@@ -44,6 +46,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['add', 'change', 'delete', 'view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['view'],
+    ApprovalData: ['view'],
         User: ['view'],
     },
     PermissionGroupEnum.CALIBRATION.value: {
@@ -52,6 +55,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        ApprovalData: ['view'],
         User: ['view'],
     },
     PermissionGroupEnum.CALIBRATION_APPROVER.value: {
@@ -60,6 +64,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['view'],
         InstrumentCategory: ['view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        ApprovalData:  ['add', 'change', 'delete', 'view'],
         User: ['view'],
     },
     PermissionGroupEnum.ADMINISTRATOR.value: {
@@ -68,6 +73,7 @@ GROUP_PERMISSIONS = {
         ModelCategory: ['add', 'change', 'delete', 'view'],
         InstrumentCategory: ['add', 'change', 'delete', 'view'],
         CalibrationEvent: ['add', 'change', 'delete', 'view'],
+        ApprovalData:  ['add', 'change', 'delete', 'view'],
         User: ['add', 'change', 'delete', 'view'],
     },
 }
