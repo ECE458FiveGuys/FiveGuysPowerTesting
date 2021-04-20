@@ -7,8 +7,8 @@ from database.services.import_service import ImportService
 
 class ImportModels(ImportService):
 
-    def __init__(self, file, min_column_enum, serializer):
-        super(ImportModels, self).__init__(file, min_column_enum, serializer)
+    def __init__(self, file, serializer, min_column_enum, max_column_enum):
+        super(ImportModels, self).__init__(file, serializer, min_column_enum, max_column_enum)
 
     def create_object(self, row):
         return Model.objects.create(

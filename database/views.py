@@ -22,7 +22,8 @@ from database.services.export_services.export_instruments import ExportInstrumen
 from database.services.export_services.export_models import ExportModelsService
 from database.services.import_instruments import ImportInstruments
 from database.services.import_models import ImportModels
-from database.services.table_enums import MaxInstrumentTableColumnNames, MinInstrumentTableColumnNames, \
+from database.services.table_enums import MaxInstrumentTableColumnNames, MaxModelTableColumnNames, \
+    MinInstrumentTableColumnNames, \
     ModelTableColumnNames
 
 
@@ -249,7 +250,7 @@ class ModelUploadView(APIView):
 
     def post(self, request):
         file = request.data['file']
-        return ImportModels(file, ModelListSerializer, ModelTableColumnNames).bulk_import()
+        return ImportModels(file, ModelListSerializer, ModelTableColumnNames, MaxModelTableColumnNames).bulk_import()
 
 
 class InstrumentUploadView(APIView):
