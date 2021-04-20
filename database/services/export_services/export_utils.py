@@ -11,6 +11,8 @@ def special_file(calibration_mode, calibration_event):
         return 'Load Bank Calibration'
     elif calibration_mode == 'GUIDED_HARDWARE':
         return 'Guided Hardware Calibration'
+    elif calibration_mode == 'CUSTOM':
+        return 'Custom Form Calibration'
     return None
 
 
@@ -18,7 +20,7 @@ def write_instrument_file(writer, queryset):
     instruments = queryset
     writer.writerow([e.value for e in MaxInstrumentTableColumnNames])
     for instrument in instruments:
-        latest_calibration_event = CalibrationEvent.objects.filter(instrument=instrument).order_by("-date").first()
+        latest_calibration_event = CalibrationEvent.objects.find_valid_calibration_event(instrument.pk)
         writer.writerow([instrument.model.vendor,
                          instrument.model.model_number,
                          instrument.serial_number,
@@ -37,11 +39,16 @@ def write_model_file(writer, queryset):
     models = queryset
     writer.writerow([e.value for e in ModelTableColumnNames])
     for model in models:
-        writer.writerow([model.vendor,
-                         model.model_number,
-                         model.description,
-                         model.comment,
-                         ' '.join([mc.__str__() for mc in model.model_categories.all()]),
-                         "Y" if model.calibration_mode == "LOAD_BANK" else "",
-                         "N/A" if model.calibration_frequency == timedelta(
-                             days=0) else model.calibration_frequency.days])
+        writer.writerow(
+            [
+                model.vendor,
+                model.model_number,
+                model.description,
+                model.comment,
+                ' '.join([mc.__str__() for mc in model.model_categories.all()]),
+                "Y" if model.calibration_mode == "LOAD_BANK" else "Klufe" if model.calibration_mode == 'GUIDED_HARDWARE' else "",
+                "N/A" if model.calibration_frequency == timedelta(days=0) else model.calibration_frequency.days,
+                ' '.join([mc.__str__() for mc in model.calibrator_categories.all()]),
+                "Y" if model.custom_form != "" else ""
+            ]
+        )

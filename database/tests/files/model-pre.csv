@@ -1,31 +1,31 @@
 ﻿Vendor,Model-Number,Short-Description,Comment,Model-Categories,Special-Calibration-Support,Calibration-Frequency,Calibration-Requires-Approval,Calibrator-Categories
-Fluke,1KA,current shunt meter,1K,,,60,Y,
+Fluke,1KA,current shunt meter,1K,,,60,,
 Fluke,99V,voltmeter,voltmeter,voltmeter,,60,,
 HPT,LBC21,load bank,calibrator,,Load-Bank,10,,
 Fluke,5080A,High Compliance Multi-Product Calibrator,calibrates your analog and digital workload accurately and economically,Multi-Product Calibrator,,41,,
 Fluke,52120A,Transconductance Amplifier,"supplies dc current up to 100 amps and ac current up to 120 amps, at accuracies to 140 ppm.",Transconductance Amplifier,,5,,
 Fluke,7526A,Precision Process Calibrator,"Easily calibrate RTD and thermocouple readouts, pressure gauges, temperature transmitters, digital process simulators, data loggers, multimeters",Precision Process Calibrator,,58,,
 Fluke,6003A,Three Phase Electrical Power Calibrator,superior accuracy and performance of three independent phases in one instrument,Power Calibrator,,23,,
-Fluke,8558A,Digit Multimeter,5 mega-samples-per-second high resolution digitizing,Digit Multimeter,,100,,
+Fluke,8558A,Digit Multimeter,5 mega-samples-per-second high resolution digitizing,Digit Multimeter,,100,Y,
 Fluke,742A,Resistance Standards,742A-10k 10 kΩ units are ideally suited for Artifact Calibration,Resistance Standards,,N/A,,
 Fluke,1586A,Super-DAQ Precision Temperature Scanner,"Scans and records temperature, dc voltage, dc current, and resistance for up to 40 input channels and scan speeds as fast as 10 channels per second.",Super-DAQ Precision Temperature Scanner,,27,,
-Fluke,1620A,Digital Thermometer-Hygrometer,"Measures temperature to ± 0.125 °C and humidity to ± 1.5 % on two channels, displays it on a big, clear screen. Ethernet, or RS-232 will allow you to network as many Fluke 1620s (DewKs) as desired",Digital Thermometer-Hygrometer,,36,,
-Fluke,9600FLT,1 GHz Wide Offset Phase Noise Filter,filter connects easily to 96xx Reference Source models in bench top or rack-mounted installations,1-GHz Noise Filter,,47,,
-Keysight Technologies,B2981A,Femto / Picoammeter,0.01 fA pico current resolution,Femto Picoammeter,,3,,
-Keysight Technologies,PA2203A,IntegraVision Power Analyzer,3-Phase AC,IntegraVision Power Analyzer,,28,,
-Keysight Technologies,N6731B,DC Power Analyzer,DC power,DC Power Analyzer,,61,,
-Keysight Technologies,N4960A,Serial BERT 32,Bit error rate tester,Serial BERT 32,Klufe,47,,
-Keysight Technologies,N8976B,Noise Figure Analyzer,high performance noise figure analyzer,Noise Figure Analyzer,Klufe,24,,
-AMETEK,BURST NX8,ELECTRICAL FAST TRANSIENT GENERATOR,EFT/Burst tester with a built-in coupling/decoupling network for single phase or three-phase mains supply lines and a HV terminal to connect a capacitive coupling clamp,ELECTRICAL FAST TRANSIENT GENERATOR,Klufe,79,Y,
-AMETEK,DITO,ESD Simulator,simulates electrostatic discharges,ESD Simulator,Klufe,49,Y,
-AMETEK,IMN2,Impedance Matching Network,Impedance Matching Network for Surge impulse Generators,Impedance Matching Network,Klufe,77,Y,
-AMETEK,VCS 500N10,Combination Wave Simulator,surge voltages up to 10kV and surge currents up to 5kVA,Combination Wave Simulator,Klufe,79,Y,
+Fluke,1620A,Digital Thermometer-Hygrometer,"Measures temperature to ± 0.125 °C and humidity to ± 1.5 % on two channels, displays it on a big, clear screen. Ethernet, or RS-232 will allow you to network as many Fluke 1620s (DewKs) as desired",Digital Thermometer-Hygrometer,,36,,precision-multimeter
+Fluke,9600FLT,1 GHz Wide Offset Phase Noise Filter,filter connects easily to 96xx Reference Source models in bench top or rack-mounted installations,1-GHz Noise Filter,,47,,precision-multimeter
+Keysight Technologies,B2981A,Femto / Picoammeter,0.01 fA pico current resolution,Femto Picoammeter,,3,Y,precision-multimeter
+Keysight Technologies,PA2203A,IntegraVision Power Analyzer,3-Phase AC,IntegraVision Power Analyzer,,28,,precision-multimeter
+Keysight Technologies,N6731B,DC Power Analyzer,DC power,DC Power Analyzer,,61,,precision-multimeter
+Keysight Technologies,N4960A,Serial BERT 32,Bit error rate tester,Serial BERT 32,Klufe,47,,precision-multimeter
+Keysight Technologies,N8976B,Noise Figure Analyzer,high performance noise figure analyzer,Noise Figure Analyzer,Klufe,24,,precision-multimeter
+AMETEK,BURST NX8,ELECTRICAL FAST TRANSIENT GENERATOR,EFT/Burst tester with a built-in coupling/decoupling network for single phase or three-phase mains supply lines and a HV terminal to connect a capacitive coupling clamp,ELECTRICAL FAST TRANSIENT GENERATOR,Klufe,79,,precision-multimeter
+AMETEK,DITO,ESD Simulator,simulates electrostatic discharges,ESD Simulator,Klufe,49,,precision-multimeter
+AMETEK,IMN2,Impedance Matching Network,Impedance Matching Network for Surge impulse Generators,Impedance Matching Network,Klufe,77,,precision-multimeter
+AMETEK,VCS 500N10,Combination Wave Simulator,surge voltages up to 10kV and surge currents up to 5kVA,Combination Wave Simulator,Klufe,79,Y,precision-multimeter
 AMETEK,AS0104,solid-state power amplifiers,upgradeable microwave power amplifier solution,solid-state power amplifiers,,72,Y,
-Teledyne Technologies,3014z,WaveSurfer Oscilloscope,"100 MHz, 2 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,22,,
-Teledyne Technologies,3054z,WaveSurfer Oscilloscope,"500 MHz, 4 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,81,,
-Teledyne Technologies,DL05-HCM,Common Mode Differential Probe,60 V of common mode and 80 V differential input range with 1 GHz of bandwidth,Common Mode Differential Probe,,6,,
-Teledyne Technologies,HVP120,High Voltage Passive Probe,"probing up to 1,000 Vrms and capable of handling up to 6,000 V peak transients",High Voltage Passive Probe,,63,,
-Teledyne Technologies,ZS4000,Active Voltage Probe,high 1 MΩ input resistance and low 0.6 pF input capacitance,Active Voltage Probe,,42,,
+Teledyne Technologies,3014z,WaveSurfer Oscilloscope,"100 MHz, 2 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,22,Y,
+Teledyne Technologies,3054z,WaveSurfer Oscilloscope,"500 MHz, 4 GS/s, 4 Ch, 10 Mpts/ch DSO with 10.1"" Wide screen Color, Capacitive Touch Screen Display",WaveSurfer Oscilloscope,,81,Y,
+Teledyne Technologies,DL05-HCM,Common Mode Differential Probe,60 V of common mode and 80 V differential input range with 1 GHz of bandwidth,Common Mode Differential Probe,,6,Y,
+Teledyne Technologies,HVP120,High Voltage Passive Probe,"probing up to 1,000 Vrms and capable of handling up to 6,000 V peak transients",High Voltage Passive Probe,,63,Y,
+Teledyne Technologies,ZS4000,Active Voltage Probe,high 1 MΩ input resistance and low 0.6 pF input capacitance,Active Voltage Probe,,42,Y,
 Fluke,8808A,Digital Multimeter,"The Fluke 8808A 5.5 digit multimeter has a broad range of functions, measuring volts, ohms and amps with a basic V dc accuracy of 0.015 %. It is remarkably easy to use, even by unskilled operators, because it makes the measurements you perform most often extremely easy and fast to do.",Digital Multimeter,,74,,
 Fluke,8845A/8846A,6.5 Digit Precision Multimeters,"The Fluke 8845A and 8846A 6.5 digit multimeters have the precision and versatility to handle your most demanding measurements, on the bench or in a system. These DMMs are both high performance and feature rich, yet also remarkably easy to use.",6.5 Digit Precision Multimeters,,10,,
 Fluke,5790B,AC Measurement Standard,"The 5790B AC Measurement Standard is a multi-purpose ac measurement and transfer standard designed for the most demanding calibration applications. It combines the accuracy you would expect from a thermal transfer standard with the ease of use of a digital multimeter. Absolute ac voltage measurement uncertainties are as low as ± 24 ppm (one year, 23 °C ± 5 °C). The 5790B is designed to meet the complete ac voltage, ac current and wideband verification requirements of the Fluke Calibration 5730A, 5720A, and 5700A Multifunction Calibrators; 5522A, 5502A, 5520A, and 5500A Multi-Product Calibrators; plus other calibrators, amplifiers like the 52120, 5725A and 5205A/5215A, and transfer standards and ac voltmeters.",AC Measurement Standard,,43,,
@@ -66,3 +66,7 @@ Fluke,1594A,Super-Thermometers,"The Fluke Calibration 1594A and 1595A Super-Ther
 Fluke,3125,Surface Probe Calibrator,Calibrates surface sensors up to 400°C,Surface Probe Calibrator,,30,,
 Fluke,525B,Temperature/Pressure Calibrator,"The 525B Temperature/Pressure Calibrator gives you a workhorse combination of high accuracy and broad functionality for temperature and pressure instrument calibration. Compact and economical, the 525B has an interface for automated calibration, providing wide workload coverage in instrument shops and calibration labs, as well as in ATE applications.",Temperature Pressure Calibrator,,36,,
 Fluke,9118A,Thermocouple Calibration Furnace,"The Fluke Calibration 9118A Thermocouple Calibration Furnace is a horizontal, open-ended tube furnace with a temperature range of 300 °C to 1200 °C. It is used for comparison calibration of noble and base-metal thermocouples by secondary high-temperature labs and instrument shops in industries such as aerospace, automotive, energy, metals, and plastics. The 9118A is the most accurate, reliable, and flexible furnace in its class, meeting the demanding requirements of high-temperature thermocouple calibration.",Thermocouple Calibration Furnace,,86,,
+Fluke,PV1,totally real,,precision-voltmeter,,24,,precision-multimeter
+Fluke,PA1,super real,,precision-ammeter,,15,,precision-multimeter
+Fluke,PM1,definitely exists,,precision-multimeter,,9,,precision-multimeter
+Fluke,RustyMM,very real thing,,,,66,,precision-ammeter precision-voltmeter

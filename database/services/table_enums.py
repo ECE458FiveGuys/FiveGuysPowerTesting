@@ -23,6 +23,19 @@ class ModelTableColumnNames(AutoName):
     CALIBRATOR_CATEGORIES = auto()
 
 
+class MaxModelTableColumnNames(AutoName):
+    VENDOR = auto()
+    MODEL_NUMBER = auto()
+    SHORT_DESCRIPTION = auto()
+    COMMENT = auto()
+    MODEL_CATEGORIES = auto()
+    SPECIAL_CALIBRATION_SUPPORT = auto()
+    CALIBRATION_FREQUENCY = auto()
+    CALIBRATION_REQUIRES_APPROVAL = auto()
+    CALIBRATOR_CATEGORIES = auto()
+    CUSTOM_FORM_EXISTS = auto()
+
+
 class MaxInstrumentTableColumnNames(AutoName):
     VENDOR = auto()
     MODEL_NUMBER = auto()
