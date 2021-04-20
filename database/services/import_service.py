@@ -5,7 +5,8 @@ from abc import ABC, abstractmethod
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework.response import Response
 
-from database.exceptions import IllegalColumnHeadersError, IllegalNewlineCharacterError, ModelDoesNotExistError, \
+from database.exceptions import DuplicateObjectError, IllegalColumnHeadersError, IllegalNewlineCharacterError, \
+    ModelDoesNotExistError, \
     SpecificValidationError
 from database.services.table_enums import ModelTableColumnNames as MTCN
 
@@ -47,11 +48,11 @@ class ImportService(ABC):
         except ValidationError as v:
             try:
                 key = list(v.message_dict.keys())[0]
-                if key == '__all__':
-                    raise v
                 value = v.message_dict[key][0]
                 if key in [e.value.lower().replace('-', '_') for e in self.min_column_enum]:
                     raise SpecificValidationError(self.reader.line_num, key.title().replace('_', '-'), value)
+                else:
+                    raise DuplicateObjectError(self.reader.line_num, value)
             except AttributeError:
                 raise v
 

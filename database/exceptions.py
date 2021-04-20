@@ -19,6 +19,12 @@ class SpecificValidationError(ValidationError):
         super(SpecificValidationError, self).__init__(message=message)
 
 
+class DuplicateObjectError(ValidationError):
+    def __init__(self, row, error):
+        message = f"Illegal value in row {row}. {error}"
+        super(DuplicateObjectError, self).__init__(message=message)
+
+
 class IllegalColumnHeadersError(ValidationError):
     def __init__(self, headers):
         message = f"Illegal column headers. Column headers are unique and should be {headers}."
