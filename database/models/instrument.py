@@ -211,6 +211,9 @@ class CalibrationEventManager(models.Manager):
         return self.filter(instrument__pk=pk).filter(approval_data__approved=True).filter(date__lte=date)\
                    .annotate(expiration=expression).filter(expiration__gte=date).order_by('-date').first()
 
+    def find_valid_calibration_event(self, pk):
+        return self.filter(instrument__pk=pk).filter(approval_data__approved=True).order_by('-date').first()
+
 
 def instrument_evidence_directory_path(instance, filename):
     """ Returns file upload path """

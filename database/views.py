@@ -210,7 +210,7 @@ class InstrumentViewSet(viewsets.ModelViewSet):
     def calibration_certificate(self, request, pk=None, *args, **kwargs):
         """ Return calibration certificate for given instrument """
         c_e_s, i_s = self.get_serializer_class()
-        calibration_event = CalibrationEvent.objects.find_calibration_event(pk, datetime.today().astimezone())
+        calibration_event = CalibrationEvent.objects.find_valid_calibration_event(pk)
         return Response(self.recurse_calibration_event(calibration_event, c_e_s, i_s))
 
 
